@@ -1,0 +1,6 @@
+services:
+    picture_crawler.configure_menu_listener:
+        class: PictureCrawlerBundle\EventListener\ConfigureMenuListener
+        tags:
+            - { name: kernel.event_listener, event: unicorn.user.main_menu_logged, method: onMainMenuLoggedConfigure }
+        arguments: ["@service_container"]

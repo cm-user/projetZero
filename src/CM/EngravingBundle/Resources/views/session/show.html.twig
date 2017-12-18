@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Session</h1>
+
+    <table>
+        <tbody>
+        <tr>
+            <th>Id</th>
+            <td>{{ session.id }}</td>
+        </tr>
+        <tr>
+            <th>Name</th>
+            <td>{{ session.name }}</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a class="btn btn-warning" href="{{ path('session_download_picture', { 'id': session.id }) }}">
+        Télécharger les pdf
+    </a>
+
+    <br>
+
+    {# Affiche toutes les images lies à cette session #}
+    <div class="row">
+        {% for image in images %}
+            <div class="col-sm-4">
+                <a href="{{ image.pathPdf }}">
+                    {{ image.name }}
+                </a>
+                machine utilisé : {{ image.machine }}
+                <img src="{{ image.pathJpg }}" alt="{{ image.name }}" width="390">
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="row">
+        <br>
+        <a class="btn btn-info" href="{{ path('session_index') }}">
+            Retour à la liste
+        </a>
+
+    </div>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Category edit</h1>
+
+    {{ form_start(edit_form) }}
+        {{ form_widget(edit_form) }}
+        <input class="btn btn-warning" type="submit" value="Sauvegarder" />
+    {{ form_end(edit_form) }}
+
+
+            <a class="btn btn-info" href="{{ path('category_index') }}">Retour à la liste</a>
+
+            {{ form_start(delete_form) }}
+                <input class="btn btn-danger" type="submit" value="Supprimer">
+            {{ form_end(delete_form) }}
+
+{% endblock %}

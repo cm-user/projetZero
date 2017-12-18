@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+        {% for branch in branches %}
+                {% if branch.parent == null  %}
+                {{ _self.display_tree(branch) }}
+                {% endif %}
+        {% endfor %}
+
+
+        {% macro display_tree(level) %}
+                <li>{{ level.nom }}
+                        {% if level.children|default() %}
+                                <ul>
+                                        {% for child in level.children %}
+                                                {{ _self.display_tree(child) }}
+                                                {% if child.children|length == 0 %}
+                                                        <a class="btn btn-danger" href="{{ path('liste_delete', { 'id': child.id }) }}">
+                                                                <span class="glyphicon glyphicon-remove"></span>
+                                                                Supprimer
+                                                        </a>
+                                                        {% endif %}
+                                        {% endfor %}
+                                </ul>
+                        {% endif %}
+                </li>
+        {% endmacro %}
+{% endblock %}
+
+ {#{% macro display_tree(level) %}#}
+         {#<li>{{ level.nom }}#}
+                 {#{% if level.children|default() %}#}
+                         {#<ul>#}
+                                 {#{% for child in level.children %}#}
+                                         {#{{ _self.display_tree(child) }}#}
+                                 {#{% endfor %}#}
+                         {#</ul>#}
+                 {#{% endif %}#}
+         {#</li>#}
+ {#{% endmacro %}#}

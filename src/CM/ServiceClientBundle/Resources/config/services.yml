@@ -1,0 +1,28 @@
+services:
+#    service_client.example:
+#        class: CM\ServiceClientBundle\Example
+#        arguments: ["@service_id", "plain_value", "%parameter%"]
+
+     sc.repository.mail:
+         class: CM\ServiceClientBundle\Repository\MailRepository
+         arguments: ['@doctrine.orm.entity_manager']
+
+     sc.repository.solution:
+              class: CM\ServiceClientBundle\Repository\SolutionRepository
+              arguments: ['@doctrine.orm.entity_manager']
+
+     sc.repository.branch:
+              class: CM\ServiceClientBundle\Repository\BranchRepository
+              arguments: ['@doctrine.orm.entity_manager']
+
+     sc.repository.guide:
+                   class: CM\ServiceClientBundle\Repository\GuideRepository
+                   arguments: ['@doctrine.orm.entity_manager']
+
+     sc.repository.phone:
+                   class: CM\ServiceClientBundle\Repository\PhoneRepository
+                   arguments: ['@doctrine.orm.entity_manager']
+
+     sc.repository.attachment:
+          class: CM\ServiceClientBundle\Repository\AttachmentRepository
+          arguments: ['@doctrine.orm.entity_manager']

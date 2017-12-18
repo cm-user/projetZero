@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+        <h1>Arbre du service client</h1>
+        <br> <br>
+
+
+
+        {% for branch in branches %}
+                {% if branch.parent == null  %}
+                {{ _self.display_tree(branch) }}
+                {% endif %}
+        {% endfor %}
+
+
+        {% macro display_tree(level) %}
+                <li><h4>{{ level.nom }}</h4>
+                    <a class="btn btn-warning" href="{{ path('branch_edit', { 'id': level.id }) }}">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                        Modifier
+                    </a>
+                        {% if level.children|default() %}
+                                <ul>
+                                        {% for child in level.children %}
+
+                                                {{ _self.display_tree(child) }}
+
+                                                {% if child.children|length == 0 %}
+
+                                                        <a class="btn btn-danger" href="{{ path('branch_delete', { 'id': child.id }) }}">
+                                                                <span class="glyphicon glyphicon-remove"></span>
+                                                                Supprimer
+                                                        </a>
+                                                        {% endif %}
+                                        {% endfor %}
+                                </ul>
+                        {% endif %}
+                </li>
+        {% endmacro %}
+
+        <br> <br>
+        <a class="btn btn-success" href="{{ path('branch_new') }}">
+                <span class="glyphicon glyphicon-plus"></span>
+                Ajouter une nouvelle branche
+        </a>
+
+
+{% endblock %}
+
+ {#{% macro display_tree(level) %}#}
+         {#<li>{{ level.nom }}#}
+                 {#{% if level.children|default() %}#}
+                         {#<ul>#}
+                                 {#{% for child in level.children %}#}
+                                         {#{{ _self.display_tree(child) }}#}
+                                 {#{% endfor %}#}
+                         {#</ul>#}
+                 {#{% endif %}#}
+         {#</li>#}
+ {#{% endmacro %}#}

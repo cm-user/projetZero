@@ -1,0 +1,19 @@
+
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Téléchargement des images de Cadeau-Maestro</h1>
+
+
+    <a href="{{ path('download_image')}}"><button type="button" class="btn btn-warning" >Télécharger</button></a>
+{% endblock %}
+
+
+{%  block javascripts %}
+    <script type="application/javascript">
+        $(document).ready(function () {
+
+
+        });
+    </script>
+{% endblock %}

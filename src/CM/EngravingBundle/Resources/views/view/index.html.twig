@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Liste des nouvelles gravures: </h1>
+
+    <div id="time_new_gravure"></div>
+    <div id="new_gravure"></div>
+    <a>
+        <button class="btn btn-info" onclick="actualize();" id="btn_actualize">Actualiser</button>
+    </a>
+    <a>
+        <button class="btn btn-warning" onclick="DisplayNewEngraving();" id="btn_session">Nouvelle session de gravures</button>
+    </a>
+    <a id="btn_download" href="{{ path('download_pdf_gravure') }}" >
+        <button class="btn btn-warning">Récupérer l'archive ZIP</button>
+    </a>
+
+    <h1>Liste des gravures en cours :</h1>
+    {#<div id="msg"></div>#}
+    <div id="time_ongoing_gravure"></div>
+    <div id="ongoing_gravure"></div>
+
+    <a id="btn_download2" href="{{ path('download_pdf_gravure') }}" >
+        <button class="btn btn-warning">Récupérer l'archive ZIP</button>
+    </a>
+
+    <style>
+        input[type='radio'] { transform: scale(2); }
+
+        .center-block {
+            margin-left:auto;
+            margin-right:auto;
+            display:block;
+        }
+
+
+
+    </style>
+
+{% endblock %}
+
+
+{% block javascripts %}
+    <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+    <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
+    <script src="{{ asset('bundles/engraving/js/gravure.js') }}"></script>
+{% endblock %}
+
+
+

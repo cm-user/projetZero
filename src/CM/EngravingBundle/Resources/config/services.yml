@@ -1,0 +1,17 @@
+services:
+#    engraving.example:
+#        class: CM\EngravingBundle\Example
+#        arguments: ["@service_id", "plain_value", "%parameter%"]
+
+      engraving.repository.picture:
+          class: CM\EngravingBundle\Repository\PictureRepository
+          arguments: ['@doctrine.orm.entity_manager']
+
+      engraving.repository.category:
+          class: CM\EngravingBundle\Repository\CategoryRepository
+          arguments: ['@doctrine.orm.entity_manager']
+
+      engraving.repository.session:
+                class: CM\EngravingBundle\Repository\SessionRepository
+                arguments: ['@doctrine.orm.entity_manager']
+

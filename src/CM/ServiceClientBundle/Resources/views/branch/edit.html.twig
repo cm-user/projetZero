@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Modifier une branche</h1>
+
+    {{ form_start(edit_form) }}
+
+    {{ form_row(edit_form.nom) }}
+
+    {% if branch.solutions|length > 0 %}
+        {{ form_widget(edit_form.parent,{'attr':{'class':'hidden'}}) }}
+    {% endif %}
+
+    {{ form_widget(edit_form) }}
+    <p class="text-center"><input class="btn btn-warning" type="submit" value="Modifier" /></p>
+    {{ form_end(edit_form) }}
+
+
+
+    <p>
+        {{ msg }}
+    </p>
+
+    <p class="text-right">
+        <a class="btn btn-default" href="{{ path('branch_index') }}">
+            Retour à la liste
+        </a>
+        {% if branch.children|length == 0 %}
+            {{ form_start(delete_form) }}
+            <input class="btn btn-danger" type="submit" value="Supprimer">
+            {{ form_end(delete_form) }}
+        {% endif %}
+    </p>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Liste des numéros de téléphone </h1>
+
+    <table class="table table-bordered table-hover">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Texte</th>
+            <th>Action</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        {% for phone in phones %}
+            <tr>
+                <td>{{ phone.id }}</td>
+                <td>
+                    {#le raw permet de forcer l'utilisation des balises html qui sont dans la base de donnée#}
+                    {{ phone.text|raw }}
+                </td>
+                <td>
+                    <a class="btn btn-warning" href="{{ path('phone_edit', { 'id': phone.id }) }}">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                        Voir/Modifier
+                    </a>
+                    -
+                    <a class="btn btn-danger" href="{{ path('phone_delete', { 'id': phone.id }) }}">
+                        <span class="glyphicon glyphicon-remove"></span>
+                        Supprimer
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a class="btn btn-success" href="{{ path('phone_new') }}">
+        <span class="glyphicon glyphicon-plus"></span>
+        Ajouter un numéro et son descriptif
+    </a>
+{% endblock %}

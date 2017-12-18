@@ -1,0 +1,107 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Liste des Sessions</h1>
+
+    <div class='col-md-5'>
+        <div class="form-group">
+            <div class='input-group date' id='datetimepicker6'>
+                <input id="dateDebut" type='text' class="form-control" required/>
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class='col-md-5'>
+        <div class="form-group">
+            <div class='input-group date' id='datetimepicker7'>
+                <input id="dateFin" type='text' class="form-control" required/>
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn btn-info" onclick="displaySession();">Rechercher</button>
+
+
+        <div id="listSession"> </div>
+
+
+
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+    <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
+    <script>
+        $(document).ready(function () {
+            $('.datepicker').datepicker();
+            $(function () {
+                $('#datetimepicker6').datepicker({
+                    format: 'yyyy-mm-dd'
+                });
+                $('#datetimepicker7').datepicker({
+                    useCurrent: false, //Important! See issue #1075
+                    format: 'yyyy-mm-dd'
+                });
+                $("#datetimepicker6").on("dp.change", function (e) {
+                    $('#datetimepicker7').data("DateTimePicker").minDate(e.date);
+                });
+                $("#datetimepicker7").on("dp.change", function (e) {
+                    $('#datetimepicker6').data("DateTimePicker").maxDate(e.date);
+                });
+            });
+
+
+            $.ajax({
+                url: Routing.generate('session_last_json'),
+                success: function (result) {
+                    var url = "/engraving/session/"; //url menant à la session par son id
+                    $elem = "<table class=\"table table-striped\"> <thead><tr> <th>Id</th><th>Name</th><th>Actions</th></tr></thead><tbody>";
+                    $.each(result, function (key, val) {
+                        $elem += "<tr>";
+                        $elem += "<td>" + val['id'] + "</td>";
+                        $elem += "<td>" + val['name'] + "</td>";
+                        $elem += "<td> <a href=\"" + url + val['id'] + "\"> Voir en détails </a></td>"; //Changer le chemin manuellement
+                        $elem += "</tr>";
+
+                    });
+                    $elem += " </tbody> </table>";
+
+                    $("#listSession").html($elem);
+                }
+            });
+        })
+
+
+        function displaySession() {
+            var dateDebut = $("#dateDebut").val();
+            var dateFin = $("#dateFin").val();
+            var url = "/engraving/session/"; //url menant à la session par son id
+
+
+            $.ajax({
+                url: Routing.generate('session_date_json', {debut: dateDebut, fin: dateFin}),
+                success: function (result) {
+                    $elem = "<table class=\"table table-striped\"> <thead><tr> <th>Id</th><th>Name</th><th>Actions</th></tr></thead><tbody>";
+                    $.each(result, function (key, val) {
+                        $elem += "<tr>";
+                        $elem += "<td>" + val['id'] + "</td>";
+                        $elem += "<td>" + val['name'] + "</td>";
+                        $elem += "<td> <a href=\"" + url + val['id'] + "\"> Voir en détails </a></td>"; //Changer le chemin manuellement
+                        $elem += "</tr>";
+
+                    });
+                    $elem += " </tbody> </table>";
+                    $("#listSession").html($elem);
+                }
+            });
+
+        }
+
+    </script>
+
+{% endblock %}

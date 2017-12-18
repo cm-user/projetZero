@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Téléchargement des images de Cadeau-Maestro</h1>
+
+    {{ form(form) }}
+
+    <div id="result">
+        <div id="alert" class="alert alert-danger" role="alert" style="display: none"></div>
+        <div id="url"  role="alert" style="display: none"></div>
+    </div>
+
+{% endblock %}
+
+
+{%  block javascripts %}
+    <script type="application/javascript">
+        $(document).ready(function () {
+
+
+        });
+    </script>
+{% endblock %}

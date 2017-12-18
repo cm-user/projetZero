@@ -1,0 +1,67 @@
+engraving_order_regulator:
+    resource: "@EngravingBundle/Controller/OrderRegulatorController.php"
+    type:     annotation
+
+faulty:
+    resource: "@FaultyBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+engraving:
+    resource: "@EngravingBundle/Controller/"
+    type:     annotation
+    prefix:   /engraving
+
+
+service_client_attachment:
+    resource: "@ServiceClientBundle/Controller/AttachmentController.php"
+    type:     annotation
+
+service_client_feedback:
+    resource: "@ServiceClientBundle/Controller/FeedbackController.php"
+    type:     annotation
+
+test:
+    resource: "@TestBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+app:
+    resource: '@AppBundle/Controller/'
+    type: annotation
+
+coresphere_console:
+    resource: .
+    type: extra
+
+cm_service_client:
+    resource: "@ServiceClientBundle/Controller/"
+    type:     annotation
+    prefix:   /service_client
+
+cm_test:
+    resource: "@AppBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+cm_test2:
+    resource: "@TestBundle/Controller/"
+    type:     annotation
+    prefix:   /test
+
+api_service_client:
+    type : rest
+    resource: "@ServiceClientBundle/Controller/ApiController.php"
+
+cm_picture_crawler:
+    resource: "@PictureCrawlerBundle/Controller/"
+    type:     annotation
+    prefix:   /picture-crawler
+
+fos_js_routing:
+    resource: "@FOSJsRoutingBundle/Resources/config/routing/routing.xml"
+
+cm_faulty:
+    resource: "@FaultyBundle/Controller/"
+    type:     annotation
+    prefix:   /faulty

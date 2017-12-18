@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Liste des pièces jointes</h1>
+
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nom</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for attachment in attachments %}
+            <tr>
+                <td>{{ attachment.id }}</td>
+                <td><a href="{{ attachment.path }}">{{ attachment.name }}</a></td>
+                <td>
+                            <a class="btn btn-warning" href="{{ path('attachment_edit', { 'id': attachment.id }) }}">Modifier</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+
+    <a class="btn btn-success" href="{{ path('attachment_new') }}">
+        <span class="glyphicon glyphicon-plus"></span>
+        Ajouter une pièce jointe
+    </a>
+
+{% endblock %}

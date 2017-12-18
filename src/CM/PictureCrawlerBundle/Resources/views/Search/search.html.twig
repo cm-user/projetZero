@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Téléchargement des images</h1>
+
+    {{ form(form) }}
+
+    <div id="result">
+        <div id="alert" class="alert alert-danger" role="alert" style="display: none"></div>
+        <div id="url" class="alert alert-success" role="alert" style="display: none"></div>
+    </div>
+
+{% endblock %}
+
+
+{%  block javascripts %}
+    <script type="application/javascript">
+        $(document).ready(function () {
+
+            $('#search_url button').on('click', function (e) {
+                $("#alert").empty().hide();
+                $("#url").empty().hide();
+                e.preventDefault();
+                var searchUrl = $('#search_url input').val();
+                $.post({
+                    url: '{{ path("picture_crawler_ajax") }}',
+                    data: {
+                        url: searchUrl
+                    },
+                    dataType : 'json'
+                }, function (data) {
+                    if (typeof data.error != "undefined") {
+                        $("#alert").html("<p>"+data.error+"</p>").show();
+                    }else if (typeof data.data != "undefined") {
+                        var links = '';
+                        $(data.data).each(function(index, value){
+                            links += toUrl(value);
+                        });
+                        $("#url").html(links).show();
+                    }
+                });
+            });
+        });
+
+        function toUrl(a){
+            return '<p><a href="'+a+'" target="_blank">'+a+'</a></p>';
+        }
+    </script>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Liste de solution</h1>
+
+    <table class="table table-bordered table-hover">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Nom</th>
+            <th>Mails associés</th>
+            <th>Branches associées</th>
+            <th>Action</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        {% for solution in solutions %}
+            <tr>
+                <td>{{ solution.id }}</td>
+                <td>
+                    {#<a href="{{ path('mail_show', { 'id': mail.id }) }}">#}
+                    {{ solution.nom }}
+                    {#</a>#}
+                </td>
+                <td>
+                    {% for mail in solution.mails %}
+                        <a href="{{ path('mail_edit', { 'id': mail.id }) }}">
+                        {{ mail.nom }}
+                        </a>
+                        {% if not loop.last %}, {% endif %}
+                    {%  endfor %}
+                </td>
+                <td>
+                    {#indispensable sinon déclenche une erreur #}
+                    {% if solution.branche != null %}
+                    <a href="{{ path('branch_edit', { 'id': solution.branche.id }) }}">
+                    {{ solution.branche.nom }}
+                    </a>
+                    {% endif %}
+                </td>
+                <td>
+                    <a class="btn btn-warning" href="{{ path('solution_edit', { 'id': solution.id }) }}">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                        Voir/Modifier
+                    </a>
+                    -
+                    <a class="btn btn-danger" href="{{ path('solution_delete', { 'id': solution.id }) }}">
+                        <span class="glyphicon glyphicon-remove"></span>
+                        Supprimer
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a class="btn btn-success" href="{{ path('solution_new') }}">
+        <span class="glyphicon glyphicon-plus"></span>
+        Ajouter une solution
+    </a>
+
+    <p>Note: Vous ne pouvez pas supprimer une solution liée avec un mail.</p>
+{% endblock %}

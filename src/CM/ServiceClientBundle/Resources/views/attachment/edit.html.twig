@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Attachment edit</h1>
+
+
+    {{ form_start(edit_form) }}
+    {{ form_widget(edit_form) }}
+    <p class="text-left"><input type="submit" value="Sauvegarder" class="btn btn-success"/></p>
+    {{ form_end(edit_form) }}
+
+    <p><a class="btn btn-info" href="{{ path('attachment_index') }}">Retour à la liste</a></p>
+
+
+    {{ form_start(delete_form) }}
+    <input type="submit" value="Delete" class="btn btn-danger">
+    {{ form_end(delete_form) }}
+
+
+
+
+{% endblock %}

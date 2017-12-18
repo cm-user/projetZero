@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Liste de mail type</h1>
+
+    <table class="table table-bordered table-hover">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Nom</th>
+            <th>Solution</th>
+            <th>Action</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        {% for mail in mails %}
+            <tr>
+                <td>{{ mail.id }}</td>
+                <td>
+                    {#<a href="{{ path('mail_show', { 'id': mail.id }) }}">#}
+                        {{ mail.nom }}
+                    {#</a>#}
+                </td>
+                <td>
+                    {% for solution in mail.solutions %}
+                    {#indispensable sinon déclenche une erreur #}
+                    {% if solution != null %}
+                        <a href="{{ path('solution_edit', { 'id': solution.id }) }}">
+                        {{ solution.nom }}
+                            </a>
+                    {% endif %}
+                    {% endfor %}
+                </td>
+                <td>
+                    <a class="btn btn-warning" href="{{ path('mail_edit', { 'id': mail.id }) }}">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                        Voir/Modifier
+                    </a>
+                    -
+                    <a class="btn btn-danger" href="{{ path('mail_delete', { 'id': mail.id }) }}">
+                        <span class="glyphicon glyphicon-remove"></span>
+                        Supprimer
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a class="btn btn-success" href="{{ path('mail_new') }}">
+        <span class="glyphicon glyphicon-plus"></span>
+        Ajouter un mail type
+    </a>
+{% endblock %}

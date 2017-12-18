@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Liste du guide </h1>
+
+    <table class="table table-bordered table-hover">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Texte</th>
+            <th>Action</th>
+
+        </tr>
+        </thead>
+        <tbody>
+        {% for guide in guides %}
+            <tr>
+                <td>{{ guide.id }}</td>
+                <td>
+                    {#le raw permet de forcer l'utilisation des balises html qui sont dans la base de donnée#}
+                    {{ guide.text|raw }}
+                </td>
+                <td>
+                    <a class="btn btn-warning" href="{{ path('guide_edit', { 'id': guide.id }) }}">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                        Voir/Modifier
+                    </a>
+                    -
+                    <a class="btn btn-danger" href="{{ path('guide_delete', { 'id': guide.id }) }}">
+                        <span class="glyphicon glyphicon-remove"></span>
+                        Supprimer
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a class="btn btn-success" href="{{ path('guide_new') }}">
+        <span class="glyphicon glyphicon-plus"></span>
+        Ajouter une ligne au guide
+    </a>
+{% endblock %}

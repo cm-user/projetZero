@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+<h1>Ajout d'une nouvelle branche</h1>
+
+    {{ form_start(form) }}
+    {{ form_widget(form) }}
+    <p class="text-center"><input class="btn btn-success" type="submit" value="Créer" /></p>
+    {{ form_end(form) }}
+
+    <p class="text-right">
+    <a class="btn btn-default" href="{{ path('branch_index') }}">
+        Retour à la liste
+    </a>
+    </p>
+
+{% endblock %}

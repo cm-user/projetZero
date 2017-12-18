@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Modifier le mail type</h1>
+
+    {{ form_start(edit_form) }}
+    {{ form_widget(edit_form) }}
+    <p class="text-center"><input class="btn btn-warning" type="submit" value="Modifier" /></p>
+    {{ form_end(edit_form) }}
+
+    {#<div id="searchProduct" class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">#}
+        {#<div class="modal-dialog modal-lg" role="document">#}
+            {#<div class="modal-content">#}
+                {#<div class="modal-header">#}
+                    {#<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>#}
+                    {#<h4 class="modal-title" id="title"></h4>#}
+                {#</div>#}
+                {#<div class="modal-body"></div>#}
+                {#<div class="modal-footer">#}
+                    {#<button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>#}
+                {#</div>#}
+            {#</div>#}
+        {#</div>#}
+    {#</div>#}
+
+    <p class="text-right">
+        <a class="btn btn-default" href="{{ path('mail_index') }}">
+            Retour à la liste
+        </a>
+        {{ form_start(delete_form) }}
+        <input class="btn btn-danger" type="submit" value="Supprimer">
+        {{ form_end(delete_form) }}
+    </p>
+{% endblock %}
+
+{% block javascripts %}
+    {#<script src="{{ asset('bundles/faultyproduct/js/jquery.collection.js') }}"></script>#}
+    {#<script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>#}
+    {#<script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>#}
+    {#<script src="{{ asset('bundles/faultyproduct/js/imagesloaded.pkgd.min.js') }}"></script>#}
+    {#<script src="{{ asset('bundles/faultyproduct/js/app.js') }}"></script>#}
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Régulateur de Commande </h1>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nombre de Commandes</th>
+                <th>Mis à jour le </th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for orderRegulator in orderRegulators %}
+            <tr>
+                <td>{{ orderRegulator.number }}</td>
+                <td>{% if orderRegulator.updatedAt %}{{ orderRegulator.updatedAt|date('Y-m-d H:i:s') }}{% endif %}</td>
+                <td>
+
+                            {#<a href="{{ path('orderregulator_show', { 'id': orderRegulator.id }) }}">show</a>#}
+
+                            <a class="btn btn-warning" href="{{ path('orderregulator_edit', { 'id': orderRegulator.id }) }}">edit</a>
+
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <p>Le nombre de commande est très important: il fait réfèrence aux X dernières commandes que le module va traiter.</p>
+    <p>Faites attention svp !</p>
+
+            {#<a href="{{ path('orderregulator_new') }}">Create a new orderRegulator</a>#}
+
+{% endblock %}

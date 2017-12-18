@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Faulties list</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Idorder</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for faulty in faulties %}
+            <tr>
+                <td><a href="{{ path('faulty_show', { 'id': faulty.id }) }}">{{ faulty.id }}</a></td>
+                <td>{{ faulty.idOrder }}</td>
+                <td>
+                    <ul>
+                        <li>
+                            <a href="{{ path('faulty_show', { 'id': faulty.id }) }}">show</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('faulty_edit', { 'id': faulty.id }) }}">edit</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('faulty_new') }}">Create a new faulty</a>
+        </li>
+    </ul>
+{% endblock %}

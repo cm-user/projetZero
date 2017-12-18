@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Modifier cette ligne du guide</h1>
+
+    {{ form_start(edit_form) }}
+    {{ form_widget(edit_form) }}
+    <p class="text-center"><input class="btn btn-warning" type="submit" value="Modifier" /></p>
+    {{ form_end(edit_form) }}
+
+
+    <p class="text-right">
+        <a class="btn btn-default" href="{{ path('guide_index') }}">
+            Retour à la liste
+        </a>
+        {{ form_start(delete_form) }}
+        <input class="btn btn-danger" type="submit" value="Supprimer">
+        {{ form_end(delete_form) }}
+    </p>
+{% endblock %}
+
+{% block javascripts %}
+
+{% endblock %}
