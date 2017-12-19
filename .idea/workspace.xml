@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="ff9e954d-75d1-495d-86e7-1eb7b20bd258" name="Default" comment="new entity">
+    <list default="true" id="ff9e954d-75d1-495d-86e7-1eb7b20bd258" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="projetZero.iws" />
@@ -570,7 +570,7 @@
       <workItem from="1512120566256" duration="21285000" />
       <workItem from="1512235687535" duration="4379000" />
       <workItem from="1513585581693" duration="7022000" />
-      <workItem from="1513694491068" duration="1084000" />
+      <workItem from="1513694491068" duration="1319000" />
     </task>
     <task id="LOCAL-00001" summary="new entity">
       <created>1513695489653</created>
@@ -579,11 +579,32 @@
       <option name="project" value="LOCAL" />
       <updated>1513695489653</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="new entity2">
+      <created>1513695610452</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1513695610452</updated>
+    </task>
+    <task id="LOCAL-00003" summary="new entity bond">
+      <created>1513695786237</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1513695786237</updated>
+    </task>
+    <task id="LOCAL-00004" summary="new entity bond">
+      <created>1513695809755</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1513695809755</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="398451000" />
+    <option name="totallyTimeSpent" value="398686000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -622,7 +643,9 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="new entity" />
-    <option name="LAST_COMMIT_MESSAGE" value="new entity" />
+    <MESSAGE value="new entity2" />
+    <MESSAGE value="new entity bond" />
+    <option name="LAST_COMMIT_MESSAGE" value="new entity bond" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
