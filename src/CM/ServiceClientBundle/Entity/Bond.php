@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Bond
  *
- * @ORM\Table(name="bond")
+ * @ORM\Table(name="sc_bond")
  * @ORM\Entity(repositoryClass="CM\ServiceClientBundle\Repository\BondRepository")
  */
 class Bond
@@ -38,14 +38,14 @@ class Bond
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="CreatedAt", type="datetime")
+     * @ORM\Column(name="created-at", type="datetime")
      */
     private $createdAt;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="updatedAt", type="datetime")
+     * @ORM\Column(name="updated-at", type="datetime")
      */
     private $updatedAt;
 

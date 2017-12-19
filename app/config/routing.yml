@@ -1,3 +1,7 @@
+service_client_bond:
+    resource: "@ServiceClientBundle/Controller/BondController.php"
+    type:     annotation
+
 engraving_order_regulator:
     resource: "@EngravingBundle/Controller/OrderRegulatorController.php"
     type:     annotation

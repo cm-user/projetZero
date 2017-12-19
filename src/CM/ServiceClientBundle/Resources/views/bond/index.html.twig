@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Bonds list</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Path</th>
+                <th>Createdat</th>
+                <th>Updatedat</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for bond in bonds %}
+            <tr>
+                <td><a href="{{ path('bond_show', { 'id': bond.id }) }}">{{ bond.id }}</a></td>
+                <td>{{ bond.name }}</td>
+                <td>{{ bond.path }}</td>
+                <td>{% if bond.createdAt %}{{ bond.createdAt|date('Y-m-d H:i:s') }}{% endif %}</td>
+                <td>{% if bond.updatedAt %}{{ bond.updatedAt|date('Y-m-d H:i:s') }}{% endif %}</td>
+                <td>
+                    <ul>
+                        <li>
+                            <a href="{{ path('bond_show', { 'id': bond.id }) }}">show</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('bond_edit', { 'id': bond.id }) }}">edit</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('bond_new') }}">Create a new bond</a>
+        </li>
+    </ul>
+{% endblock %}
