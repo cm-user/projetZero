@@ -13,7 +13,7 @@ class BondType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('name')->add('path')->add('createdAt')->add('updatedAt');
+        $builder->add('name')->add('path');
     }
     
     /**

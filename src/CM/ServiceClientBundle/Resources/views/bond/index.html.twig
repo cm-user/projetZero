@@ -1,45 +1,44 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Bonds list</h1>
+    <h1>Liste des bons de retour</h1>
 
-    <table>
+    <table class="table table-bordered table-hover">
         <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Path</th>
-                <th>Createdat</th>
-                <th>Updatedat</th>
-                <th>Actions</th>
-            </tr>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Path</th>
+            <th>Createdat</th>
+            <th>Updatedat</th>
+            <th>Actions</th>
+        </tr>
         </thead>
         <tbody>
         {% for bond in bonds %}
             <tr>
-                <td><a href="{{ path('bond_show', { 'id': bond.id }) }}">{{ bond.id }}</a></td>
+                <td>{{ bond.id }}</td>
                 <td>{{ bond.name }}</td>
                 <td>{{ bond.path }}</td>
                 <td>{% if bond.createdAt %}{{ bond.createdAt|date('Y-m-d H:i:s') }}{% endif %}</td>
                 <td>{% if bond.updatedAt %}{{ bond.updatedAt|date('Y-m-d H:i:s') }}{% endif %}</td>
                 <td>
-                    <ul>
-                        <li>
-                            <a href="{{ path('bond_show', { 'id': bond.id }) }}">show</a>
-                        </li>
-                        <li>
-                            <a href="{{ path('bond_edit', { 'id': bond.id }) }}">edit</a>
-                        </li>
-                    </ul>
+                    <a class="btn btn-info" href="{{ path('bond_show', { 'id': bond.id }) }}">Voir</a>
+                    <a class="btn btn-warning" href="{{ path('bond_edit', { 'id': bond.id }) }}">Modifier</a>
+
+                    <a class="btn btn-danger" href="{{ path('bond_delete_bybutton', { 'id': bond.id }) }}">
+                        <span class="glyphicon glyphicon-remove"></span>
+                        Supprimer
+                    </a>
                 </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <ul>
-        <li>
-            <a href="{{ path('bond_new') }}">Create a new bond</a>
-        </li>
-    </ul>
+    <a class="btn btn-success" href="{{ path('bond_new') }}">
+        <span class="glyphicon glyphicon-plus"></span>
+        Ajouter un nouveau bon retour
+    </a>
+
 {% endblock %}

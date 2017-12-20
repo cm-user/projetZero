@@ -48,7 +48,7 @@ class BondController extends Controller
             $em->persist($bond);
             $em->flush();
 
-            return $this->redirectToRoute('bond_show', array('id' => $bond->getId()));
+            return $this->redirectToRoute('bond_index');
         }
 
         return $this->render('ServiceClientBundle:bond:new.html.twig', array(
@@ -86,6 +86,8 @@ class BondController extends Controller
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
+            $date = new \DateTime('NOW');
+            $bond->setUpdatedAt($date);
             $this->getDoctrine()->getManager()->flush();
 
             return $this->redirectToRoute('bond_edit', array('id' => $bond->getId()));
@@ -132,5 +134,45 @@ class BondController extends Controller
             ->setMethod('DELETE')
             ->getForm()
         ;
+    }
+
+    /**
+     * Delete a bond entity.
+     *
+     * @Route("/{id}/delete", name="bond_delete_bybutton")
+     * @return RedirectResponse
+     */
+    public function delete_bybuttonAction(Bond $bond)
+    {
+
+//        $productImages = $bond->getProduct()->getProductImages();
+//        $productImageRepository = $this->get('faulty.repository.product_image');
+//
+//        $dir_path = "faulty"; //chemin du dossier des images
+//        $ouverture = opendir($dir_path);
+//        $lecture = readdir($ouverture);
+//
+//        if( sizeof($productImages) != 0 ) {
+//            foreach ($productImages as $productImage) {
+//                /* @var $productImage ProductImage */
+//
+//                $path_file = $productImage->getPicture(); //récupére l'url de l'image
+//
+//                if ($path_file == null) {
+//                    $productImageRepository->delete($productImage); //suppression dans la base de donnée
+//                } else {
+//                    $file_name = str_replace("http://tools.cadeau-maestro.com/faulty/", "", $path_file);  //récupére le nom de l'image
+//                    $path = $dir_path . "/" . $file_name; //forme le chemin complet de l'image
+//                    unlink($path); //suppression de l'image
+//                    $productImageRepository->delete($productImage); //suppression dans la base de donnée
+//                }
+//            }
+//        }
+
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($bond);
+        $em->flush();
+
+        return $this->redirectToRoute('bond_index');
     }
 }
