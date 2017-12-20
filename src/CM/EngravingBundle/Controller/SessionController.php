@@ -66,22 +66,31 @@ class SessionController extends Controller
         $fichier = 'gravure_' . $session->getCreatedAt()->format('Y-m-d_H-i') . '.zip';
         $chemin = "gravure/"; // emplacement de votre fichier .pdf
 
+        $fichier_txt = fopen($chemin . 'gravure_' . $session->getCreatedAt()->format('Y-m-d_H-i') . '.txt', 'a');
+
 
         $zip = new ZipArchive();
         if ($zip->open($chemin . $fichier) == TRUE)
             if ($zip->open($chemin . $fichier, ZipArchive::CREATE) === true) {
+
+                $zip->addFile($chemin . 'gravure_' . $session->getCreatedAt()->format('Y-m-d_H-i') . '.txt', 'gravure_' . $session->getCreatedAt()->format('Y-m-d_H-i') . '.txt'); //Ajout du fichier au ZIP
+
 //                chmod( $fichier, 0777);
 
-//                \Doctrine\Common\Util\Debug::dump(file_exists($zip));
-                foreach($images as $image) {
+                foreach ($images as $image) {
                     $category = $image->getCategory();
-                    if($category != null){
-                        $directory = $category->getSurname(); //nom du dossier associé à la catégorie
-                        $current = file_get_contents($image->getPathPdf()); //recupere contenu du fichier
-                        $folder_file = $chemin . $image->getSurname() . '.pdf'; // nommage du fichier + son extension et choix du repertoire
-                        file_put_contents($folder_file, $current); //creation du fichier au bon repertoire
-                        $file = $image->getSurname() . '.pdf';
-                        $zip->addFile($chemin . $file,  $directory .'/' . $file); //Ajout du fichier au ZIP
+                    if ($category != null) {
+                        $directory = $category->getFolder(); //nom du dossier associé à la catégorie
+                        if(get_headers($image->getPathPdf())[0] == "HTTP/1.1 200 OK"){ //vérifie que l'url existe bien
+                            $current = file_get_contents($image->getPathPdf()); //recupere contenu du fichier
+                            $folder_file = $chemin . $image->getSurname() . '.pdf'; // nommage du fichier + son extension et choix du repertoire
+                            file_put_contents($folder_file, $current); //creation du fichier au bon repertoire
+                            $file = $image->getSurname() . '.pdf';
+                            $zip->addFile($chemin . $file, $directory . '/' . $file); //Ajout du fichier au ZIP
+                        }
+                        else {
+                            fputs($fichier_txt, "le produit " . $image->getName() . " n'a pas de pdf" . "\r\n"); //indique le produit qui n'a pas de pdf
+                        }
                     }
                 }
 
@@ -97,9 +106,11 @@ class SessionController extends Controller
         $response->headers->set('Content-Type', 'application/zip'); // modification du content-type pour forcer le téléchargement (sinon le navigateur internet essaie d'afficher le document)
         $response->headers->set('Content-Transfer-Encoding', 'Binary');
         $response->headers->set('Content-Length', filesize($chemin . $fichier));
-        $response->headers->set('Content-disposition', 'filename=' . $fichier);
+        $response->headers->set('Content-disposition', 'filename=GRAVURE.zip' );
         ob_end_clean();
+        fclose($fichier_txt);
         self::clearFolder($chemin);
+
 
         return $response;
     }
