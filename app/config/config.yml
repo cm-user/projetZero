@@ -14,6 +14,7 @@ parameters:
     attachment_directory: '%kernel.project_dir%/web/attachment/'
 #    url_directory_engraving: 'https://cadeaumaestro.newquest.fr/modules/nq_config/files/'
     url_directory_engraving: 'https://cadeau-maestro.com/modules/nq_config/files/'
+    bond: '%kernel.project_dir%/web/bond'
 
 
 framework:

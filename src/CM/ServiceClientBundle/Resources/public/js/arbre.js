@@ -336,6 +336,12 @@ function DisplayAttachment(){
     else {
         $("#attachment").hide();
     }
+
+    //faire apparaitre la liste des BL
+    // avec un bouton utiliser pour chaque BL
+    //mettre une route pour télécharger le pdf lié (s'inspirer de l'écran configuration) supprimer également le BL
+    // mettre un listener pour recharger la partie BL
+
 }
 
 

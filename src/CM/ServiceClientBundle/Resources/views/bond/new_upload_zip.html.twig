@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Ajouter des bons de retour</h1>
+    <br><br><br>
+
+    {{ form(form) }}
+
+
+    {#<a href="{{ path('bond_new_upload')}}"><button type="button" class="btn btn-warning" >Ajouter</button></a>#}
+
+    <a class="btn btn-danger" href="{{ path('bond_index') }}">
+        <span class="glyphicon glyphicon-arrow-left"></span>
+        Retour
+    </a>
+
+{% endblock %}
+
+
+{%  block javascripts %}
+    <script type="application/javascript">
+        $(document).ready(function () {
+
+
+        });
+    </script>
+{% endblock %}
