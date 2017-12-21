@@ -26,3 +26,7 @@ services:
      sc.repository.attachment:
           class: CM\ServiceClientBundle\Repository\AttachmentRepository
           arguments: ['@doctrine.orm.entity_manager']
+
+     sc.repository.bond:
+          class: CM\ServiceClientBundle\Repository\BondRepository
+          arguments: ['@doctrine.orm.entity_manager']

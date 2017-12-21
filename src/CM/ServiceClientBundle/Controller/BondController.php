@@ -9,6 +9,10 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component\HttpFoundation\Request;
 use CM\ServiceClientBundle\Form\UploadZipType;
 use \ZipArchive;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
+
+
 
 
 
@@ -44,12 +48,27 @@ class BondController extends Controller
      */
     public function newAction(Request $request)
     {
-        $bond = new Bond();
-        $form = $this->createForm('CM\ServiceClientBundle\Form\BondType', $bond);
+        $em = $this->getDoctrine()->getManager();
+        $uploadZip = new UploadZip();
+        $form = $this->createForm('CM\ServiceClientBundle\Form\UploadZipType',$uploadZip);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
+            $file = $uploadZip->getZip();
+            $fileName = "temp.pdf"; //nom du fichier zip dans notre repertoire
+
+            $file->move(
+                $this->getParameter('bond'),
+                $fileName
+            );
+
+            $bond = new Bond();
+            $number_random = rand (); //genere un nombre aléatoire
+            $new_name = "BL" . $number_random . ".pdf"; //nouveau nom pour le fichier pdf
+            $path = $this->getParameter('bond') . "/" . $new_name; //creation du chemin complet
+            rename($this->getParameter('bond') . "/" . $fileName, $path); //on renomme le fichier qui se situe déjà dans le répertoire bond
+            $bond->setName($new_name);
+            $bond->setPath($path);
             $em->persist($bond);
             $em->flush();
 
@@ -57,7 +76,7 @@ class BondController extends Controller
         }
 
         return $this->render('ServiceClientBundle:bond:new.html.twig', array(
-            'bond' => $bond,
+//            'bond' => $bond,
             'form' => $form->createView(),
         ));
     }
@@ -149,31 +168,13 @@ class BondController extends Controller
      */
     public function delete_bybuttonAction(Bond $bond)
     {
+        $dir_path = "bond"; //chemin du dossier des images
+        $file_name = $bond->getName();
+        $path = $dir_path . "/" . $file_name; //forme le chemin complet de l'image
 
-//        $productImages = $bond->getProduct()->getProductImages();
-//        $productImageRepository = $this->get('faulty.repository.product_image');
-//
-//        $dir_path = "faulty"; //chemin du dossier des images
-//        $ouverture = opendir($dir_path);
-//        $lecture = readdir($ouverture);
-//
-//        if( sizeof($productImages) != 0 ) {
-//            foreach ($productImages as $productImage) {
-//                /* @var $productImage ProductImage */
-//
-//                $path_file = $productImage->getPicture(); //récupére l'url de l'image
-//
-//                if ($path_file == null) {
-//                    $productImageRepository->delete($productImage); //suppression dans la base de donnée
-//                } else {
-//                    $file_name = str_replace("http://tools.cadeau-maestro.com/faulty/", "", $path_file);  //récupére le nom de l'image
-//                    $path = $dir_path . "/" . $file_name; //forme le chemin complet de l'image
-//                    unlink($path); //suppression de l'image
-//                    $productImageRepository->delete($productImage); //suppression dans la base de donnée
-//                }
-//            }
-//        }
-
+        if(file_exists($path)){
+            unlink($path); //suppression du pdf
+        }
         $em = $this->getDoctrine()->getManager();
         $em->remove($bond);
         $em->flush();
@@ -251,5 +252,54 @@ class BondController extends Controller
         $zip->close();
         // Afficher un message de fin
 //                    echo 'Archive extrait';
+    }
+
+
+    /**
+     * @Route("/json/all", name="bond_show_json", options={"expose"=true})
+     *
+     */
+    public function GetAllAction(){
+
+        $ListeBond = $this->get('sc.repository.bond')->findAll();
+
+        $formatted = [];
+        foreach ($ListeBond as $bond) {
+            $formatted[] = [
+                'id' => $bond->getId(),
+                'name' => $bond->getName(),
+                'path' => $bond->getPath(),
+            ];
+        }
+        return new JsonResponse($formatted);
+    }
+
+    /**
+     * @Route("/download/{id}", name="bond_downlaod")
+     *
+     */
+    public function downloadAction(Bond $bond){
+
+        $dir_path = "bond"; //chemin du dossier des images
+        $file_name = $bond->getName();
+        $path = $dir_path . "/" . $file_name; //forme le chemin complet de l'image
+
+        $response = new Response();
+        $response->setContent(file_get_contents($path));
+        $response->headers->set('Content-Type', 'application/force-download'); // modification du content-type pour forcer le téléchargement (sinon le navigateur internet essaie d'afficher le document)
+        $response->headers->set('Content-Transfer-Encoding', 'Binary');
+        $response->headers->set('Content-Length', filesize($path));
+        $response->headers->set('Content-disposition', 'filename=' . $file_name );
+        ob_end_clean();
+
+        if(file_exists($path)){
+            unlink($path); //suppression du pdf
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $em->remove($bond);
+        $em->flush();
+
+        return $response;
     }
 }

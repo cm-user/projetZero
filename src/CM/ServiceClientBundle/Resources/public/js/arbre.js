@@ -6,8 +6,11 @@
     var compt_guide = 1 ; //compteur pour déterminer quand faire apparaitre le contenu
     var compt_phone = 1 ; //compteur pour déterminer quand faire apparaitre le contenu
     var compt_attachment = 1 ; //compteur pour déterminer quand faire apparaitre le contenu
+    var compt_bond = 1 ; //compteur pour déterminer quand faire apparaitre le contenu
 
     $.getJSON( url+"branche_parent", displayBranche); //va chercher les branch sans parents et les passe en parametre de la fonction display
+
+    callBond(); //appel de la fonction callBond
 
     //////////requête ajax pour le contenu du guide////////
     $elem_guide = "<br><div class=\"alert alert-warning\" role=\"alert\"><ol>";
@@ -59,6 +62,36 @@
             $("#attachment").html($elem_attachment).hide();
         }
     });
+
+    //////////requête ajax pour le contenu des bons retour////////
+    function callBond() {
+        $.ajax({
+
+            url: Routing.generate('bond_show_json'),
+
+            success: function (result) {
+                loadBond(result);
+            }
+        });
+    }
+
+    function loadBond(data) {
+       var $elem_bond = "<br><div class=\"row alert alert-warning\" role=\"alert\">";
+        var compteur = 0 ;
+
+        $.each(data, function (key, val) {
+        $elem_bond += compteur % 10 == 0 ? "<div class=\"col-sm-3\"> <ul>" : ""; //affiche une colonne lorsque le nombre est de X
+        $elem_bond += "<li>";
+        $elem_bond += "<a id=\"bond_" + val['id'] + "\" onclick=\'setTimeout(function() {DisplayBond();callBond();}, 4000);\' href=\"http://localhost/projetZero2/web/app_dev.php/service_client/bond/download/" + val['id'] + "\">" +  val['name'] + "</a>";
+        $elem_bond += "</li>";
+        $elem_bond += compteur % 10 == 9 ? "</div> </ul>" : ""; //fermeture de la colonne bonjour
+
+        compteur++; //incrémentation du compteur
+
+    });
+    $elem_bond += "</div>";
+    $("#bond").html($elem_bond).hide();
+    }
 
     //recupere les enfants de la branche passé en parametre par son id
     function callBranch(id) {
@@ -336,13 +369,16 @@ function DisplayAttachment(){
     else {
         $("#attachment").hide();
     }
-
-    //faire apparaitre la liste des BL
-    // avec un bouton utiliser pour chaque BL
-    //mettre une route pour télécharger le pdf lié (s'inspirer de l'écran configuration) supprimer également le BL
-    // mettre un listener pour recharger la partie BL
-
 }
 
+    function DisplayBond(){
+        compt_bond++;
+        if(compt_bond % 2 == 0) {
+            $("#bond").show();
+        }
+        else {
+            $("#bond").hide();
+        }  
+    }
 
 

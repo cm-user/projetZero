@@ -2,6 +2,9 @@
 
 namespace CM\ServiceClientBundle\Repository;
 
+use Doctrine\ORM\EntityManager;
+use CM\ServiceClientBundle\Entity\Bond;
+
 /**
  * BondRepository
  *
@@ -10,4 +13,26 @@ namespace CM\ServiceClientBundle\Repository;
  */
 class BondRepository extends \Doctrine\ORM\EntityRepository
 {
+    private $entityManager;
+
+    public function __construct(EntityManager $entityManager){
+        $this->entityManager = $entityManager;
+    }
+
+    /**
+     * @return array|Bond[]
+     */
+    public function findAll(){
+        return $this->entityManager->getRepository('ServiceClientBundle:Bond')->findAll();
+    }
+
+    public function save(Bond $bond){
+        $this->entityManager->persist($bond);
+        $this->entityManager->flush();
+    }
+
+    public function delete(Bond $bond){
+        $this->entityManager->remove($bond);
+        $this->entityManager->flush();
+    }
 }

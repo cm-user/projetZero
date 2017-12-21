@@ -165,7 +165,6 @@ class ViewController extends Controller
         //on récupère les images qui n'ont pas de session
         $Images = $this->get('engraving.repository.picture')->findAllNewPicture();
 
-
         $formatted = [];
         foreach ($Images as $image) {
 

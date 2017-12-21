@@ -16,13 +16,8 @@ engraving:
     type:     annotation
     prefix:   /engraving
 
-
 service_client_attachment:
     resource: "@ServiceClientBundle/Controller/AttachmentController.php"
-    type:     annotation
-
-service_client_feedback:
-    resource: "@ServiceClientBundle/Controller/FeedbackController.php"
     type:     annotation
 
 test:

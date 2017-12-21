@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Bond
  *
  * @ORM\Table(name="sc_bond")
- * @ORM\Entity(repositoryClass="CM\ServiceClientBundle\Repository\BondRepository")
+ * @ORM\Entity
  */
 class Bond
 {

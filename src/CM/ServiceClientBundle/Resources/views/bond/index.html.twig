@@ -7,10 +7,8 @@
         <thead>
         <tr>
             <th>Id</th>
-            <th>Name</th>
-            <th>Path</th>
-            <th>Createdat</th>
-            <th>Updatedat</th>
+            <th>Nom</th>
+            <th>Date de création</th>
             <th>Actions</th>
         </tr>
         </thead>
@@ -19,12 +17,10 @@
             <tr>
                 <td>{{ bond.id }}</td>
                 <td>{{ bond.name }}</td>
-                <td>{{ bond.path }}</td>
                 <td>{% if bond.createdAt %}{{ bond.createdAt|date('Y-m-d H:i:s') }}{% endif %}</td>
-                <td>{% if bond.updatedAt %}{{ bond.updatedAt|date('Y-m-d H:i:s') }}{% endif %}</td>
                 <td>
-                    <a class="btn btn-info" href="{{ path('bond_show', { 'id': bond.id }) }}">Voir</a>
-                    <a class="btn btn-warning" href="{{ path('bond_edit', { 'id': bond.id }) }}">Modifier</a>
+                    {#<a class="btn btn-info" href="{{ path('bond_show', { 'id': bond.id }) }}">Voir</a>#}
+                    {#<a class="btn btn-warning" href="{{ path('bond_edit', { 'id': bond.id }) }}">Modifier</a>#}
 
                     <a class="btn btn-danger" href="{{ path('bond_delete_bybutton', { 'id': bond.id }) }}">
                         <span class="glyphicon glyphicon-remove"></span>
@@ -36,9 +32,14 @@
         </tbody>
     </table>
 
-    <a class="btn btn-success" href="{{ path('bond_new_upload') }}">
+    <a class="btn btn-success" href="{{ path('bond_new') }}">
         <span class="glyphicon glyphicon-plus"></span>
         Ajouter un nouveau bon retour
+    </a>
+
+    <a class="btn btn-success" href="{{ path('bond_new_upload') }}">
+        <span class="glyphicon glyphicon-plus"></span>
+        Ajouter plusieurs bons retour
     </a>
 
 {% endblock %}

@@ -1,11 +1,12 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Ajouter des bons de retour</h1>
+    <h1>Ajouter un bon de retour</h1>
 
     {{ form_start(form) }}
-        {{ form_widget(form) }}
-        <input class="btn btn-success" type="submit" value="Ajouter" />
+    <label> Votre fichier PDF :<br>{{ form_widget(form.zip) }}
+    </label>
+    <br>
     {{ form_end(form) }}
 
 
