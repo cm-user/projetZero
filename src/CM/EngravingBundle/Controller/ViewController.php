@@ -35,29 +35,31 @@ class ViewController extends Controller
         $array_state = [2, 3, 4, 30, 31]; //tableau contenant les "bons" etats des commandes
         $time = 0; //temps en minutes pour effectuer les gravures
 
-
         $persta = $this->get('iq2i_prestashop_web_service')->getInstance();
 
-        $result = $persta->get(array(
-            "resource" => "orders",
-            "filter[id]" => '[230000, 250000]',
-            "display" => '[id]',
-        ));
+//        $result = $persta->get(array(
+//            "resource" => "orders",
+//            "filter[id]" => '[230000, 250000]',
+//            "display" => '[id]',
+//        ));
 
-//        var_dump($result);
+        //recherche de la dernière image dans la bdd locale
+        $last_picture= $this->get('engraving.repository.picture')->FindLast()[0];
 
-        $result = json_decode(json_encode((array)$result), TRUE);
+//        $result = json_decode(json_encode((array)$result), TRUE);
 
-        //cherche l'id max
-        $id_max = end($result['orders']['order']); //récupère dernière ligne du tableau
-        $id_max = $id_max['id']; //récupère uniquement l'id
+//        //cherche l'id max
+//        $id_max = end($result['orders']['order']); //récupère dernière ligne du tableau
+//        $id_max = $id_max['id']; //récupère uniquement l'id
 
         //récupération du régulateur de commande
         $regulator = $em->getRepository('EngravingBundle:OrderRegulator')->find(1);
-        $diff = $regulator->getNumber();
+        $diff = $regulator->getNumber(); //valeur du regulateur
+        $id_min = $last_picture->getName() - $diff;
+        $id_max = $last_picture->getName() + $diff;
 
         //récupère les X dernières commandes
-        $id_min = $id_max - $diff;
+//        $id_min = $id_max - $diff;
         $result = $persta->get(array(
             "resource" => "orders",
             "filter[id]" => '[' . $id_min . ',' . $id_max . ']',
@@ -150,7 +152,7 @@ class ViewController extends Controller
                 }
                 else {
                     foreach($pictures as $picture){
-                        $this->UpdateState($picture); //Mis à jour de l'état si l'image est déjà en bdd
+                        $this->UpdateState($picture); //Mise à jour de l'état et de la catégorie si l'image est déjà en bdd
                         $time += $picture->getTime(); //incrémente le compteur de temps
                     }
                 }
@@ -176,6 +178,7 @@ class ViewController extends Controller
                 'id_category' => $image->getCategory(),
                 'id_product' => $image->getIdProduct(),
                 'etat' => $image->getEtat(),
+                'time' => $image->getTime(),
             ];
         }
         $formatted[] = ['temps' => $time]; //ajout du temps au tableau
@@ -229,8 +232,6 @@ class ViewController extends Controller
 
                     $time += $category->getTime(); //incremente le compteur de temps
 
-
-
                     $formatted[] = [
                         'id' => $picture->getId(),
                         'name' => $picture->getName(),
@@ -275,12 +276,25 @@ class ViewController extends Controller
             $result = json_decode(json_encode((array)$result), TRUE);
             $order_state = $result['orders']['order']['current_state']; //récupère l'état
 
+
+
             //on met à jour notre bdd
                 $images = $this->get('engraving.repository.picture')->FindAllByName($name);//récupère les nouvelles gravures
                 foreach ($images as $image){
                     $image->setEtat($order_state);
                     $em->persist($image);
                 }
+
+
+//        $id_product = $result_config_cart['config_carts']['config_cart']['id_product'];
+//
+//        //////Methode récupérer l'id produit de chaque image pour trouver sa categorie///////
+//        $category = $this->get('engraving.repository.category')->findOneByIdProduct($id_product);
+//
+//        if ($category != "") { //si la requête est vide (id produit est introuvable) cette image ne sera pas traité
+//            $new_picture->setCategory($category); //renseigne la categorie
+//            $new_picture->setTime($category->getTime()); //rentre la durée
+//        }
 
         $em->flush();
         return "";

@@ -212,7 +212,7 @@ class BondController extends Controller
                 while($zipEntry = zip_read($zip)) { //boucle sur chaque pdf dans le fichier zip
                     $bond = new Bond();
                     $number_random = rand (); //genere un nombre aléatoire
-                    $new_name = "BL" . $number_random . ".pdf"; //nouveau nom pour le fichier pdf
+                    $new_name = "BL-" . $number_random . ".pdf"; //nouveau nom pour le fichier pdf
                     $path = $this->getParameter('bond') . "/" . $new_name; //creation du chemin complet
                     $file_Name = zip_entry_name($zipEntry); //nom du fichier dans le zip
                     rename($this->getParameter('bond') . "/" . $file_Name, $path); //on renomme le fichier qui se situe déjà dans le répertoire bond
@@ -220,7 +220,6 @@ class BondController extends Controller
                     $bond->setPath($path);
                     $em->persist($bond);
                 }
-
                 zip_close($zip);
             }
 
@@ -282,6 +281,7 @@ class BondController extends Controller
 
         $dir_path = "bond"; //chemin du dossier des images
         $file_name = $bond->getName();
+        $date_name = (new \DateTime())->format('d-m-Y') . ".pdf"; //nom final du fichier lors du téléchargement
         $path = $dir_path . "/" . $file_name; //forme le chemin complet de l'image
 
         $response = new Response();
@@ -289,7 +289,7 @@ class BondController extends Controller
         $response->headers->set('Content-Type', 'application/force-download'); // modification du content-type pour forcer le téléchargement (sinon le navigateur internet essaie d'afficher le document)
         $response->headers->set('Content-Transfer-Encoding', 'Binary');
         $response->headers->set('Content-Length', filesize($path));
-        $response->headers->set('Content-disposition', 'filename=' . $file_name );
+        $response->headers->set('Content-disposition', 'filename=' . $date_name );
         ob_end_clean();
 
         if(file_exists($path)){

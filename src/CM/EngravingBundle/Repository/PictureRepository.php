@@ -65,6 +65,20 @@ class PictureRepository extends \Doctrine\ORM\EntityRepository
         return $images;
     }
 
+    public function FindLast()
+    {
+        $qb = $this->entityManager->createQueryBuilder('p');
+        $qb->select('p')
+            ->from('EngravingBundle:Picture', 'p')
+            ->orderBy('p.id', 'DESC')
+            ->setMaxResults(1);
+        ;
+
+        $picture = $qb->getQuery()->getResult();
+
+        return $picture;
+    }
+
     /**
      * @return array|Picture[]
      * Cherche les images sans session

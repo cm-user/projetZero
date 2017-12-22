@@ -77,7 +77,8 @@
 
     function loadBond(data) {
        var $elem_bond = "<br><div class=\"row alert alert-warning\" role=\"alert\">";
-        var compteur = 0 ;
+       var compteur = 0 ;
+       var nombre_bon_retour = 0;
 
         $.each(data, function (key, val) {
         $elem_bond += compteur % 10 == 0 ? "<div class=\"col-sm-3\"> <ul>" : ""; //affiche une colonne lorsque le nombre est de X
@@ -86,10 +87,17 @@
         $elem_bond += "</li>";
         $elem_bond += compteur % 10 == 9 ? "</div> </ul>" : ""; //fermeture de la colonne bonjour
 
+        nombre_bon_retour++; //décrementation du nombre de bon retour
         compteur++; //incrémentation du compteur
 
     });
     $elem_bond += "</div>";
+
+        //affiche une alerte si il reste moins de 10 BL
+        if(nombre_bon_retour < 10){
+            alert("Attention il reste moins de 10 bons retour!")
+        }
+
     $("#bond").html($elem_bond).hide();
     }
 

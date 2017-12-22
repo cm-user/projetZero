@@ -1,3 +1,7 @@
+service_client_mail_bond:
+    resource: "@ServiceClientBundle/Controller/MailBondController.php"
+    type:     annotation
+
 service_client_bond:
     resource: "@ServiceClientBundle/Controller/BondController.php"
     type:     annotation
