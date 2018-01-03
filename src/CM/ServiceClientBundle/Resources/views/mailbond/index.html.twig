@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Mailbonds list</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Mail</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for mailBond in mailBonds %}
+            <tr>
+                <td><a href="{{ path('mailbond_show', { 'id': mailBond.id }) }}">{{ mailBond.id }}</a></td>
+                <td>{{ mailBond.mail }}</td>
+                <td>
+                    <ul>
+                        <li>
+                            <a href="{{ path('mailbond_show', { 'id': mailBond.id }) }}">show</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('mailbond_edit', { 'id': mailBond.id }) }}">edit</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('mailbond_new') }}">Create a new mailBond</a>
+        </li>
+    </ul>
+{% endblock %}

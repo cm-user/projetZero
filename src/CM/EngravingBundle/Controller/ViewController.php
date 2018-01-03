@@ -112,11 +112,11 @@ class ViewController extends Controller
                                 //////Methode récupérer l'id produit de chaque image pour trouver sa categorie///////
                                 $category = $this->get('engraving.repository.category')->findOneByIdProduct($id_product);
 
-                                if ($category != "") { //si la requête est vide (id produit est introuvable) cette image ne sera pas traité
+                                if ($category != "null") { //si la requête est vide (id produit est introuvable) cette image ne sera pas traité
                                     $new_picture->setCategory($category); //renseigne la categorie
                                     $new_picture->setTime($category->getTime()); //rentre la durée
                                 }
-                                $time += $new_picture->getTime();
+//                                $time += $new_picture->getTime();
                                 $em->persist($new_picture);
                             }
                         } //sinon on doit récupérer chaque produit
@@ -138,12 +138,12 @@ class ViewController extends Controller
                                     //////Methode récupérer l'id produit de chaque image pour trouver sa categorie///////
                                     $category = $this->get('engraving.repository.category')->findOneByIdProduct($id_product);
 
-                                    if ($category != "") { //si la requête est vide (id produit est introuvable) cette image ne sera pas traité
+                                    if ($category != "null") { //si la requête est vide (id produit est introuvable) cette image ne sera pas traité
                                         $new_picture->setCategory($category); //renseigne la categorie
                                         $new_picture->setTime($category->getTime()); //rentre la durée
                                     }
 
-                                    $time += $new_picture->getTime();
+//                                    $time += $new_picture->getTime();
                                     $em->persist($new_picture);
                                 }
                             }
@@ -153,13 +153,11 @@ class ViewController extends Controller
                 else {
                     foreach($pictures as $picture){
                         $this->UpdateState($picture); //Mise à jour de l'état et de la catégorie si l'image est déjà en bdd
-                        $time += $picture->getTime(); //incrémente le compteur de temps
+//                        $time += $picture->getTime(); //incrémente le compteur de temps
                     }
                 }
             }
             else {
-//                printf("mauvais etat");
-//                var_dump($id_order);
             }
         }
         $em->flush();
@@ -178,8 +176,8 @@ class ViewController extends Controller
                 'id_category' => $image->getCategory(),
                 'id_product' => $image->getIdProduct(),
                 'etat' => $image->getEtat(),
-                'time' => $image->getTime(),
             ];
+            $time += $image->getTime(); //somme le temps de gravure de chaque image
         }
         $formatted[] = ['temps' => $time]; //ajout du temps au tableau
         return new JsonResponse($formatted);
@@ -217,9 +215,7 @@ class ViewController extends Controller
 
                 if ($category == "") { //si la requête est vide (id produit est introuvable) cette image ne sera pas traité
                     $array_category['NoCategory']++; //incremente le compteur
-//                $picture->setNumber($array_category['NoCategory']);
                     $surname = 'NoCategory(' . $array_category['NoCategory'] . ')';
-
                 } else {
                     $picture->setSession($session); //renseigne la session
                     $picture->setUpdatedAt(new \DateTime());
@@ -276,8 +272,6 @@ class ViewController extends Controller
             $result = json_decode(json_encode((array)$result), TRUE);
             $order_state = $result['orders']['order']['current_state']; //récupère l'état
 
-
-
             //on met à jour notre bdd
                 $images = $this->get('engraving.repository.picture')->FindAllByName($name);//récupère les nouvelles gravures
                 foreach ($images as $image){
@@ -285,16 +279,19 @@ class ViewController extends Controller
                     $em->persist($image);
                 }
 
+        //////Methode récupérer l'id produit de chaque image pour trouver sa categorie///////
+        $id_product = $picture->getIdProduct();
+        $category = $this->get('engraving.repository.category')->findOneByIdProduct($id_product);
+//        printf($picture->getName());
+//        var_dump($picture);
+//        var_dump($category);
+//        print($category);
+        if (sizeof($category) != "null") { //si la requête est vide (id produit est introuvable) cette image ne sera pas traité
+            $picture->setCategory($category); //renseigne la categorie
+            $picture->setTime($category->getTime()); //rentre la durée
 
-//        $id_product = $result_config_cart['config_carts']['config_cart']['id_product'];
-//
-//        //////Methode récupérer l'id produit de chaque image pour trouver sa categorie///////
-//        $category = $this->get('engraving.repository.category')->findOneByIdProduct($id_product);
-//
-//        if ($category != "") { //si la requête est vide (id produit est introuvable) cette image ne sera pas traité
-//            $new_picture->setCategory($category); //renseigne la categorie
-//            $new_picture->setTime($category->getTime()); //rentre la durée
-//        }
+            $em->persist($picture);
+        }
 
         $em->flush();
         return "";

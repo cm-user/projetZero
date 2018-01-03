@@ -279,6 +279,18 @@ class BondController extends Controller
      */
     public function downloadAction(Bond $bond){
 
+        $em = $this->getDoctrine()->getManager();
+
+        $bonds = $em->getRepository('ServiceClientBundle:Bond')->findAll();
+        if(sizeof($bonds) < 10){ //s'il reste moins de 10 bons retour, on envoit une alerte par mail
+            ///Procèdure d'envoie de mail
+            $mailBonds = $em->getRepository('ServiceClientBundle:MailBond')->findAll();
+            foreach ($mailBonds as $mailBond){
+                sendMail($mailBond->getMail()); //appel de la fonction sendMail()
+            }
+        }
+
+
         $dir_path = "bond"; //chemin du dossier des images
         $file_name = $bond->getName();
         $date_name = (new \DateTime())->format('d-m-Y') . ".pdf"; //nom final du fichier lors du téléchargement
