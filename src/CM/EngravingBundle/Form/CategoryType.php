@@ -107,6 +107,9 @@ class CategoryType extends AbstractType
             ->add('folder',     TextType::class,[
                 'label' => 'Nom du dossier dans le zip'
             ])
+            ->add('alias',     TextType::class,[
+                'label' => 'Nom de l\'alias'
+            ])
         ;
 
 //        $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {

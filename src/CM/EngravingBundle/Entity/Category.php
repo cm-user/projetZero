@@ -302,7 +302,7 @@ class Category
     /**
      * @var string
      *
-     * @ORM\Column(name="id_product", type="string", length=255, options={"default":null})
+     * @ORM\Column(name="id_product", type="string", length=255, unique=true, options={"default":null})
      */
     private $idProduct;
 
@@ -326,6 +326,13 @@ class Category
      * @ORM\Column(name="folder", type="string", length=255)
      */
     private $folder;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="alias", type="string", length=255)
+     */
+    private $alias;
 
     /**
      * @var \DateTime
@@ -542,5 +549,29 @@ class Category
     public function getFolder()
     {
         return $this->folder;
+    }
+
+    /**
+     * Set alias
+     *
+     * @param string $alias
+     *
+     * @return Category
+     */
+    public function setAlias($alias)
+    {
+        $this->alias = $alias;
+
+        return $this;
+    }
+
+    /**
+     * Get alias
+     *
+     * @return string
+     */
+    public function getAlias()
+    {
+        return $this->alias;
     }
 }

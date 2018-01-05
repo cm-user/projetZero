@@ -16,6 +16,9 @@
             <label>Nom du dossier dans le zip :<br> {{ form_widget(form.folder, {'attr': {'placeholder': '' }} ) }}
             </label>
             <br>
+            <label>Nom de l'alias :<br> {{ form_widget(form.alias, {'attr': {'placeholder': '' }} ) }}
+            </label>
+            <br>
             <label> Id du produit :<br>{{ form_widget(form.idProduct, {'attr': {'value': idProduct} } ) }}
             </label>
             <br>
@@ -51,6 +54,7 @@
                 <tr>
                     <th>Id</th>
                     <th>Id du Produit</th>
+                    <th>Alias</th>
                     <th>Nom Catégorie</th>
                     <th>Dossier</th>
                     <th>Temps(min)</th>
@@ -62,6 +66,7 @@
                     <tr>
                         <td><a href="{{ path('category_show', { 'id': category.id }) }}">{{ category.id }}</a></td>
                         <td>{{ category.idProduct }}</td>
+                        <td>{{ category.alias }}</td>
                         <td>{{ category.surname }}</td>
                         <td>{{ category.folder }}</td>
                         <td>{{ category.time }}</td>

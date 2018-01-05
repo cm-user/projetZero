@@ -57,13 +57,6 @@ class Picture
     private $idConfig;
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="quantity", type="integer", options={"default":1}, nullable=true)
-     */
-    private $quantity;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="surname", type="string", length=255, nullable=true)
@@ -83,6 +76,27 @@ class Picture
      * @ORM\Column(name="etat", type="integer", nullable=true)
      */
     private $etat;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="time", type="integer", options={"default":0}, nullable=true)
+     */
+    private $time;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="date_presta", type="datetime", nullable=true)
+     */
+    private $datePresta;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="check", type="integer", options={"default":1})
+     */
+    private $check;
 
     /**
      * @var \DateTime
@@ -109,7 +123,7 @@ class Picture
     /**
      * @var int
      *
-     * @ORM\ManyToOne(targetEntity="CM\EngravingBundle\Entity\Session", inversedBy="pictures")
+     * @ORM\ManyToOne(targetEntity="CM\EngravingBundle\Entity\Session", inversedBy="pictures" , cascade={"persist"})
      * @ORM\JoinColumn(name="id_session", referencedColumnName="id", nullable=true)
      */
     private $session;
@@ -180,31 +194,7 @@ class Picture
     {
         return $this->idProduct;
     }
-
-    /**
-     * Set number
-     *
-     * @param integer $number
-     *
-     * @return Picture
-     */
-    public function setNumber($number)
-    {
-        $this->number = $number;
-
-        return $this;
-    }
-
-    /**
-     * Get number
-     *
-     * @return int
-     */
-    public function getNumber()
-    {
-        return $this->number;
-    }
-
+    
     /**
      * Set surname
      *
@@ -422,26 +412,52 @@ class Picture
     }
 
     /**
-     * Set quantity
+     * Set etat
      *
-     * @param integer $quantity
+     * @param integer $etat
      *
      * @return Picture
      */
-    public function setQuantity($quantity)
+    public function setEtat($etat)
     {
-        $this->quantity = $quantity;
+        $this->etat = $etat;
 
         return $this;
     }
 
     /**
-     * Get quantity
+     * Get etat
      *
      * @return integer
      */
-    public function getQuantity()
+    public function getEtat()
     {
-        return $this->quantity;
+        return $this->etat;
     }
-}
+
+    /**
+     * Set time
+     *
+     * @param integer $time
+     *
+     * @return Category
+     */
+    public function setTime($time)
+    {
+        $this->time = $time;
+
+        return $this;
+    }
+
+    /**
+     * Get time
+     *
+     * @return integer
+     */
+    public function getTime()
+    {
+        return $this->time;
+    }
+
+    
+    }

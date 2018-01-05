@@ -286,7 +286,7 @@ class BondController extends Controller
             ///Procèdure d'envoie de mail
             $mailBonds = $em->getRepository('ServiceClientBundle:MailBond')->findAll();
             foreach ($mailBonds as $mailBond){
-                sendMail($mailBond->getMail()); //appel de la fonction sendMail()
+                BondController::sendMail($mailBond->getMail()); //appel de la fonction sendMail()
             }
         }
 
@@ -314,4 +314,22 @@ class BondController extends Controller
 
         return $response;
     }
+
+    private function sendMail($mail){
+        $message = (new \Swift_Message('Nombre Bons Retour'))
+            ->setFrom('contact@cadeau-maestro.com')
+            ->setTo($mail)
+            ->setBody(
+                $this->renderView(
+                    '@ServiceClient/bond/mail_alert.html.twig',
+                    array()
+                ),
+                'text/html'
+            )
+        ;
+
+        $this->get('mailer')
+            ->send($message);
+    }
+
 }

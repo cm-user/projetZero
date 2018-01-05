@@ -32,7 +32,7 @@ class ViewController extends Controller
     {
         //http://doc.prestashop.com/download/attachments/720902/CRUD%20Tutorial%20EN.pdf
         $em = $this->getDoctrine()->getManager();
-        $array_state = [2, 3, 4, 30, 31]; //tableau contenant les "bons" etats des commandes
+        $array_state = [2, 3, 4, 31]; //tableau contenant les "bons" etats des commandes
         $time = 0; //temps en minutes pour effectuer les gravures
 
         $persta = $this->get('iq2i_prestashop_web_service')->getInstance();
@@ -63,7 +63,7 @@ class ViewController extends Controller
         $result = $persta->get(array(
             "resource" => "orders",
             "filter[id]" => '[' . $id_min . ',' . $id_max . ']',
-            "display" => '[id,id_cart,current_state]',
+            "display" => '[id,id_cart,current_state,date_add]',
         ));
 
         $result = json_decode(json_encode((array)$result), TRUE);
@@ -108,11 +108,12 @@ class ViewController extends Controller
                                 $new_picture->setPathJpg($this->getParameter('url_directory_engraving') . $id_config . '-' . $id_product . '.jpg');
                                 $new_picture->setPathPdf($this->getParameter('url_directory_engraving') . $id_config . '-' . $id_product . '.pdf');
                                 $new_picture->setEtat($id_order['current_state']);
+                                $new_picture->setDatePresta($id_order['date_add']);                                
 
                                 //////Methode récupérer l'id produit de chaque image pour trouver sa categorie///////
                                 $category = $this->get('engraving.repository.category')->findOneByIdProduct($id_product);
 
-                                if ($category != "null") { //si la requête est vide (id produit est introuvable) cette image ne sera pas traité
+                                if ($category != "") { //si la requête est vide (id produit est introuvable) cette image ne sera pas traité
                                     $new_picture->setCategory($category); //renseigne la categorie
                                     $new_picture->setTime($category->getTime()); //rentre la durée
                                 }
@@ -134,11 +135,12 @@ class ViewController extends Controller
                                     $new_picture->setPathJpg($this->getParameter('url_directory_engraving') . $id_config . '-' . $id_product . '.jpg');
                                     $new_picture->setPathPdf($this->getParameter('url_directory_engraving') . $id_config . '-' . $id_product . '.pdf');
                                     $new_picture->setEtat($id_order['current_state']);
+                                    $new_picture->setDatePresta($id_order['date_add']);                                    
 
                                     //////Methode récupérer l'id produit de chaque image pour trouver sa categorie///////
                                     $category = $this->get('engraving.repository.category')->findOneByIdProduct($id_product);
 
-                                    if ($category != "null") { //si la requête est vide (id produit est introuvable) cette image ne sera pas traité
+                                    if ($category != "") { //si la requête est vide (id produit est introuvable) cette image ne sera pas traité
                                         $new_picture->setCategory($category); //renseigne la categorie
                                         $new_picture->setTime($category->getTime()); //rentre la durée
                                     }
@@ -165,17 +167,31 @@ class ViewController extends Controller
         //on récupère les images qui n'ont pas de session
         $Images = $this->get('engraving.repository.picture')->findAllNewPicture();
 
+//        $array_images_order_etat = ViewController::orderByEtat($Images); //appel de la fonction pour trier par etat
+
         $formatted = [];
         foreach ($Images as $image) {
+
+            //renseigne le nom et l'alias si la catégorie existe
+            if($image->getCategory() != null){
+                $name_category = $image->getCategory()->getSurname();
+                $alias_category = $image->getCategory()->getAlias();
+            }
+            else {
+                $name_category = "NoCategory";
+                $alias_category = "NoAlias";
+            }
 
             $formatted[] = [
                 'id' => $image->getId(),
                 'name' => $image->getName(),
                 'path-jpg' => $image->getPathJpg(),
                 'path-pdf' => $image->getPathPdf(),
-                'id_category' => $image->getCategory(),
+                'name_category' => $name_category,
+                'alias_category' => $alias_category,
                 'id_product' => $image->getIdProduct(),
                 'etat' => $image->getEtat(),
+                'date' => $image->getDatePresta(),
             ];
             $time += $image->getTime(); //somme le temps de gravure de chaque image
         }
@@ -200,13 +216,12 @@ class ViewController extends Controller
             $array_category[$cat->getSurname()] = 0;
         }
 
-
         $pictures = $this->get('engraving.repository.picture')->findAllNewPicture();//récupère les nouvelles gravures
 
         $formatted = [];
         foreach ($pictures as $picture) {
 
-            //si l'etat n'est pas préparation en cours on ne traite pas l'image
+            //si l'etat n'est pas en cours de livraison on ne traite pas l'image
             if ($picture->getEtat() == 3 || 4 ) {
 
                 //////Methode récupérer l'id produit de chaque image pour trouver sa categorie///////
@@ -286,7 +301,7 @@ class ViewController extends Controller
 //        var_dump($picture);
 //        var_dump($category);
 //        print($category);
-        if (sizeof($category) != "null") { //si la requête est vide (id produit est introuvable) cette image ne sera pas traité
+        if (sizeof($category) != "") { //si la requête est vide (id produit est introuvable) cette image ne sera pas traité
             $picture->setCategory($category); //renseigne la categorie
             $picture->setTime($category->getTime()); //rentre la durée
 
@@ -390,19 +405,6 @@ class ViewController extends Controller
         closedir($dossier);
     }
 
-    /**
-     * @Route("/server-picture/json", name="view_server_picture_json", options={"expose"=true})
-     */
-    public function ServerPictureAction()
-    {
-//        try {
-//            $bdd = new PDO('mysql:host=37.59.32.174;dbname=nqcadeau;charset=utf8', 'nqcadeau', 'KJfazdaz');
-//        } catch (Exception $e) {
-//            die('Erreur : ' . $e->getMessage());
-//        }
-//
-//        return new JsonResponse($e);
-    }
 
     /**
      * Récupère les détails du produit sélectionné
@@ -631,6 +633,25 @@ class ViewController extends Controller
         $this->get('engraving.repository.picture')->save($picture);
 
         return new Response("passage machine gravograph");
+    }
+
+    //fonction pour trier les images par etat en gardant leur tri par catégorie
+    private function orderByEtat($images){
+        $array = [$images[0]];
+        $array_category_null = [];
+        for($i=1;$i<count($images);$i++){
+            if($images[$i]->getCategory() != null){ //vérifie que l'image a bien une catégorie lié
+                if($images[$i]->getCategory()->getSurname() != $images[$i-1]->getCategory()->getSurname()){
+
+                }
+            }
+            else {
+                $array_category_null[] = $images[$i];
+            }
+
+        }
+        return $array;
+
     }
 
 }

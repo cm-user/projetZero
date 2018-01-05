@@ -57,13 +57,6 @@ class Picture
     private $idConfig;
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="quantity", type="integer", options={"default":1}, nullable=true)
-     */
-    private $quantity;
-
-    /**
      * @var string
      *
      * @ORM\Column(name="surname", type="string", length=255, nullable=true)
@@ -90,6 +83,20 @@ class Picture
      * @ORM\Column(name="time", type="integer", options={"default":0}, nullable=true)
      */
     private $time;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="date_presta", type="datetime")
+     */
+    private $datePresta;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="check", type="integer", options={"default":1})
+     */
+    private $check;
 
     /**
      * @var \DateTime
@@ -405,30 +412,6 @@ class Picture
     }
 
     /**
-     * Set quantity
-     *
-     * @param integer $quantity
-     *
-     * @return Picture
-     */
-    public function setQuantity($quantity)
-    {
-        $this->quantity = $quantity;
-
-        return $this;
-    }
-
-    /**
-     * Get quantity
-     *
-     * @return integer
-     */
-    public function getQuantity()
-    {
-        return $this->quantity;
-    }
-
-    /**
      * Set etat
      *
      * @param integer $etat
@@ -474,5 +457,55 @@ class Picture
     public function getTime()
     {
         return $this->time;
+    }
+
+    
+    
+    /**
+     * Set datePresta
+     *
+     * @param \DateTime $datePresta
+     *
+     * @return Picture
+     */
+    public function setDatePresta($datePresta)
+    {
+        $this->datePresta = $datePresta;
+
+        return $this;
+    }
+
+    /**
+     * Get datePresta
+     *
+     * @return \DateTime
+     */
+    public function getDatePresta()
+    {
+        return $this->datePresta;
+    }
+
+    /**
+     * Set check
+     *
+     * @param integer $check
+     *
+     * @return Picture
+     */
+    public function setCheck($check)
+    {
+        $this->check = $check;
+
+        return $this;
+    }
+
+    /**
+     * Get check
+     *
+     * @return integer
+     */
+    public function getCheck()
+    {
+        return $this->check;
     }
 }

@@ -8,6 +8,7 @@
             <tr>
                 <th>Id</th>
                 <th>Id du Produit</th>
+                <th>Alias</th>
                 <th>Nom Catégorie</th>
                 <th>Dossier</th>
                 <th>Temps(min)</th>
@@ -19,6 +20,7 @@
             <tr>
                 <td><a href="{{ path('category_show', { 'id': category.id }) }}">{{ category.id }}</a></td>
                 <td>{{ category.idProduct }}</td>
+                <td>{{ category.alias }}</td>
                 <td>{{ category.surname }}</td>
                 <td>{{ category.folder }}</td>
                 <td>{{ category.time }}</td>
