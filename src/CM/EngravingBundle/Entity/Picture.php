@@ -85,18 +85,18 @@ class Picture
     private $time;
 
     /**
-     * @var \DateTime
+     * @var string
      *
-     * @ORM\Column(name="date_presta", type="datetime")
+     * @ORM\Column(name="date_presta", type="string", nullable=true)
      */
     private $datePresta;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="check", type="integer", options={"default":1})
+     * @ORM\Column(name="checked", type="integer", nullable=true)
      */
-    private $check;
+    private $checked;
 
     /**
      * @var \DateTime
@@ -464,7 +464,7 @@ class Picture
     /**
      * Set datePresta
      *
-     * @param \DateTime $datePresta
+     * @param string $datePresta
      *
      * @return Picture
      */
@@ -478,34 +478,36 @@ class Picture
     /**
      * Get datePresta
      *
-     * @return \DateTime
+     * @return string
      */
     public function getDatePresta()
     {
         return $this->datePresta;
     }
 
+    
+    
     /**
-     * Set check
+     * Set checked
      *
-     * @param integer $check
+     * @param integer $checked
      *
      * @return Picture
      */
-    public function setCheck($check)
+    public function setChecked($checked)
     {
-        $this->check = $check;
+        $this->checked = $checked;
 
         return $this;
     }
 
     /**
-     * Get check
+     * Get checked
      *
      * @return integer
      */
-    public function getCheck()
+    public function getChecked()
     {
-        return $this->check;
+        return $this->checked;
     }
 }

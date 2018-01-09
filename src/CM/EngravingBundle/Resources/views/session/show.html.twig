@@ -25,12 +25,12 @@
     {# Affiche toutes les images lies à cette session #}
     <div class="row">
         {% for image in images %}
-            <div class="col-sm-4">
+            <div class="col-sm-4 alert alert-info">
+                <img src="{{ image.pathJpg }}" alt="{{ image.name }}" width="350">
                 <a href="{{ image.pathPdf }}">
                     {{ image.name }}
                 </a>
-                machine utilisé : {{ image.machine }}
-                <img src="{{ image.pathJpg }}" alt="{{ image.name }}" width="390">
+                <p> machine utilisé : {{ image.machine }}</p>
             </div>
         {% endfor %}
     </div>

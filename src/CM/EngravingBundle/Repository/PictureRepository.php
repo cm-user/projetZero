@@ -83,18 +83,75 @@ class PictureRepository extends \Doctrine\ORM\EntityRepository
      * @return array|Picture[]
      * Cherche les images sans session
      */
-    public function findAllNewPicture(){
+    public function findAllNewPictureChecked(){
         $q = $this->entityManager->createQueryBuilder();
         $q->select('p')
             ->from('EngravingBundle:Picture', 'p')
             ->where($q->expr()->isNull('p.session'))
-            ->orderBy('p.category', 'DESC')
+            ->andWhere('p.checked = 1')
+            ->OrderBy('p.category', 'DESC')
         ;
 
         $images = $q->getQuery()->getResult();
 
         return $images;
     }
+
+    public function findAllNewPicture(){
+        $q = $this->entityManager->createQueryBuilder();
+        $q->select('p')
+            ->from('EngravingBundle:Picture', 'p')
+            ->where($q->expr()->isNull('p.session'))
+            ->OrderBy('p.category', 'DESC')
+        ;
+
+        $images = $q->getQuery()->getResult();
+
+        return $images;
+    }
+
+    public function findAllNewPictureUnChecked(){
+        $q = $this->entityManager->createQueryBuilder();
+        $q->select('p')
+            ->from('EngravingBundle:Picture', 'p')
+            ->where($q->expr()->isNull('p.session'))
+            ->andWhere('p.checked = 0')
+        ;
+
+        $images = $q->getQuery()->getResult();
+
+        return $images;
+    }
+
+    public function findAllNewPicturePaid(){
+        $q = $this->entityManager->createQueryBuilder();
+        $q->select('p')
+            ->from('EngravingBundle:Picture', 'p')
+            ->where($q->expr()->isNull('p.session'))
+            ->andWhere('p.etat = 2 OR p.etat = 31')
+            ->OrderBy('p.category', 'DESC')
+        ;
+
+        $images = $q->getQuery()->getResult();
+
+        return $images;
+    }
+
+    public function findAllPictureMachineLaser($session){
+        $q = $this->entityManager->createQueryBuilder();
+        $q->select('p')
+            ->from('EngravingBundle:Picture', 'p')
+            ->where($q->expr()->like('p.machine', ':name_machine'))
+            ->andwhere('p.session =' . $session)
+            ->setParameter('name_machine','%ML_Laser%')
+            ->OrderBy('p.category', 'DESC')
+        ;
+
+        $images = $q->getQuery()->getResult();
+
+        return $images;
+    }
+
 
     public function save(Picture $picture){
         $this->entityManager->persist($picture);

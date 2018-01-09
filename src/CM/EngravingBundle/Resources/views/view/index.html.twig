@@ -8,6 +8,9 @@
     <a>
         <button class="btn btn-info" onclick="actualize();" id="btn_actualize">Actualiser</button>
     </a>
+    <a href="{{ path('session_last') }}">
+        <button class="btn btn-info"  id="btn_session_last">Voir dernière session</button>
+    </a>
     <a>
         <button class="btn btn-warning" onclick="DisplayNewEngraving();" id="btn_session">Nouvelle session de gravures</button>
     </a>
@@ -34,6 +37,7 @@
         }
 
         #btn_actualize{ position: fixed; top: 25px; left: 20px; }
+        #btn_session_last{ position: fixed; top: 75px; left: 20px; }
 
     </style>
 

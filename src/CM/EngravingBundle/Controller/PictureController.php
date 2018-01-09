@@ -172,13 +172,16 @@ class PictureController extends Controller
                 'surname' => $picture->getSurname(),
                 'path-jpg' => $picture->getPathJpg(),
                 'path-pdf' => $picture->getPathPdf(),
-                'category' => ($picture->getCategory() == null) ? 'No_Category' : $picture->getCategory()->getSurname(),
+//                'category' => ($picture->getCategory() == null) ? 'No_Category' : $picture->getCategory()->getSurname(),
+                'alias' => ($picture->getCategory() == null) ? 'No_Alias' : $picture->getCategory()->getAlias(),
                 'id_product' => $picture->getIdProduct(),
                 'session' => ($picture->getSession() == null) ? 'No_Session' : $picture->getSession()->getName(),
                 'id_config' => $picture->getIdConfig(),
                 'machine' => $picture->getMachine(),
                 'date_created' => $picture->getCreatedAt(),
                 'date_updated' => $picture->getUpdatedAt(),
+                'date_presta' => $picture->getDatePresta(),
+//                'checked' => $picture->getChecked(),
             ];
         }
 

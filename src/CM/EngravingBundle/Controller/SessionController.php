@@ -126,8 +126,8 @@ class SessionController extends Controller
     }
 
     /**
-     * @Route("/find-date/{debut}/{fin}", name="session_date_json", options={"expose"=true})
-     */
+    * @Route("/find-date/{debut}/{fin}", name="session_date_json", options={"expose"=true})
+    */
     public function FindSessionByDateAction($debut, $fin)
     {
 
@@ -143,7 +143,6 @@ class SessionController extends Controller
 
         return new JsonResponse($formatted);
     }
-
 
     /**
      * @Route("/last/10", name="session_last_json", options={"expose"=true})
@@ -162,5 +161,18 @@ class SessionController extends Controller
         }
 
         return new JsonResponse($formatted);
+    }
+
+    /**
+     * @Route("/testsession", name="session_test")
+     * @Method("GET")
+     */
+    public function TheTestAction()
+    {
+        printf("coucou");
+//        $session = $this->get('engraving.repository.session')->findTheLast();
+//        var_dump($session);
+
+//        return $this->redirectToRoute('session_show', array('id' => $session->getId()));
     }
 }

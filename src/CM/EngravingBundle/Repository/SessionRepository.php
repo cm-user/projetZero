@@ -80,7 +80,21 @@ class SessionRepository extends \Doctrine\ORM\EntityRepository
 
     }
 
+    public function findTheLast(){
 
+        $q = $this->entityManager->createQueryBuilder();
+
+        $q->select('s')
+            ->from('EngravingBundle:Session', 's')
+            ->orderBy('s.id', 'DESC')
+            ->setMaxResults(1);
+        ;
+
+        $sessions = $q->getQuery()->getResult();
+
+        return $sessions;
+
+    }
 
     public function save(Session $session)
     {
