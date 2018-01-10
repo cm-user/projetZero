@@ -164,7 +164,7 @@ class SessionController extends Controller
     }
 
     /**
-     * @Route("/testsession", name="session_test")
+     * @Route("/testsession", name="session_last")
      * @Method("GET")
      */
     public function TheTestAction()

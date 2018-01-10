@@ -32,7 +32,7 @@ class ViewController extends Controller
     {
         //http://doc.prestashop.com/download/attachments/720902/CRUD%20Tutorial%20EN.pdf
         $em = $this->getDoctrine()->getManager();
-        $array_state = [2, 3, 4, 31]; //tableau contenant les "bons" etats des commandes
+        $array_state = [2, 4, 31]; //tableau contenant les "bons" etats des commandes
         $time = 0; //temps en minutes pour effectuer les gravures
 
         $persta = $this->get('iq2i_prestashop_web_service')->getInstance('my_prestashop_1');
@@ -153,13 +153,16 @@ class ViewController extends Controller
                 }
                 else {
                     foreach($pictures as $picture){
-//                        $this->UpdateState($picture); //Mise à jour de l'état et de la catégorie si l'image est déjà en bdd
+                        $this->UpdateState($picture); //Mise à jour de l'état et de la catégorie si l'image est déjà en bdd
 //                        $time += $picture->getTime(); //incrémente le compteur de temps
                     }
                 }
             }
         }
         $em->flush();
+
+        //recherche de la dernière image dans la bdd locale qui a changé si de nouvelles gravures sont arrivées
+        $new_last_picture= $this->get('engraving.repository.picture')->FindLast()[0];
 
         //on récupère les images qui n'ont pas de session
         $Images = $this->get('engraving.repository.picture')->findAllNewPicture();
@@ -195,6 +198,12 @@ class ViewController extends Controller
                 $time += $image->getTime(); //somme le temps de gravure de chaque image
         }
         $formatted[] = ['temps' => $time]; //ajout du temps au tableau
+        
+        //si la dernière gravure n'a pas changé on envoit un message pour l'indiquer à l'utilisateur
+        if($new_last_picture == $last_picture){
+            $formatted[] = ['msg' => ""]; //enverra un message pour l'utilisateur
+        }
+        
         return new JsonResponse($formatted);
     }
 
@@ -232,7 +241,8 @@ class ViewController extends Controller
         foreach ($pictures as $picture) {
 
             //si l'etat n'est pas en cours de livraison ou en cours de préparation on ne traite pas l'image
-            if ($picture->getEtat() == 3 || $picture->getEtat() == 4  ) {
+//            if ($picture->getEtat() == 3 || $picture->getEtat() == 4  ) {
+                if ($picture->getEtat() == 4  ) {
 
                 //////Methode récupérer l'id produit de chaque image pour trouver sa categorie///////
                 $id_product = $picture->getIdProduct();
@@ -302,19 +312,18 @@ class ViewController extends Controller
                 foreach ($images as $image){
                     $image->setEtat($order_state); //maj de l'etat
 //                    $image->setChecked(0); //remet le check à 1 comme valeur par défaut
+
+                    //////Methode récupérer l'id produit de chaque image pour trouver sa categorie///////
+                    $id_product = $image->getIdProduct();
+                    $category = $this->get('engraving.repository.category')->findOneByIdProduct($id_product);
+
+                    if ($category != "") { //si la requête est vide (id produit est introuvable) cette image ne sera pas traité
+                        $image->setCategory($category); //renseigne la categorie
+                        $image->setTime($category->getTime()); //rentre la durée
+                    }
+
                     $em->persist($image);
                 }
-
-        //////Methode récupérer l'id produit de chaque image pour trouver sa categorie///////
-        $id_product = $picture->getIdProduct();
-        $category = $this->get('engraving.repository.category')->findOneByIdProduct($id_product);
-
-        if (sizeof($category) != "") { //si la requête est vide (id produit est introuvable) cette image ne sera pas traité
-            $picture->setCategory($category); //renseigne la categorie
-            $picture->setTime($category->getTime()); //rentre la durée
-
-            $em->persist($picture);
-        }
 
         $em->flush();
         return "";
@@ -329,6 +338,14 @@ class ViewController extends Controller
         $id_max_session = $this->get('engraving.repository.session')->findByMaxId(); //sélection de la dernière session
         $session = $this->get('engraving.repository.session')->findOneById($id_max_session);
         $array_category = array('NoCategory' => 0); //tableau associatif pour gérer les différents compteurs de chaque catégorie
+
+        //suppression de la session pour les gravures qui n'ont pas été sélectionnées
+        $images = $this->get('engraving.repository.picture')->findAllPictureWithoutMachine($session->getId());//récupère les nouvelles gravures sans machine sélectionnée
+        foreach ($images as $image){
+            $image->setSession(null);
+            $image->setChecked(0);
+            $em->persist($image);
+        }
 
 //        $images = $session->getPictures();
         $images = $this->get('engraving.repository.picture')->findAllPictureMachineLaser($session->getId());//récupère les nouvelles gravures pour la machine ML Laser
@@ -371,20 +388,18 @@ class ViewController extends Controller
                     if ($category != null) {
                         $directory = $category->getFolder(); //nom du dossier associé à la catégorie
 
-                        if(get_headers($image->getPathPdf())[0] == "HTTP/1.1 200 OK"){ //vérifie que l'url existe bien
+                        if(get_headers($image->getPathPdf())[0] == "HTTP/1.1 200 OK" ||get_headers($image->getPathPdf())[0] == "HTTP/1.1 302 Moved Temporarily"){ //vérifie que l'url existe bien
                             $current = file_get_contents($image->getPathPdf()); //recupere contenu du fichier
-//                            var_dump($current);
-
+                            $folder_file = $chemin . $image->getSurname() . '.pdf'; // nommage du fichier + son extension et choix du repertoire
+                            file_put_contents($folder_file, $current); //creation du fichier au bon repertoire
+                            $file = $image->getSurname() . '.pdf';
+                            $zip->addFile($chemin . $file, $directory . '/' . $file); //Ajout du fichier au ZIP
                         }
                         else { //s'il y a un problème avec le pdf de la gravure
                             $fichier_txt = fopen($chemin . 'gravure_' . $session->getCreatedAt()->format('Y-m-d_H-i') . '.txt', 'a');
                             $current = "";
                             fputs($fichier_txt, "le produit " . $image->getName() . " n'a pas de pdf" . "\r\n");
                         }
-                        $folder_file = $chemin . $image->getSurname() . '.pdf'; // nommage du fichier + son extension et choix du repertoire
-                        file_put_contents($folder_file, $current); //creation du fichier au bon repertoire
-                        $file = $image->getSurname() . '.pdf';
-                        $zip->addFile($chemin . $file, $directory . '/' . $file); //Ajout du fichier au ZIP
                     }
                 }
                 //vérifie que le fichier txt existe avant de l'ajouter au ZIP
@@ -393,14 +408,18 @@ class ViewController extends Controller
                     fclose($fichier_txt);
                 }
 
+                if(!file_exists($chemin . $fichier)) {
+                    $fichier_txt_nogravure = fopen($chemin . 'PASDEGRAVURE.txt', 'a');
+                    fclose($fichier_txt_nogravure);
+                    $zip->addFile($chemin . 'PASDEGRAVURE.txt', 'PASDEGRAVURE.txt'); //Ajout du fichier au ZIP
+                }
+
                 // Et on referme l'archive.
                 $zip->close();
             } else {
                 echo 'Impossible d&#039;ouvrir &quot;Zip.zip&quot;';
             }
-
-//        $content = file_get_contents($chemin . $fichier);
-//        if($content === false){
+//
             //partie téléchargement
             $response = new Response();
             $response->setContent(file_get_contents($chemin . $fichier));
@@ -409,12 +428,7 @@ class ViewController extends Controller
             $response->headers->set('Content-Length', filesize($chemin . $fichier));
             $response->headers->set('Content-disposition', 'filename=GRAVURE.zip' );
             ob_end_clean();
-            self::clearFolder($chemin);
-//        }
-//        else {
-//            $response = "";
-//        }
-
+            self::clearFolder($chemin);//
 
         return $response;
 

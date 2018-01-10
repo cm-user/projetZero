@@ -6,6 +6,7 @@ $("#btn_download2").hide();
 //////////au clic du bouton une requête ajax se lance pour charger les nouvelles gravures en attente////////
 function actualize() {
     $("#btn_actualize").addClass("btn-danger").removeClass("btn-info");  //changement de couleur du bouton
+    $("#msg_new_gravure").html(""); //efface le contenu de la div msg
     var $elem = "<br>";
     var compteur = 0;  //compteur pour calculer quand placer les rows
     var nom_categorie = ""; //nom de la catégorie
@@ -22,7 +23,9 @@ function actualize() {
                 if(val['temps'] != undefined){
                     var newDateObj = addMinutes(new Date(), val['temps']).toString().substring(16,21);
                     $("#time_new_gravure").html("<h3> Temps estimé à " + val['temps'] +" minutes, fin prévue à " + newDateObj + "</h3><a><button id=\"btn_paid_accept\" class=\"btn btn-info\" onclick=\"displayPaidAccept();\">Voir les paiements acceptés</button></a>");
-
+                }
+                else if(val['msg'] != undefined) {
+                    $("#msg_new_gravure").html("<br><div class=\"alert alert-danger\">Il n'y a pas de nouvelles gravures , patientez... ou pensez à augmenter le régulateur de commande</div>");
                 }
                 else {
                     // $elem += compteur % 4 == 0 ? "<div class=\"row\">" : ""; //affiche une row lorsque le nombre est de X
@@ -88,7 +91,7 @@ function actualize() {
                     $elem += "<td><a href=\"#\" data-toggle=\"modal\" data-target=\"#Modal_Picture_" + val['id'] + "\"><img src=\"" + val['path-jpg'] + " \" width=\'100\'></a></td>";
                     $elem += "<td><h2>" + val['name'] + "<h2>" ;
                         if (val['name_category'] == "NoCategory") {
-                            $elem += "<a class=\"btn btn-success\" id=\"add_" + val['id'] + "\" href=\"/projetZero/web/app_dev.php/engraving/category/new/" + val['id_product'] + "\">Ajouter cette catégorie</a>";
+                            $elem += "<a class=\"btn btn-success\" id=\"add_" + val['id'] + "\" href=\"/projetZero2/web/app_dev.php/engraving/category/new/" + val['id_product'] + "\">Ajouter cette catégorie</a>";
                         }
                     $elem += "</td>";
                     $elem += "<td><label class=\"checkbox-inline\">" ;
@@ -175,7 +178,7 @@ function DisplayPicture(data) {
             $elem += "<div class=\"radio\"> <label><input id=\"mllaser_" + val['id'] + "\" type=\"radio\" name=\"machine_" + val['id'] + "\" size=\"30\" onclick=\'compteCase();\'>&nbsp;&nbsp;ML Laser</label></div>";
             $elem += "<div class=\"radio\"> <label><input id=\"gravograph_" + val['id'] + "\" type=\"radio\" name=\"machine_" + val['id'] + "\" size=\"20\" onclick=\'compteCase();\'>&nbsp;&nbsp;Gravograph</label></div>";
             $elem += "</div>";
-            $elem += val['etat'] == 3 ? "<div class=\"col-sm-12\"><button class=\"btn btn-warning btn-block\" style=\"background-color:orange;\">Préparation de la caisse</button></div>" : ""; //indique que cette gravure est en préparation en cours
+            $elem += val['etat'] == 3 ? "<div class=\"col-sm-12\"><button class=\"btn btn-warning btn-block\" style=\"background-color:orange;\">Préparation de la caisse en cours</button></div>" : ""; //indique que cette gravure est en préparation en cours
 
             $elem += "</div>";
             $elem += "</div>";
@@ -206,6 +209,7 @@ function DisplayPicture(data) {
         }
     });
 
+    $elem += "</div><div class=\"row\"><button class=\"btn btn-warning\" onclick=\"ActualizeAndClean();\">Terminer la session</button></div>";
 
     $("#ongoing_gravure").html($elem);
 
@@ -259,6 +263,8 @@ function DisplayPicture(data) {
 
         });
     }
+
+    actualize(); //appel de la fonction pour actualiser
 }
 
 //compte le nombre d'input coché
@@ -284,6 +290,13 @@ function UncheckPicture(id){
             console.log(result);
         }
     });
+}
+
+//fonction pour actualiser et effacer la session en cours
+function ActualizeAndClean(){
+    actualize(); //appel de la fonction pour actualiser
+    $("#new_gravure").html(""); //efface les nouvelles gravures
+    $("#ongoing_gravure").html(""); //efface le contenu de la div
 }
 
 //affiche les gravures avec le statut paiement accepté ou paiement validé

@@ -4,6 +4,7 @@
     <h1>Liste des nouvelles gravures: </h1>
 
     <div id="time_new_gravure"></div>
+    <div id="msg_new_gravure"></div>
     <div id="new_gravure"></div>
     <a>
         <button class="btn btn-info" onclick="actualize();" id="btn_actualize">Actualiser</button>
@@ -11,6 +12,12 @@
     <a href="{{ path('session_last') }}">
         <button class="btn btn-info"  id="btn_session_last">Voir dernière session</button>
     </a>
+    <div class="legend">
+        <h3>Legende :</h3>
+        <p class="btn btn-success"  style="background-color:lightgreen;">En cours de livraison</p>
+        <p class="btn btn-warning"  style="background-color:orange;">En cours de préparation</p>
+        <p class="btn btn-info"  style="background-color:dodgerblue;">Prêt pour la gravure</p>
+    </div>
     <a>
         <button class="btn btn-warning" onclick="DisplayNewEngraving();" id="btn_session">Nouvelle session de gravures</button>
     </a>
@@ -24,11 +31,12 @@
     <div id="ongoing_gravure"></div>
 
     <a id="btn_download2" href="{{ path('download_pdf_gravure') }}" >
-        <button class="btn btn-warning">Récupérer l'archive ZIP</button>
+        <button class="btn btn-warning">Télécharger fichiers ML Laser</button>
     </a>
 
     <style>
         input[type='radio'] { transform: scale(2); }
+        input[type='checkbox'] { transform: scale(4); }
 
         .center-block {
             margin-left:auto;
@@ -38,7 +46,12 @@
 
         #btn_actualize{ position: fixed; top: 25px; left: 20px; }
         #btn_session_last{ position: fixed; top: 75px; left: 20px; }
-
+        .legend {
+            width: 190px;
+            display: flex;
+           flex-flow: column;
+            position: fixed; top: 175px; left: 20px;
+        }
     </style>
 
 {% endblock %}
