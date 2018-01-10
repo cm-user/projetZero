@@ -1,36 +1,36 @@
 {% extends 'base.html.twig' %}
 
 {% block body%}
-   <center> <h1>Service Client</h1></center>
-<div class="row">
-    <div class="col-sm-2">
-        <button onclick="rafraichissement();" type="button" class="btn btn-danger">Retour au début</button>
-    </div>
-    <div class="col-sm-2">
-        <button class="btn btn-warning btn-block" onclick="DisplayGuide();" type="button" >Guide</button>
-    </div>
-    <div class="col-sm-2">
-        <button class="btn btn-warning btn-block" onclick="DisplayAttachment();" type="button" >Pièces Jointes</button>
-    </div>
-    <div class="col-sm-2">
-        <button class="btn btn-warning btn-block" onclick="DisplayPhone();" type="button">Numéro Téléphone</button>
-    </div>
-    <div class="col-sm-2">
-        <button class="btn btn-warning btn-block" onclick="DisplayBond();" type="button">Bon retour</button>
-    </div>
+    <h1>Service Client</h1>
+    <div class="row">
+        <div class="col-sm-2">
+            <button onclick="rafraichissement();" type="button" class="btn btn-danger btn-block">Retour au début</button>
+        </div>
+        <div class="col-sm-2">
+            <button class="btn btn-warning btn-block" onclick="DisplayGuide();" type="button" >Guide</button>
+        </div>
+        <div class="col-sm-2">
+            <button class="btn btn-warning btn-block" onclick="DisplayAttachment();" type="button" >Pièces Jointes</button>
+        </div>
+        <div class="col-sm-2">
+            <button class="btn btn-warning btn-block" onclick="DisplayPhone();" type="button">Numéro Téléphone</button>
+        </div>
+        <div class="col-sm-2">
+            <button class="btn btn-warning btn-block" onclick="DisplayBond();" type="button">Bon retour</button>
+        </div>
     </div>
     <br>
     <div class="row">
-    <div class="col-sm-5">
-        <input type="text" id="recherche" size="50" />
+        <div class="col-sm-5">
+            <input type="text" id="recherche" size="50" />
 
-           <button onclick="recherche();" type="button" class="btn btn-warning">Rechercher</button>
-        <div id="container"></div>
+            <button onclick="recherche();" type="button" class="btn btn-warning">Rechercher</button>
+            <div id="container"></div>
+        </div>
+        <div class="col-sm-2">
+            <button onclick="OngletOdoo();" type="button" class="btn btn-warning btn-block">Odoo</button>
+        </div>
     </div>
-    <div class="col-sm-2">
-        <button onclick="OngletOdoo();" type="button" class="btn btn-warning btn-block">Odoo</button>
-    </div>
-</div>
 
     <div id="guide"></div>
     <div id="phone"></div>
@@ -43,16 +43,8 @@
     <div id="arbre"></div>
 
 
-{% endblock %}
-{% block stylesheets %}
-    <style>
-        .btn:hover /* Quand le visiteur clique sur le lien */
-        {
-            background-color: #FFCC66;
-        }
-    </style>
-{% endblock %}
 
+{% endblock %}
 
 {% block javascripts %}
     <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>

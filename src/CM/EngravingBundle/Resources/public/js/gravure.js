@@ -86,7 +86,7 @@ function actualize() {
                         compteur++; //incrémentation du compteur
                     }
 
-                    $elem += val['etat'] == 4 ? "<tr class=\"success\" style=\"background-color:lightgreen;\">" : "<tr class=\"light\" style=\"background-color:orange;\">"; //affiche une alert en fonction de l'état de la commande
+                    $elem += val['etat'] == 4 ? "<tr class=\"success\" style=\"background-color:green;\">" : "<tr class=\"light\" style=\"background-color:orange;\">"; //affiche une alert en fonction de l'état de la commande
                     $elem += "<td><h2>" + compteur_ligne + "</h2></td>";
                     $elem += "<td><a href=\"#\" data-toggle=\"modal\" data-target=\"#Modal_Picture_" + val['id'] + "\"><img src=\"" + val['path-jpg'] + " \" width=\'100\'></a></td>";
                     $elem += "<td><h2>" + val['name'] + "<h2>" ;

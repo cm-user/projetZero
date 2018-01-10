@@ -166,6 +166,21 @@ class PictureRepository extends \Doctrine\ORM\EntityRepository
         return $images;
     }
 
+    public function findAllPictureMachineGravograph($session){
+        $q = $this->entityManager->createQueryBuilder();
+        $q->select('p')
+            ->from('EngravingBundle:Picture', 'p')
+            ->where($q->expr()->like('p.machine', ':name_machine'))
+            ->andWhere('p.session =' . $session)
+            ->setParameter('name_machine','%Gravograph%')
+            ->orderBy('p.category', 'DESC')
+        ;
+
+        $images = $q->getQuery()->getResult();
+
+        return $images;
+    }
+
 
     public function save(Picture $picture){
         $this->entityManager->persist($picture);

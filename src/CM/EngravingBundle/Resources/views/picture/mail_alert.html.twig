@@ -1,0 +1,17 @@
+
+<h2>Liste des gravures sur la gravopraph</h2>
+
+<br>
+
+{% for picture in pictures %}
+
+    {{ image.name }}
+    <img src="{{ image.pathJpg }}" alt="{{ image.name }}" width="200">
+    <br> <br>
+
+{% endfor %}
+
+
+
+
+

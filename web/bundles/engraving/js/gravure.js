@@ -6,6 +6,7 @@ $("#btn_download2").hide();
 //////////au clic du bouton une requête ajax se lance pour charger les nouvelles gravures en attente////////
 function actualize() {
     $("#btn_actualize").addClass("btn-danger").removeClass("btn-info");  //changement de couleur du bouton
+    $("#msg_new_gravure").html(""); //efface le contenu de la div msg
     var $elem = "<br>";
     var compteur = 0;  //compteur pour calculer quand placer les rows
     var nom_categorie = ""; //nom de la catégorie
@@ -85,7 +86,7 @@ function actualize() {
                         compteur++; //incrémentation du compteur
                     }
 
-                    $elem += val['etat'] == 4 ? "<tr class=\"success\" style=\"background-color:lightgreen;\">" : "<tr class=\"light\" style=\"background-color:orange;\">"; //affiche une alert en fonction de l'état de la commande
+                    $elem += val['etat'] == 4 ? "<tr class=\"success\" style=\"background-color:green;\">" : "<tr class=\"light\" style=\"background-color:orange;\">"; //affiche une alert en fonction de l'état de la commande
                     $elem += "<td><h2>" + compteur_ligne + "</h2></td>";
                     $elem += "<td><a href=\"#\" data-toggle=\"modal\" data-target=\"#Modal_Picture_" + val['id'] + "\"><img src=\"" + val['path-jpg'] + " \" width=\'100\'></a></td>";
                     $elem += "<td><h2>" + val['name'] + "<h2>" ;

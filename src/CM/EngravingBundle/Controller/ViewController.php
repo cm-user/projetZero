@@ -347,7 +347,13 @@ class ViewController extends Controller
             $em->persist($image);
         }
 
-//        $images = $session->getPictures();
+        $images = $this->get('engraving.repository.picture')->findAllPictureMachineGravograph($session->getId());//récupère les nouvelles gravures pour la machine Gravograph
+
+        if(sizeof($images) == 0){
+            ViewController::sendMail("antoine@cadeau-maestro.com",$images);
+        }
+
+    //        $images = $session->getPictures();
         $images = $this->get('engraving.repository.picture')->findAllPictureMachineLaser($session->getId());//récupère les nouvelles gravures pour la machine ML Laser
 
         //on remplit le tableau associatif avec les catégories
@@ -807,6 +813,23 @@ class ViewController extends Controller
         }
         $formatted[] = ['temps' => $time]; //ajout du temps au tableau
         return new JsonResponse($formatted);
+    }
+
+    private function sendMail($mail, $images){
+        $message = (new \Swift_Message('Nombre Bons Retour'))
+            ->setFrom('contact@cadeau-maestro.com')
+            ->setTo($mail)
+            ->setBody(
+                $this->renderView(
+                    '@Engraving/picture/mail_alert.html.twig',
+                    array('pictures' => $images)
+                ),
+                'text/html'
+            )
+        ;
+
+        $this->get('mailer')
+            ->send($message);
     }
 
 }
