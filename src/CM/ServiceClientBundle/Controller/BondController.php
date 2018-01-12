@@ -293,7 +293,7 @@ class BondController extends Controller
 
         $dir_path = "bond"; //chemin du dossier des images
         $file_name = $bond->getName();
-        $date_name = (new \DateTime())->format('d-m-Y') . ".pdf"; //nom final du fichier lors du téléchargement
+        $date_name = (new \DateTime())->format('d-m-Y_H-i') . ".pdf"; //nom final du fichier lors du téléchargement
         $path = $dir_path . "/" . $file_name; //forme le chemin complet de l'image
 
         $response = new Response();

@@ -5,9 +5,11 @@
 
 {% for picture in pictures %}
 
-    {{ image.name }}
-    <img src="{{ image.pathJpg }}" alt="{{ image.name }}" width="200">
-    <br> <br>
+    <tr>
+        <td>loop.index</td>
+    <td>{{ picture.name }}</td>
+    <td><img src="{{ picture.pathJpg }}" alt="{{ picture.name }}" width="200"></td>
+    </tr>
 
 {% endfor %}
 

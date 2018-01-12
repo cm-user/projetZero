@@ -129,6 +129,11 @@ class Picture
     private $session;
 
     /**
+     * @ORM\OneToMany(targetEntity="CM\EngravingBundle\Entity\Texte", mappedBy="picture")
+     */
+    private $textes;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -509,5 +514,39 @@ class Picture
     public function getChecked()
     {
         return $this->checked;
+    }
+
+    /**
+     * Add texte
+     *
+     * @param \CM\EngravingBundle\Entity\Texte $texte
+     *
+     * @return Picture
+     */
+    public function addTexte(\CM\EngravingBundle\Entity\Texte $texte)
+    {
+        $this->textes[] = $texte;
+
+        return $this;
+    }
+
+    /**
+     * Remove texte
+     *
+     * @param \CM\EngravingBundle\Entity\Texte $texte
+     */
+    public function removeTexte(\CM\EngravingBundle\Entity\Texte $texte)
+    {
+        $this->textes->removeElement($texte);
+    }
+
+    /**
+     * Get textes
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getTextes()
+    {
+        return $this->textes;
     }
 }

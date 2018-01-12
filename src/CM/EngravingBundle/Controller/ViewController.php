@@ -339,6 +339,12 @@ class ViewController extends Controller
         $session = $this->get('engraving.repository.session')->findOneById($id_max_session);
         $array_category = array('NoCategory' => 0); //tableau associatif pour gérer les différents compteurs de chaque catégorie
 
+        //on remplit le tableau associatif avec les catégories
+        $categories = $this->get('engraving.repository.category')->findAll();
+        foreach ($categories as $cat) {
+            $array_category[$cat->getSurname()] = 0;
+        }
+
         //suppression de la session pour les gravures qui n'ont pas été sélectionnées
         $images = $this->get('engraving.repository.picture')->findAllPictureWithoutMachine($session->getId());//récupère les nouvelles gravures sans machine sélectionnée
         foreach ($images as $image){
@@ -348,25 +354,29 @@ class ViewController extends Controller
         }
 
         $images = $this->get('engraving.repository.picture')->findAllPictureMachineGravograph($session->getId());//récupère les nouvelles gravures pour la machine Gravograph
+        if(sizeof($images) != 0){
+            ViewController::sendMail("personnalisation@cadeau-maestro.com",$images,$session->getId());
 
-        if(sizeof($images) == 0){
-            ViewController::sendMail("antoine@cadeau-maestro.com",$images);
+            //remplit le champ surname
+            foreach ($images as $image){
+                $category = $image->getCategory();
+                $name_category = $category->getSurname();
+                $array_category[$name_category]++;
+                $surname = $name_category . ' (' . $array_category[$name_category] . ')';
+                $image->setSurname($surname);
+                $em->persist($image);
+            }
         }
 
-    //        $images = $session->getPictures();
+        //        $images = $session->getPictures();
         $images = $this->get('engraving.repository.picture')->findAllPictureMachineLaser($session->getId());//récupère les nouvelles gravures pour la machine ML Laser
 
-        //on remplit le tableau associatif avec les catégories
-        $categories = $this->get('engraving.repository.category')->findAll();
-        foreach ($categories as $cat) {
-            $array_category[$cat->getSurname()] = 0;
-        }
-
+        //remplit le champ surname
         foreach ($images as $image){
             $category = $image->getCategory();
             $name_category = $category->getSurname();
             $array_category[$name_category]++;
-            $surname = $name_category . '(' . $array_category[$name_category] . ')';
+            $surname = $name_category . ' (' . $array_category[$name_category] . ')';
             $image->setSurname($surname);
             $em->persist($image);
         }
@@ -390,34 +400,35 @@ class ViewController extends Controller
 
                 foreach ($images as $image) {
 //                    var_dump($image);
-                    $category = $image->getCategory();                   
+                    $category = $image->getCategory();
                     if ($category != null) {
                         $directory = $category->getFolder(); //nom du dossier associé à la catégorie
 
-                        if(get_headers($image->getPathPdf())[0] == "HTTP/1.1 200 OK" ||get_headers($image->getPathPdf())[0] == "HTTP/1.1 302 Moved Temporarily"){ //vérifie que l'url existe bien
-                            $current = file_get_contents($image->getPathPdf()); //recupere contenu du fichier
-                            $folder_file = $chemin . $image->getSurname() . '.pdf'; // nommage du fichier + son extension et choix du repertoire
-                            file_put_contents($folder_file, $current); //creation du fichier au bon repertoire
-                            $file = $image->getSurname() . '.pdf';
-                            $zip->addFile($chemin . $file, $directory . '/' . $file); //Ajout du fichier au ZIP
-                        }
-                        else { //s'il y a un problème avec le pdf de la gravure
-                            $fichier_txt = fopen($chemin . 'gravure_' . $session->getCreatedAt()->format('Y-m-d_H-i') . '.txt', 'a');
-                            $current = "";
-                            fputs($fichier_txt, "le produit " . $image->getName() . " n'a pas de pdf" . "\r\n");
-                        }
+//                        if(get_headers($image->getPathPdf())[0] == "HTTP/1.1 200 OK" ||get_headers($image->getPathPdf())[0] == "HTTP/1.1 302 Moved Temporarily"){ //vérifie que l'url existe bien
+                        $current = file_get_contents($image->getPathPdf()); //recupere contenu du fichier
+                        $folder_file = $chemin . $image->getSurname() . '.pdf'; // nommage du fichier + son extension et choix du repertoire
+                        file_put_contents($folder_file, $current); //creation du fichier au bon repertoire
+                        $file = $image->getSurname() . '.pdf';
+                        $zip->addFile($chemin . $file, $directory . '/' . $file); //Ajout du fichier au ZIP
+//                        }
+//                        else { //s'il y a un problème avec le pdf de la gravure
+//                            $fichier_txt = fopen($chemin . 'gravure_' . $session->getCreatedAt()->format('Y-m-d_H-i') . '.txt', 'a');
+//                            $current = "";
+//                            fputs($fichier_txt, "le produit " . $image->getName() . " n'a pas de pdf" . "\r\n");
+//                        }
                     }
                 }
                 //vérifie que le fichier txt existe avant de l'ajouter au ZIP
-                if(file_exists($chemin . 'gravure_' . $session->getCreatedAt()->format('Y-m-d_H-i') . '.txt')){
-                    $zip->addFile($chemin . 'gravure_' . $session->getCreatedAt()->format('Y-m-d_H-i') . '.txt', 'gravure_' . $session->getCreatedAt()->format('Y-m-d_H-i') . '.txt'); //Ajout du fichier au ZIP
-                    fclose($fichier_txt);
-                }
+//                if(file_exists($chemin . 'gravure_' . $session->getCreatedAt()->format('Y-m-d_H-i') . '.txt')){
+//                    $zip->addFile($chemin . 'gravure_' . $session->getCreatedAt()->format('Y-m-d_H-i') . '.txt', 'gravure_' . $session->getCreatedAt()->format('Y-m-d_H-i') . '.txt'); //Ajout du fichier au ZIP
+//                    fclose($fichier_txt);
+//                }
 
+                //si le fichier zip n'est pas créé on ajoute ce fichier txt pour envoyer quelque chose lors du téléchargement
                 if(!file_exists($chemin . $fichier)) {
-                    $fichier_txt_nogravure = fopen($chemin . 'PASDEGRAVURE.txt', 'a');
+                    $fichier_txt_nogravure = fopen($chemin . 'GRAVURE.txt', 'a');
                     fclose($fichier_txt_nogravure);
-                    $zip->addFile($chemin . 'PASDEGRAVURE.txt', 'PASDEGRAVURE.txt'); //Ajout du fichier au ZIP
+                    $zip->addFile($chemin . 'GRAVURE.txt', 'GRAVURE.txt'); //Ajout du fichier au ZIP
                 }
 
                 // Et on referme l'archive.
@@ -426,15 +437,15 @@ class ViewController extends Controller
                 echo 'Impossible d&#039;ouvrir &quot;Zip.zip&quot;';
             }
 //
-            //partie téléchargement
-            $response = new Response();
-            $response->setContent(file_get_contents($chemin . $fichier));
-            $response->headers->set('Content-Type', 'application/zip'); // modification du content-type pour forcer le téléchargement (sinon le navigateur internet essaie d'afficher le document)
-            $response->headers->set('Content-Transfer-Encoding', 'Binary');
-            $response->headers->set('Content-Length', filesize($chemin . $fichier));
-            $response->headers->set('Content-disposition', 'filename=GRAVURE.zip' );
-            ob_end_clean();
-            self::clearFolder($chemin);//
+        //partie téléchargement
+        $response = new Response();
+        $response->setContent(file_get_contents($chemin . $fichier));
+        $response->headers->set('Content-Type', 'application/zip'); // modification du content-type pour forcer le téléchargement (sinon le navigateur internet essaie d'afficher le document)
+        $response->headers->set('Content-Transfer-Encoding', 'Binary');
+        $response->headers->set('Content-Length', filesize($chemin . $fichier));
+        $response->headers->set('Content-disposition', 'filename=GRAVURE.zip' );
+        ob_end_clean();
+        self::clearFolder($chemin);//
 
         return $response;
 
@@ -688,6 +699,19 @@ class ViewController extends Controller
         $this->get('engraving.repository.picture')->save($picture);
 
         return new Response("passage machine gravograph");
+    }
+
+    /**
+     * @Route("/ongoing-picture/cancel-machine/{id}", name="view_ongoing_picture_cancel_machine", options={"expose"=true})
+     */
+    public function OngoingPictureCancelMachineAction($id)
+    {
+        $picture = $this->get('engraving.repository.picture')->findOneById($id);
+        $picture->setMachine(null);
+
+        $this->get('engraving.repository.picture')->save($picture);
+
+        return new Response("passage machine à null");
     }
 
     /**

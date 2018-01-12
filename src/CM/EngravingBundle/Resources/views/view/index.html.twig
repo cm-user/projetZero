@@ -9,14 +9,14 @@
     <a>
         <button class="btn btn-info" onclick="actualize();" id="btn_actualize">Actualiser</button>
     </a>
-    <a href="{{ path('session_last') }}">
-        <button class="btn btn-info"  id="btn_session_last">Voir dernière session</button>
-    </a>
+    {#<a href="{{ path('session_last') }}">#}
+        {#<button class="btn btn-info"  id="btn_session_last">Voir dernière session</button>#}
+    {#</a>#}
     <div class="legend">
         <h3>Legende :</h3>
-        <p class="btn btn-success"  style="background-color:green;">En cours de livraison</p>
+        <p class="btn btn-success"  style="background-color:limegreen;">En cours de livraison</p>
         <p class="btn btn-warning"  style="background-color:orange;">En cours de préparation</p>
-        <p class="btn btn-info"  style="background-color:dodgerblue;">Prêt pour la gravure</p>
+        {#<p class="btn btn-info"  style="background-color:dodgerblue;">Prêt pour la gravure</p>#}
     </div>
     <a>
         <button class="btn btn-warning" onclick="DisplayNewEngraving();" id="btn_session">Nouvelle session de gravures</button>
@@ -36,7 +36,11 @@
 
     <style>
         input[type='radio'] { transform: scale(2); }
-        input[type='checkbox'] { transform: scale(4); }
+        input[type='checkbox'] {
+            transform: scale(4);
+            margin-top: 41px;
+            margin-left: 25px;
+        }
 
         .center-block {
             margin-left:auto;

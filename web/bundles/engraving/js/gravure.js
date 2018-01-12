@@ -86,12 +86,12 @@ function actualize() {
                         compteur++; //incrémentation du compteur
                     }
 
-                    $elem += val['etat'] == 4 ? "<tr class=\"success\" style=\"background-color:green;\">" : "<tr class=\"light\" style=\"background-color:orange;\">"; //affiche une alert en fonction de l'état de la commande
+                    $elem += val['etat'] == 4 ? "<tr class=\"success\" style=\"background-color:limegreen;\">" : "<tr class=\"light\" style=\"background-color:orange;\">"; //affiche une alert en fonction de l'état de la commande
                     $elem += "<td><h2>" + compteur_ligne + "</h2></td>";
                     $elem += "<td><a href=\"#\" data-toggle=\"modal\" data-target=\"#Modal_Picture_" + val['id'] + "\"><img src=\"" + val['path-jpg'] + " \" width=\'100\'></a></td>";
                     $elem += "<td><h2>" + val['name'] + "<h2>" ;
                         if (val['name_category'] == "NoCategory") {
-                            $elem += "<a class=\"btn btn-success\" id=\"add_" + val['id'] + "\" href=\"/projetZero2/web/app_dev.php/engraving/category/new/" + val['id_product'] + "\">Ajouter cette catégorie</a>";
+                            $elem += "<a class=\"btn btn-warning\" id=\"add_" + val['id'] + "\" href=\"/projetZero2/web/app_dev.php/engraving/category/new/" + val['id_product'] + "\">Ajouter cette catégorie</a>";
                         }
                     $elem += "</td>";
                     $elem += "<td><label class=\"checkbox-inline\">" ;
@@ -177,6 +177,7 @@ function DisplayPicture(data) {
             $elem += "<br>";
             $elem += "<div class=\"radio\"> <label><input id=\"mllaser_" + val['id'] + "\" type=\"radio\" name=\"machine_" + val['id'] + "\" size=\"30\" onclick=\'compteCase();\'>&nbsp;&nbsp;ML Laser</label></div>";
             $elem += "<div class=\"radio\"> <label><input id=\"gravograph_" + val['id'] + "\" type=\"radio\" name=\"machine_" + val['id'] + "\" size=\"20\" onclick=\'compteCase();\'>&nbsp;&nbsp;Gravograph</label></div>";
+            $elem += "<div class=\"radio\"> <label><input id=\"cancel_machine_" + val['id'] + "\" type=\"radio\" name=\"machine_" + val['id'] + "\" size=\"20\" onclick=\'compteCase();\'>&nbsp;&nbsp;Annuler</label></div>";
             $elem += "</div>";
             $elem += val['etat'] == 3 ? "<div class=\"col-sm-12\"><button class=\"btn btn-warning btn-block\" style=\"background-color:orange;\">Préparation de la caisse en cours</button></div>" : ""; //indique que cette gravure est en préparation en cours
 
@@ -260,8 +261,29 @@ function DisplayPicture(data) {
             else{
                 $(this).prop('checked',false);
             }
+        });
+
+        $("#cancel_machine_" + array_id_picture[i]).on("click", function () {   //listener sur la checkbox Gravograph
+            var id = $(this).attr("id");    //recupere l'id du bouton
+            id = id.replace("cancel_machine_", ""); //recupere l'id de la branche uniquement
+            $("#click_machine_" + id).addClass("alert-danger").removeClass("alert-success");  //ajout d'un cadre de couleur
+            //enregistre dans la bdd la machine utilisée
+            if( $(this).is(':checked') ){ //si la checkbox n'est pas deja check
+                $(this).prop('checked',true);
+                // $("#mllaser_" + array_id_picture[i]).prop('checked', false); // Unchecks la checkbox laser
+                $.ajax({
+                    url: Routing.generate('view_ongoing_picture_cancel_machine', {id: id}), //enregistre en bdd
+                    success: function (result) {
+                        console.log(result);
+                    }
+                });
+            }
+            else{
+                $(this).prop('checked',false);
+            }
 
         });
+        
     }
 
     actualize(); //appel de la fonction pour actualiser

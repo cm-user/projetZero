@@ -85,18 +85,18 @@ class Picture
     private $time;
 
     /**
-     * @var \DateTime
+     * @var string
      *
-     * @ORM\Column(name="date_presta", type="datetime", nullable=true)
+     * @ORM\Column(name="date_presta", type="string", nullable=true)
      */
     private $datePresta;
 
     /**
      * @var int
      *
-     * @ORM\Column(name="check", type="integer", options={"default":1})
+     * @ORM\Column(name="checked", type="integer", nullable=true)
      */
-    private $check;
+    private $checked;
 
     /**
      * @var \DateTime
@@ -127,6 +127,11 @@ class Picture
      * @ORM\JoinColumn(name="id_session", referencedColumnName="id", nullable=true)
      */
     private $session;
+
+    /**
+     * @ORM\OneToMany(targetEntity="CM\EngravingBundle\Entity\Texte", mappedBy="picture")
+     */
+    private $textes;
 
     /**
      * Constructor
@@ -460,4 +465,54 @@ class Picture
     }
 
     
+    
+    /**
+     * Set datePresta
+     *
+     * @param string $datePresta
+     *
+     * @return Picture
+     */
+    public function setDatePresta($datePresta)
+    {
+        $this->datePresta = $datePresta;
+
+        return $this;
     }
+
+    /**
+     * Get datePresta
+     *
+     * @return string
+     */
+    public function getDatePresta()
+    {
+        return $this->datePresta;
+    }
+
+    
+    
+    /**
+     * Set checked
+     *
+     * @param integer $checked
+     *
+     * @return Picture
+     */
+    public function setChecked($checked)
+    {
+        $this->checked = $checked;
+
+        return $this;
+    }
+
+    /**
+     * Get checked
+     *
+     * @return integer
+     */
+    public function getChecked()
+    {
+        return $this->checked;
+    }
+}
