@@ -88,7 +88,7 @@ class MailBondController extends Controller
         if ($editForm->isSubmitted() && $editForm->isValid()) {
             $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('ServiceClientBundle:mailbond:edit', array('id' => $mailBond->getId()));
+            return $this->redirectToRoute('mailbond_edit', array('id' => $mailBond->getId()));
         }
 
         return $this->render('ServiceClientBundle:mailbond:edit.html.twig', array(
@@ -101,7 +101,7 @@ class MailBondController extends Controller
     /**
      * Deletes a mailBond entity.
      *
-     * @Route("/{id}", name="mailbond_delete")
+     * @Route("/delete/{id}", name="mailbond_delete")
      * @Method("DELETE")
      */
     public function deleteAction(Request $request, MailBond $mailBond)
@@ -128,7 +128,7 @@ class MailBondController extends Controller
     private function createDeleteForm(MailBond $mailBond)
     {
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl('ServiceClientBundle:mailbond:delete', array('id' => $mailBond->getId())))
+            ->setAction($this->generateUrl('mailbond_delete', array('id' => $mailBond->getId())))
             ->setMethod('DELETE')
             ->getForm()
         ;

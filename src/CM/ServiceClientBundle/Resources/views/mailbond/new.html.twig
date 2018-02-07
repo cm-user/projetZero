@@ -1,16 +1,15 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Mailbond creation</h1>
+    <h1>Ajouter un mail</h1>
 
     {{ form_start(form) }}
         {{ form_widget(form) }}
-        <input type="submit" value="Create" />
+        <input type="submit" value="Ajouter" />
     {{ form_end(form) }}
 
-    <ul>
-        <li>
-            <a href="{{ path('mailbond_index') }}">Back to the list</a>
-        </li>
-    </ul>
+       <a class="btn btn-danger" href="{{ path('mailbond_index') }}">
+        <span class="glyphicon glyphicon-arrow-left"></span>
+        Retour
+    </a>
 {% endblock %}

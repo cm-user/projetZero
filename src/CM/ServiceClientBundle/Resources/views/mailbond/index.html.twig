@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Mailbonds list</h1>
+    <h1>Liste des mails alertés lorsque le nombre de bond est inférieur à 10</h1>
 
-    <table>
+    <table class="table table-bordered table-hover">
         <thead>
             <tr>
                 <th>Id</th>
@@ -17,23 +17,19 @@
                 <td><a href="{{ path('mailbond_show', { 'id': mailBond.id }) }}">{{ mailBond.id }}</a></td>
                 <td>{{ mailBond.mail }}</td>
                 <td>
-                    <ul>
-                        <li>
-                            <a href="{{ path('mailbond_show', { 'id': mailBond.id }) }}">show</a>
-                        </li>
-                        <li>
-                            <a href="{{ path('mailbond_edit', { 'id': mailBond.id }) }}">edit</a>
-                        </li>
-                    </ul>
+                            <a class="btn btn-warning" href="{{ path('mailbond_edit', { 'id': mailBond.id }) }}">Modifier</a>
                 </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <ul>
-        <li>
-            <a href="{{ path('mailbond_new') }}">Create a new mailBond</a>
-        </li>
-    </ul>
+
+            <a class="btn btn-success" href="{{ path('mailbond_new') }}">Ajouter un nouveau mail</a>
+
+    <a class="btn btn-danger" href="{{ path('bond_index') }}">
+        <span class="glyphicon glyphicon-arrow-left"></span>
+        Retour
+    </a>
+
 {% endblock %}
