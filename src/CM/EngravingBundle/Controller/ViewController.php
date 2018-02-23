@@ -168,10 +168,10 @@ class ViewController extends Controller
         $Images = $this->get('engraving.repository.picture')->findAllNewPicture();
 
         //appel de cette fonction pour trier par etat tout en gardant le tri par catégorie et en gardant uniquement les etats 3 et 4
-        $array_images_orderByEtat = ViewController::orderByEtat($Images);
+//        $array_images_orderByEtat = ViewController::orderByEtat($Images);
 
         $formatted = [];
-        foreach ($array_images_orderByEtat as $image) {
+        foreach ($Images as $image) {
 
                 //renseigne le nom et l'alias si la catégorie existe
                 if($image->getCategory() != null){
@@ -854,6 +854,38 @@ class ViewController extends Controller
 
         $this->get('mailer')
             ->send($message);
+    }
+
+    /**
+     * @Route("/test/json", name="view_picture_paid_json_test")
+     */
+    public function testAction(){
+        //http://doc.prestashop.com/download/attachments/720902/CRUD%20Tutorial%20EN.pdf
+        $em = $this->getDoctrine()->getManager();
+        $array_state = [2, 4, 31]; //tableau contenant les "bons" etats des commandes
+        $time = 0; //temps en minutes pour effectuer les gravures
+
+        $persta = $this->get('iq2i_prestashop_web_service')->getInstance();
+
+        $id_min = 2;
+        $id_max = 100;
+
+//        $result = $persta->get(array(
+//            "resource" => "config_product_block",
+//            "filter[id]" => '[' . $id_min . ',' . $id_max . ']',
+//            "display" => '[id,id_product,name]',
+//        ));
+
+        $result = $persta->get(array(
+            "resource" => "config_block",
+            "filter[id]" => '[' . $id_min . ',' . $id_max . ']',
+            "display" => '[id]',
+        ));
+
+        $result = json_decode(json_encode((array)$result), TRUE);
+
+        return new JsonResponse($result);
+
     }
 
 }

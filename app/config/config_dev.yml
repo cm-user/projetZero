@@ -40,7 +40,7 @@ monolog:
 #swiftmailer:
 #    delivery_addresses: ['me@example.com']
 
-iq2i_prestashop_web_service:
-    url: http://www.cadeau-maestro.com
-    key: KSWP3L85YX13OIURBU7P1P48FZGX372K
-    debug: false
+#iq2i_prestashop_web_service:
+#    url: http://www.cadeau-maestro.com
+#    key: KSWP3L85YX13OIURBU7P1P48FZGX372K
+#    debug: true
