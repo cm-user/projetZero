@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Boxnumber</h1>
+
+    <table>
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ boxNumber.id }}</td>
+            </tr>
+            <tr>
+                <th>Boxcolumn</th>
+                <td>{{ boxNumber.boxColumn }}</td>
+            </tr>
+            <tr>
+                <th>Boxrow</th>
+                <td>{{ boxNumber.boxRow }}</td>
+            </tr>
+            <tr>
+                <th>Lastspeaker</th>
+                <td>{{ boxNumber.lastSpeaker }}</td>
+            </tr>
+            <tr>
+                <th>Createdat</th>
+                <td>{% if boxNumber.createdAt %}{{ boxNumber.createdAt|date('Y-m-d H:i:s') }}{% endif %}</td>
+            </tr>
+            <tr>
+                <th>Updatedat</th>
+                <td>{% if boxNumber.updatedAt %}{{ boxNumber.updatedAt|date('Y-m-d H:i:s') }}{% endif %}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('boxnumber_index') }}">Back to the list</a>
+        </li>
+        <li>
+            <a href="{{ path('boxnumber_edit', { 'id': boxNumber.id }) }}">Edit</a>
+        </li>
+        <li>
+            {{ form_start(delete_form) }}
+                <input type="submit" value="Delete">
+            {{ form_end(delete_form) }}
+        </li>
+    </ul>
+{% endblock %}

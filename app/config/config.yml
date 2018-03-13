@@ -5,6 +5,7 @@ imports:
     - { resource: "@TestBundle/Resources/config/services.yml" }
     - { resource: "@EngravingBundle/Resources/config/services.yml" }
     - { resource: "@FaultyBundle/Resources/config/services.yml" }
+    - { resource: "@GravureBundle/Resources/config/services.yml" }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
@@ -96,13 +97,13 @@ ivory_ck_editor:
             - { name: "Badge", element: "span",  attributes: { class: "badge" }}
 
 
-#iq2i_prestashop_web_service:
-#    url: http://cadeaumaestro.newquest.fr
-#    key: KSWP3L85YX13OIURBU7P1P48FZGX372K
-#    debug: false
-
-
 iq2i_prestashop_web_service:
-    url: http://www.cadeau-maestro.com
+    url: http://cadeaumaestro.newquest.fr
     key: KSWP3L85YX13OIURBU7P1P48FZGX372K
     debug: false
+
+
+#iq2i_prestashop_web_service:
+#    url: http://www.cadeau-maestro.com
+#    key: KSWP3L85YX13OIURBU7P1P48FZGX372K
+#    debug: false

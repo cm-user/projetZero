@@ -26,6 +26,7 @@ class AppKernel extends Kernel
             new CM\EngravingBundle\EngravingBundle(),
             new \IQ2i\PrestaShopWebServiceBundle\IQ2iPrestaShopWebServiceBundle(),
             new FaultyBundle\FaultyBundle(),
+            new GravureBundle\GravureBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

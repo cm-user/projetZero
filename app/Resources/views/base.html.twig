@@ -48,12 +48,40 @@
 
     </head>
     <body>
+    <div class="vertical-menu">
+        <a href="#" class="active">Home</a>
+        <a href="{{ path('gravure_mail_index') }}">Mail</a>
+        <a href="{{ path('gravure_orderregulator_index') }}">Order Regulator</a>
+        <a href="{{ path('endofthedaytime_index') }}">EndofTheDayTime</a>
+        <a href="{{ path('boxnumber_index') }}">BoxNumber</a>
+    </div>
+    <style>.vertical-menu {
+            width: 200px; /* Set a width if you like */
+        }
+
+        .vertical-menu a {
+            background-color: #eee; /* Grey background color */
+            color: black; /* Black text color */
+            display: block; /* Make the links appear below each other */
+            padding: 12px; /* Add some padding */
+            text-decoration: none; /* Remove underline from links */
+        }
+
+        .vertical-menu a:hover {
+            background-color: #ccc; /* Dark grey background on mouse-over */
+        }
+
+        .vertical-menu a.active {
+            background-color: #4CAF50; /* Add a green color to the "active/current" link */
+            color: white;
+        }</style>
     <div class="container">
     <div class="content" >
         {% block body %}{% endblock %}
     </div>
     </div>
     {% block bodyyy %}{% endblock %}
+    {% block gravure %}{% endblock %}
         {% block javascripts %}{% endblock %}
     </body>
 </html>

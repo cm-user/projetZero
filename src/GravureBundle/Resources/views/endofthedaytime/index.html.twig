@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Endofthedaytimes list</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Hours</th>
+                <th>Lastspeaker</th>
+                <th>Createdat</th>
+                <th>Updatedat</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for endOfTheDayTime in endOfTheDayTimes %}
+            <tr>
+                <td><a href="{{ path('endofthedaytime_show', { 'id': endOfTheDayTime.id }) }}">{{ endOfTheDayTime.id }}</a></td>
+                <td>{% if endOfTheDayTime.hours %}{{ endOfTheDayTime.hours|date('H:i:s') }}{% endif %}</td>
+                <td>{{ endOfTheDayTime.lastSpeaker }}</td>
+                <td>{% if endOfTheDayTime.createdAt %}{{ endOfTheDayTime.createdAt|date('Y-m-d H:i:s') }}{% endif %}</td>
+                <td>{% if endOfTheDayTime.updatedAt %}{{ endOfTheDayTime.updatedAt|date('Y-m-d H:i:s') }}{% endif %}</td>
+                <td>
+                    <ul>
+                        <li>
+                            <a href="{{ path('endofthedaytime_show', { 'id': endOfTheDayTime.id }) }}">show</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('endofthedaytime_edit', { 'id': endOfTheDayTime.id }) }}">edit</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <ul>
+        <li>
+            <a href="{{ path('endofthedaytime_new') }}">Create a new endOfTheDayTime</a>
+        </li>
+    </ul>
+{% endblock %}

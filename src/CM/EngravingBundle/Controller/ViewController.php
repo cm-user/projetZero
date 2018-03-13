@@ -32,10 +32,10 @@ class ViewController extends Controller
     {
         //http://doc.prestashop.com/download/attachments/720902/CRUD%20Tutorial%20EN.pdf
         $em = $this->getDoctrine()->getManager();
-        $array_state = [2, 4, 31]; //tableau contenant les "bons" etats des commandes
+        $array_state = [1, 2, 4, 31]; //tableau contenant les "bons" etats des commandes
         $time = 0; //temps en minutes pour effectuer les gravures
 
-        $persta = $this->get('iq2i_prestashop_web_service')->getInstance('my_prestashop_1');
+        $persta = $this->get('iq2i_prestashop_web_service')->getInstance('');
 
 //        $result = $persta->get(array(
 //            "resource" => "orders",
@@ -862,7 +862,7 @@ class ViewController extends Controller
     public function testAction(){
         //http://doc.prestashop.com/download/attachments/720902/CRUD%20Tutorial%20EN.pdf
         $em = $this->getDoctrine()->getManager();
-        $array_state = [2, 4, 31]; //tableau contenant les "bons" etats des commandes
+        $array_state = [1, 2, 4, 31]; //tableau contenant les "bons" etats des commandes
         $time = 0; //temps en minutes pour effectuer les gravures
 
         $persta = $this->get('iq2i_prestashop_web_service')->getInstance();
@@ -876,14 +876,33 @@ class ViewController extends Controller
 //            "display" => '[id,id_product,name]',
 //        ));
 
-        $result = $persta->get(array(
-            "resource" => "config_block",
-            "filter[id]" => '[' . $id_min . ',' . $id_max . ']',
-            "display" => '[id]',
+
+        //OPERATIONNEL
+//        $result = $persta->get(array(
+//            "resource" => "config_block",
+//            "filter[id]" => '[' . $id_min . ',' . $id_max . ']',
+//            "display" => '[id]',
+//        ));
+
+
+//        //OPERATIONNEL
+//                $result = $persta->get(array(
+//            "resource" => "config_carts",
+//                    "display" => 'full'
+//        ));
+//
+//        $result = json_decode(json_encode((array)$result), TRUE);
+//
+//        $array_id_order = $result['config_carts']['config_cart']; //récupère  les commandes
+//        var_dump($array_id_order[0]['associations']);
+
+
+                        $result = $persta->get(array(
+            "resource" => "giftextra_cart",
+                    "display" => 'full'
         ));
 
         $result = json_decode(json_encode((array)$result), TRUE);
-
         return new JsonResponse($result);
 
     }
