@@ -56,6 +56,15 @@ class BoxNumber
      */
     private $updatedAt;
 
+    /**
+     * BoxNumber constructor.
+     *
+     */
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime();
+        $this->updatedAt = new \DateTime();
+    }
 
     /**
      * Get id

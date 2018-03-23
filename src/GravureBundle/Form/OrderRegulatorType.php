@@ -3,6 +3,7 @@
 namespace GravureBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -13,7 +14,11 @@ class OrderRegulatorType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('number')->add('lastSpeaker')->add('createdAt')->add('updatedAt');
+        $builder->add('number',IntegerType::class,[
+            'label' => 'Nombres'
+        ])
+            ->add('lastSpeaker')
+        ;
     }
     
     /**

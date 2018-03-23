@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Ajout d'une machine</h1>
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <input class="btn btn-success" type="submit" value="Ajouter" />
+    {{ form_end(form) }}
+
+    <a class="btn btn-danger" href="{{ path('machine_index') }}">
+        <span class="glyphicon glyphicon-arrow-left"></span>
+        Retour
+    </a>
+
+{% endblock %}

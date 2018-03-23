@@ -3,6 +3,7 @@
 namespace GravureBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -13,7 +14,15 @@ class BoxNumberType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('boxColumn')->add('boxRow')->add('lastSpeaker')->add('createdAt')->add('updatedAt');
+        $builder
+            ->add('boxColumn',IntegerType::class,[
+                'label' => 'Nombres de colonnes'
+            ])
+            ->add('boxRow',IntegerType::class,[
+                'label' => 'Nombres de lignes'
+            ])
+            ->add('lastSpeaker')
+        ;
     }
     
     /**

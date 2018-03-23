@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Liste des orders</h1>
+
+    <table class="table table-bordered table-hover">
+        <thead>
+        <tr>
+            <th>Id du prestashop</th>
+            <th>Statut sur prestashop</th>
+            <th>Date d'ajout sur prestashop</th>
+            <th>Papier cadeau dans la commande</th>
+            <th>Numéro de la caisse utilisée</th>
+            <th>Gravé</th>
+            <th>Date de création</th>
+            <th>Date de modification</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for order in orders %}
+            <tr>
+                <td>{{ order.id_prestashop }}</td>
+                <td>{{ order.state_prestashop }}</td>
+                <td>{{ order.date_prestashop }}</td>
+                {% if order.gift == 1 %}
+                <td>Oui</td>
+                {% else %}
+                <td>Non</td>
+                {% endif %}
+                <td>{{ order.box }}</td>
+                {% if order.engrave == 1 %}
+                    <td>Oui</td>
+                {% else %}
+                    <td>Non</td>
+                {% endif %}
+                <td>{{ order.created_at }}</td>
+                <td>{{ order.updated_at }}</td>
+                <td>
+                    <a class="btn btn-success" href="{{ path('gravure_order_display_gravure', { 'id': order.id }) }}">Voir les gravures liées</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {#<a class="btn btn-success" href="{{ path('gravure_order_new') }}">Ajouter</a>#}
+
+{% endblock %}

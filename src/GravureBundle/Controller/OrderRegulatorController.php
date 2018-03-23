@@ -44,6 +44,7 @@ class OrderRegulatorController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            //            $boxNumber->setLastSpeaker($this->getUser()->getName());
             $em = $this->getDoctrine()->getManager();
             $em->persist($orderRegulator);
             $em->flush();
@@ -86,9 +87,12 @@ class OrderRegulatorController extends Controller
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
+            //            $boxNumber->setLastSpeaker($this->getUser()->getName());
+            $date = new \DateTime('NOW');
+            $orderRegulator->setUpdatedAt($date);
             $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('gravure_orderregulator_edit', array('id' => $orderRegulator->getId()));
+            return $this->redirectToRoute('gravure_orderregulator_index');
         }
 
         return $this->render('GravureBundle:orderregulator:edit.html.twig', array(

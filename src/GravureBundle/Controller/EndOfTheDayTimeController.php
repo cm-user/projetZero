@@ -44,6 +44,7 @@ class EndOfTheDayTimeController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            //            $boxNumber->setLastSpeaker($this->getUser()->getName());
             $em = $this->getDoctrine()->getManager();
             $em->persist($endOfTheDayTime);
             $em->flush();
@@ -86,9 +87,12 @@ class EndOfTheDayTimeController extends Controller
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
+            //            $boxNumber->setLastSpeaker($this->getUser()->getName());
+            $date = new \DateTime('NOW');
+            $endOfTheDayTime->setUpdatedAt($date);
             $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('endofthedaytime_edit', array('id' => $endOfTheDayTime->getId()));
+            return $this->redirectToRoute('endofthedaytime_index');
         }
 
         return $this->render('GravureBundle:endofthedaytime:edit.html.twig', array(

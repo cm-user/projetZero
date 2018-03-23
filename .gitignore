@@ -14,5 +14,6 @@
 !var/sessions/.gitkeep
 !var/SymfonyRequirements.php
 /web/bond/*
+/web/gravure/*
 /.idea/
 

@@ -1,21 +1,16 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Boxnumber edit</h1>
+    <h1>Modifier le nombre de caisses</h1>
 
     {{ form_start(edit_form) }}
         {{ form_widget(edit_form) }}
-        <input type="submit" value="Edit" />
+        <input class="btn btn-warning" type="submit" value="Modifier" />
     {{ form_end(edit_form) }}
 
-    <ul>
-        <li>
-            <a href="{{ path('boxnumber_index') }}">Back to the list</a>
-        </li>
-        <li>
-            {{ form_start(delete_form) }}
-                <input type="submit" value="Delete">
-            {{ form_end(delete_form) }}
-        </li>
-    </ul>
+
+            <a class="btn btn-danger" href="{{ path('boxnumber_index') }}">
+                <span class="glyphicon glyphicon-arrow-left"></span>
+                Retour
+            </a>
 {% endblock %}

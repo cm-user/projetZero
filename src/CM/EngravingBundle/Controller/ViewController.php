@@ -867,8 +867,11 @@ class ViewController extends Controller
 
         $persta = $this->get('iq2i_prestashop_web_service')->getInstance();
 
-        $id_min = 2;
-        $id_max = 100;
+        $id_min = 679740;
+        $id_max = 679747;
+        $id_presta = 204948;
+        $id_presta = 205040;
+        $id_cart = 679745;
 
 //        $result = $persta->get(array(
 //            "resource" => "config_product_block",
@@ -896,13 +899,29 @@ class ViewController extends Controller
 //        $array_id_order = $result['config_carts']['config_cart']; //récupère  les commandes
 //        var_dump($array_id_order[0]['associations']);
 
-
-                        $result = $persta->get(array(
+//        //OPERATIONNEL
+            $result = $persta->get(array(
             "resource" => "giftextra_cart",
+                "filter[id_cart]" => '[' . $id_cart . ']',
                     "display" => 'full'
         ));
 
+//        $result = $persta->get(array(
+//            "resource" => "carts",
+//            "filter[id]" => '[' . $id_min . ',' . $id_max . ']',
+//            "display" => 'full'
+//        ));
+
         $result = json_decode(json_encode((array)$result), TRUE);
+
+//        $array_id_order = $result['nq_giftextra_carts']['order']; //récupère  les commandes
+        if(isset($result['nq_giftextra_carts']['nq_giftextra_cart'])){
+            var_dump("il y a un cadeau");
+        }
+        else {
+            var_dump("il y a pas de cadeau");
+        }
+
         return new JsonResponse($result);
 
     }

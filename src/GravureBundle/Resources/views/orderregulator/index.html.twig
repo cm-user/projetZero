@@ -3,7 +3,7 @@
 {% block body %}
     <h1>Régulateur de Commande </h1>
 
-    <table class="table table-striped">
+    <table class="table table-bordered table-hover">
     <thead>
             <tr>
                 <th>Nombre de Commandes</th>
@@ -27,6 +27,7 @@
     </table>
 
     <p>Le nombre de commande est très important: il fait réfèrence aux X dernières commandes que le module va traiter.</p>
+    <p>Par défaut, on vous conseille 500.</p>
     <p>Faites attention svp !</p>
 
             {#<a href="{{ path('orderregulator_new') }}">Create a new orderRegulator</a>#}

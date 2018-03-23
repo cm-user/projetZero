@@ -1,47 +1,31 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Boxnumbers list</h1>
+    <h1>Configuration du nombre de caisses </h1>
 
-    <table>
+    <table class="table table-bordered table-hover">
         <thead>
-            <tr>
-                <th>Id</th>
-                <th>Boxcolumn</th>
-                <th>Boxrow</th>
-                <th>Lastspeaker</th>
-                <th>Createdat</th>
-                <th>Updatedat</th>
-                <th>Actions</th>
-            </tr>
+        <tr>
+            <th>Nombre de colonnes</th>
+            <th>Nombre de lignes</th>
+            <th>Dernier intervenant</th>
+            <th>Mis à jour le</th>
+            <th>Actions</th>
+        </tr>
         </thead>
         <tbody>
         {% for boxNumber in boxNumbers %}
             <tr>
-                <td><a href="{{ path('boxnumber_show', { 'id': boxNumber.id }) }}">{{ boxNumber.id }}</a></td>
                 <td>{{ boxNumber.boxColumn }}</td>
                 <td>{{ boxNumber.boxRow }}</td>
                 <td>{{ boxNumber.lastSpeaker }}</td>
-                <td>{% if boxNumber.createdAt %}{{ boxNumber.createdAt|date('Y-m-d H:i:s') }}{% endif %}</td>
                 <td>{% if boxNumber.updatedAt %}{{ boxNumber.updatedAt|date('Y-m-d H:i:s') }}{% endif %}</td>
                 <td>
-                    <ul>
-                        <li>
-                            <a href="{{ path('boxnumber_show', { 'id': boxNumber.id }) }}">show</a>
-                        </li>
-                        <li>
-                            <a href="{{ path('boxnumber_edit', { 'id': boxNumber.id }) }}">edit</a>
-                        </li>
-                    </ul>
+                    <a class="btn btn-warning" href="{{ path('boxnumber_edit', { 'id': boxNumber.id }) }}">Modifier</a>
                 </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <ul>
-        <li>
-            <a href="{{ path('boxnumber_new') }}">Create a new boxNumber</a>
-        </li>
-    </ul>
 {% endblock %}

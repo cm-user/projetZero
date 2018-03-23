@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Liste des gravures</h1>
+
+    <table class="table table-bordered table-hover">
+        <thead>
+        <tr>
+            <th>Nom du produit</th>
+            <th>Date de création de la session</th>
+            <th>Statut de gravure</th>
+            <th>Machine utilisée</th>
+            <th>Texte lié</th>
+            <th>Image</th>
+            <th>Lien PDF</th>
+            <th>ID config de prestashop</th>
+            <th>Position sur le gabarit</th>
+            <th>Date de création</th>
+            <th>Date de modification</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for gravure in gravures %}
+            <tr>
+                <td>{{ getAliasProduct(gravure.idProduct) }}</td>
+                <td>{{ getCreateSession(gravure.idSession) }}</td>
+                <td>{{ getNameStatus(gravure.idStatus) }}</td>
+                <td>{{ getNameMachine(gravure.idMachine) }}</td>
+                <td>exemple de texte</td>
+                <td><img src="{{ gravure.pathJpg }}" alt="{{ gravure.pathJpg }}"></td>
+                <td>{{ gravure.pathPdf }}</td>
+                <td>{{ gravure.configId }}</td>
+                <td>{{ gravure.position }}</td>
+                <td>{{ gravure.createdAt }}</td>
+                <td>{{ gravure.updatedAt }}</td>
+                <td>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {#<a class="btn btn-success" href="{{ path('gravure_gravure_new') }}">Ajouter</a>#}
+
+{% endblock %}

@@ -5,7 +5,8 @@ namespace GravureBundle\Controller;
 use GravureBundle\Entity\BoxNumber;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Boxnumber controller.
@@ -44,9 +45,13 @@ class BoxNumberController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+//            $boxNumber->setLastSpeaker($this->getUser()->getName());
+
             $em = $this->getDoctrine()->getManager();
             $em->persist($boxNumber);
             $em->flush();
+
 
             return $this->redirectToRoute('boxnumber_show', array('id' => $boxNumber->getId()));
         }
@@ -86,6 +91,9 @@ class BoxNumberController extends Controller
         $editForm->handleRequest($request);
 
         if ($editForm->isSubmitted() && $editForm->isValid()) {
+//            $boxNumber->setLastSpeaker($this->getUser()->getName());
+            $date = new \DateTime('NOW');
+            $boxNumber->setUpdatedAt($date);
             $this->getDoctrine()->getManager()->flush();
 
             return $this->redirectToRoute('boxnumber_edit', array('id' => $boxNumber->getId()));

@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Liste des produits</h1>
+
+    <table class="table table-bordered table-hover">
+        <thead>
+        <tr>
+            <th>Nom entier du produit</th>
+            <th>Temps pour graver</th>
+            <th>Id du produit Prestashop</th>
+            <th>Catégorie liée</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for product in products %}
+            <tr>
+                <td>{{ product.alias }}</td>
+                <td>{{ product.time }}</td>
+                <td>{{ product.product_id }}</td>
+                <td>{{ getSurnameCategory(product.id_category) }}</td>
+                <td>
+                    <a class="btn btn-warning" href="{{ path('gravure_product_edit', { 'id': product.id }) }}">Modifier</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a class="btn btn-success" href="{{ path('gravure_product_new') }}">Ajouter</a>
+
+{% endblock %}

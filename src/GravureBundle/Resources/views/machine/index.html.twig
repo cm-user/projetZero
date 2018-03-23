@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Liste des machines</h1>
+
+    <table class="table table-bordered table-hover">
+        <thead>
+        <tr>
+            <th>Nom</th>
+            <th>Type</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for machine in machines %}
+        {% if machine.name != "null" %}
+            <tr>
+                <td>{{ machine.name }}</td>
+                <td>{{ machine.type }}</td>
+                <td>
+                    <a class="btn btn-warning" href="{{ path('machine_edit', { 'id': machine.id }) }}">Modifier</a>
+                </td>
+            </tr>
+        {% endif %}
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a class="btn btn-success" href="{{ path('machine_new') }}">Ajouter</a>
+
+{% endblock %}

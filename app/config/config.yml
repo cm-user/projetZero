@@ -13,8 +13,14 @@ parameters:
     locale: en
     picturecrawler: '%kernel.project_dir%/web/picturecrawler'
     attachment_directory: '%kernel.project_dir%/web/attachment/'
-#    url_directory_engraving: 'https://cadeaumaestro.newquest.fr/modules/nq_config/files/'
-    url_directory_engraving: 'https://cadeau-maestro.com/modules/nq_config/files/'
+    gravure_gabarit_directory: '%kernel.project_dir%/web/gravure/gabarit/'
+    gravure_jpg_directory: '%kernel.project_dir%/web/gravure/jpg/'
+    gravure_jpg_url: 'http://tools.cadeau-maestro.com/gravure/jpg/'
+    gravure_pdf_directory: '%kernel.project_dir%/web/gravure/pdf/'
+    gravure_pdf_url: 'http://tools.cadeau-maestro.com/gravure/pdf/'
+    gravure_gabarit_url: 'http://tools.cadeau-maestro.com/gravure/gabarit/'
+    url_directory_engraving: 'https://cadeaumaestro.newquest.fr/modules/nq_config/files/'
+#    url_directory_engraving: 'https://cadeau-maestro.com/modules/nq_config/files/'
     bond: '%kernel.project_dir%/web/bond'
 
 
@@ -45,6 +51,8 @@ framework:
 
 # Twig Configuration
 twig:
+    form_themes:
+        - 'bootstrap_3_horizontal_layout.html.twig'
     debug: '%kernel.debug%'
     strict_variables: '%kernel.debug%'
 

@@ -5,7 +5,8 @@ namespace GravureBundle\Controller;
 use GravureBundle\Entity\Mail;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;use Symfony\Component\HttpFoundation\Request;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Mail controller.
@@ -48,7 +49,7 @@ class MailController extends Controller
             $em->persist($mail);
             $em->flush();
 
-            return $this->redirectToRoute('gravure_mail_show', array('id' => $mail->getId()));
+            return $this->redirectToRoute('gravure_mail_index');
         }
 
         return $this->render('GravureBundle:mail:new.html.twig', array(

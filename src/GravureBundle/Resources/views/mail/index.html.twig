@@ -1,45 +1,28 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Mails list</h1>
+    <h1>Liste des mails à reçevoir sur la Gravograph</h1>
 
-    <table>
+    <table class="table table-bordered table-hover">
         <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Createdat</th>
-                <th>Updatedat</th>
-                <th>Actions</th>
-            </tr>
+        <tr>
+            <th>Nom</th>
+            <th>Email</th>
+            <th>Actions</th>
+        </tr>
         </thead>
         <tbody>
         {% for mail in mails %}
             <tr>
-                <td><a href="{{ path('mail_show', { 'id': mail.id }) }}">{{ mail.id }}</a></td>
                 <td>{{ mail.name }}</td>
                 <td>{{ mail.email }}</td>
-                <td>{% if mail.createdAt %}{{ mail.createdAt|date('Y-m-d H:i:s') }}{% endif %}</td>
-                <td>{% if mail.updatedAt %}{{ mail.updatedAt|date('Y-m-d H:i:s') }}{% endif %}</td>
                 <td>
-                    <ul>
-                        <li>
-                            <a href="{{ path('mail_show', { 'id': mail.id }) }}">show</a>
-                        </li>
-                        <li>
-                            <a href="{{ path('mail_edit', { 'id': mail.id }) }}">edit</a>
-                        </li>
-                    </ul>
+                    <a class="btn btn-warning" href="{{ path('gravure_mail_edit', { 'id': mail.id }) }}">Modifier</a>
                 </td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
+    <a class="btn btn-success" href="{{ path('gravure_mail_new') }}">Ajouter un mail</a>
 
-    <ul>
-        <li>
-            <a href="{{ path('mail_new') }}">Create a new mail</a>
-        </li>
-    </ul>
 {% endblock %}

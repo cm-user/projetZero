@@ -1,0 +1,148 @@
+{% extends 'base.html.twig' %}
+
+
+{% block gravure %}
+    <br>
+    <div class="row">
+        <div class="col-sm-2 ">
+            <div class="row">
+                <div class="col-sm-8 col-sm-offset-2" style="background-color: #1ABB49;border-radius: 20px; color:white;">En cours de livraison</div>
+                <div class="col-sm-2" style="color: #1ABB49"></div>
+            </div>
+            <div class="row">
+                <div class="col-sm-8 col-sm-offset-2" style="background-color: #E79D24;border-radius: 20px; color:white;">En cours de préparation</div>
+                <div class="col-sm-2" style="color: #E79D24"></div>
+            </div>
+            <div class="row">
+                <div class="col-sm-8 col-sm-offset-2" style="background-color: #E72322;border-radius: 20px; color:white;"> à envoyer aujourd'hui</div>
+                <div class="col-sm-2" style="color: #E72322"></div>
+            </div>
+            <div class="row">
+                <div class="col-sm-8 col-sm-offset-2" style="background-color: #575354;border-radius: 20px; color:white;"> à envoyer demain</div>
+                <div class="col-sm-2" style="color: #575354"></div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <a>
+                <button class="btn btn-default btn-block" onclick="actualize();" id="btn_actualize" role="button" style="border-radius: 15px;padding: 5%;background-color: #575354;color:white;">
+                    <h2>Actualiser</h2>
+                </button>
+            </a>
+            <div id="msg_hours"></div>
+        </div>
+        <div class="col-sm-6">
+            <h1>Liste des nouvelles gravures: </h1>
+            <div id="time_new_gravure"></div>
+            <div id="msg_new_gravure"></div>
+            <div>
+                <form class="form-inline">
+                    <input type="text" class="form-control form-control-lg" size="50" id="recherche" placeholder="Je recherche un n° de commande ou de case..."/>
+                    <button onclick="recherche();" type="button" class="btn btn-warning">Rechercher</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-9 col-sm-offset-1">
+            <div id="new_gravure"></div>
+        </div>
+        <div class="col-sm-2">
+            <div id="div_table">
+            </div>
+        </div>
+    </div>
+    {#<div style="padding-bottom:2000px">fsgd</div>#}
+
+
+
+
+    {#<a href="{{ path('session_last') }}">#}
+    {#<button class="btn btn-info"  id="btn_session_last">Voir dernière session</button>#}
+    {#</a>#}
+
+
+    {#<a>#}
+    {#<button class="btn btn-warning" onclick="DisplayNewEngraving();" id="btn_session">Nouvelle session de gravures#}
+    {#</button>#}
+    {#</a>#}
+    {#<a id="btn_download" href="{{ path('download_pdf_gravure') }}">#}
+    {#<button class="btn btn-warning">Récupérer l'archive ZIP</button>#}
+    {#</a>#}
+
+    {#<h1>Liste des gravures en cours :</h1>#}
+    {#<div id="msg"></div>#}
+    <div id="time_ongoing_gravure"></div>
+    <div id="ongoing_gravure"></div>
+
+    <a id="btn_download2" href="{{ path('download_pdf_gravure') }}">
+        <button class="btn btn-warning">Télécharger fichiers ML Laser</button>
+    </a>
+
+    <style>
+        input[type='radio'] {
+            transform: scale(2);
+        }
+
+        input[type='checkbox'] {
+            transform: scale(4);
+            margin-top: 18px;
+            margin-left: -25px;
+        }
+
+        /*.sticky{*/
+        /*position: sticky;*/
+        /*position: -webkit-sticky;*/
+        /*top: 0; !* required *!*/
+        /*}*/
+
+        #btn_actualize {
+            /*position: fixed;*/
+            margin-top: 50px;
+            /*left: 20px;*/
+        }
+
+        #table_order{
+            background-color: #E1B7B9;
+        }
+
+        #table_order td{
+            /*padding:20px;*/
+            width:50px;
+            height: 50px;
+            border: 3px solid white;
+            font-size: large;
+            color: white;
+            font-size: 30px;
+            text-decoration: none;
+            text-align:center;
+        }
+
+        #div_table {
+            position: fixed;
+            position: -webkit-sticky;
+            top: 0; /* required */
+            padding-top: 300px;
+        }
+
+        .center-block {
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
+
+        #btn_session_last {
+            position: fixed;
+            top: 75px;
+            left: 20px;
+        }
+
+    </style>
+
+{% endblock %}
+
+
+{% block javascripts %}
+    <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+    <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
+    <script src="{{ asset('bundles/gravure/js/gravure.js') }}"></script>
+{% endblock %}

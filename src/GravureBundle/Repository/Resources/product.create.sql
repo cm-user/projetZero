@@ -1,4 +1,4 @@
-CREATE TABLE `gravure_object` (
+CREATE TABLE `gravure_product_test` (
   `id` int NOT NULL AUTO_INCREMENT,
   `id_category` int,
   `product_id` int NOT NULL,

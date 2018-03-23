@@ -2,3 +2,109 @@ services:
 #    gravure.example:
 #        class: GravureBundle\Example
 #        arguments: ["@service_id", "plain_value", "%parameter%"]
+
+    machine_submit:
+        class: GravureBundle\Entity\Domain\Machine
+
+    repositories.machine:
+        alias: repositories.machine.dbal
+
+    repositories.machine.dbal:
+        class: GravureBundle\Repository\DbalMachineRepository
+        arguments: ["@doctrine.dbal.default_connection"]
+
+
+
+    category_submit:
+        class: GravureBundle\Entity\Domain\Category
+
+    repositories.category:
+        alias: repositories.category.dbal
+
+    repositories.category.dbal:
+        class: GravureBundle\Repository\DbalCategoryRepository
+        arguments: ["@doctrine.dbal.default_connection"]
+
+    category.twig_extension:
+        class: GravureBundle\Twig\CategoryExtension
+        arguments:  ["@service_container"]
+        tags:
+           - { name : twig.extension }
+
+
+    repositories.product:
+        alias: repositories.product.dbal
+
+    repositories.product.dbal:
+        class: GravureBundle\Repository\DbalProductRepository
+        arguments: ["@doctrine.dbal.default_connection"]
+
+    product.twig_extension:
+            class: GravureBundle\Twig\ProductExtension
+            arguments:  ["@service_container"]
+            tags:
+               - { name : twig.extension }
+
+
+
+    text_submit:
+        class: GravureBundle\Entity\Domain\Text
+
+    repositories.text:
+        alias: repositories.text.dbal
+
+    repositories.text.dbal:
+        class: GravureBundle\Repository\DbalTextRepository
+        arguments: ["@doctrine.dbal.default_connection"]
+
+
+
+    repositories.session:
+        alias: repositories.session.dbal
+
+    repositories.session.dbal:
+        class: GravureBundle\Repository\DbalSessionRepository
+        arguments: ["@doctrine.dbal.default_connection"]
+
+
+
+    repositories.status:
+        alias: repositories.status.dbal
+
+    repositories.status.dbal:
+        class: GravureBundle\Repository\DbalStatusRepository
+        arguments: ["@doctrine.dbal.default_connection"]
+
+
+
+    repositories.order:
+        alias: repositories.order.dbal
+
+    repositories.order.dbal:
+        class: GravureBundle\Repository\DbalOrderRepository
+        arguments: ["@doctrine.dbal.default_connection"]
+
+    order.twig_extension:
+        class: GravureBundle\Twig\OrderExtension
+        arguments:  ["@service_container"]
+        tags:
+           - { name : twig.extension }
+
+
+
+    repositories.gravure:
+        alias: repositories.gravure.dbal
+
+    repositories.gravure.dbal:
+        class: GravureBundle\Repository\DbalGravureRepository
+        arguments: ["@doctrine.dbal.default_connection"]
+
+    factory.gravure:
+        class: GravureBundle\Entity\Utils\GravureFactory
+        arguments:  ["@service_container"]
+
+
+
+    creator.link.file:
+        class: GravureBundle\Entity\Utils\CreatorLinkFile
+        arguments:  ["@service_container"]
