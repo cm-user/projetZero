@@ -880,31 +880,42 @@ class ViewController extends Controller
 //        ));
 
 
-        //OPERATIONNEL
+//       // OPERATIONNEL
 //        $result = $persta->get(array(
 //            "resource" => "config_block",
-//            "filter[id]" => '[' . $id_min . ',' . $id_max . ']',
-//            "display" => '[id]',
+//            "filter[id]" => '[' . 10 . ']',
+//            "display" => '[name]',
 //        ));
+//
+//        $result = json_decode(json_encode((array)$result), TRUE);
 
+//        var_dump($result['config_product_blocks']['config_product_block']['name']);
 
 //        //OPERATIONNEL
 //                $result = $persta->get(array(
 //            "resource" => "config_carts",
+//                    "filter[id]" => '[' . 37 . ']',
 //                    "display" => 'full'
 //        ));
 //
 //        $result = json_decode(json_encode((array)$result), TRUE);
+
+//        var_dump($result['config_carts']['config_cart']['associations']['config_option']['config_option']['value']);
+
+
 //
 //        $array_id_order = $result['config_carts']['config_cart']; //récupère  les commandes
-//        var_dump($array_id_order[0]['associations']);
+////        var_dump($array_id_order[0]['associations']['config_option']['config_option']);
+//        foreach ($array_id_order[0]['associations']['config_option']['config_option'] as $block){
+//            var_dump($block);
+//        }
 
 //        //OPERATIONNEL
-            $result = $persta->get(array(
-            "resource" => "giftextra_cart",
-                "filter[id_cart]" => '[' . $id_cart . ']',
-                    "display" => 'full'
-        ));
+//            $result = $persta->get(array(
+//            "resource" => "giftextra_cart",
+//                "filter[id_cart]" => '[' . $id_cart . ']',
+//                    "display" => 'full'
+//        ));
 
 //        $result = $persta->get(array(
 //            "resource" => "carts",
@@ -912,18 +923,38 @@ class ViewController extends Controller
 //            "display" => 'full'
 //        ));
 
-        $result = json_decode(json_encode((array)$result), TRUE);
+//        $result = json_decode(json_encode((array)$result), TRUE);
 
 //        $array_id_order = $result['nq_giftextra_carts']['order']; //récupère  les commandes
-        if(isset($result['nq_giftextra_carts']['nq_giftextra_cart'])){
-            var_dump("il y a un cadeau");
-        }
-        else {
-            var_dump("il y a pas de cadeau");
-        }
+//        if(isset($result['nq_giftextra_carts']['nq_giftextra_cart'])){
+//            var_dump("il y a un cadeau");
+//        }
+//        else {
+//            var_dump("il y a pas de cadeau");
+
+
+//        }
+
+
 
         return new JsonResponse($result);
 
     }
 
+    /**
+     * @Route("/testy/haha", name="view_picture_paid_json_test_test")
+     */
+    public function hahaAction(){
+        $gravures = $this->get('repositories.gravure')->findAllWithoutSession();
+
+        $formatted = [];
+
+        foreach ($gravures as $gravure){
+            $formatted[] = [
+                'id_prestashop' => $gravure['id_prestashop']
+            ];
+        }
+        return new JsonResponse($formatted);
+
+    }
 }

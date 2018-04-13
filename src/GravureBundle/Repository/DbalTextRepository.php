@@ -42,10 +42,60 @@ SQL;
         ]);
     }
 
+    public function saveTextAndLinkGravureText($idGravure, $blockValue, $blockName){
+
+        //insere le nom du block et sa valeur dans la table Text
+        $query = <<<SQL
+INSERT INTO gravure_text
+    (name_block, value)
+VALUES
+    (:name_block, :value)
+;
+SQL;
+
+        $stmt = $this->connection->prepare($query);
+        $stmt->execute([
+            'name_block' => (string)$blockName,
+            'value' => (string)$blockValue,
+        ]);
+
+
+
+        //selectionne l'id de la table Text
+        $idText = self::findLast();
+        var_dump($idText['MAX(id)']);
+
+
+        //insere l'id de la table gravure et l'id de la table text dans la table gravure_link qui servira de liaison
+        $query = <<<SQL
+INSERT INTO gravure_link_gravure_text
+    (id_gravure, id_text)
+VALUES
+    (:id_gravure, :id_text)
+;
+SQL;
+
+        $stmt = $this->connection->prepare($query);
+        $stmt->execute([
+            'id_gravure' => $idGravure,
+            'id_text' => $idText['MAX(id)'],
+        ]);
+    }
+
     public function findAll(){
         $texts = $this->connection->fetchAll('SELECT * FROM gravure_text');
 
         return $texts;
+    }
+
+    public function findLast(){
+
+        $sql = "SELECT MAX(id) FROM `gravure_text` ";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute();
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        return $row;
     }
 
     public function findById($id){

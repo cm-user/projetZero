@@ -24,7 +24,8 @@ class DbalOrderRepository
         $this->connection = $connection;
     }
 
-    public function findAll(){
+    public function findAll()
+    {
         $orders = $this->connection->fetchAll('SELECT * FROM gravure_order');
 
         return $orders;
@@ -55,7 +56,8 @@ SQL;
         ]);
     }
 
-    public function findById($id){
+    public function findById($id)
+    {
 
         $sql = "SELECT * FROM gravure_order WHERE id = :id";
         $stmt = $this->connection->prepare($sql);
@@ -66,7 +68,8 @@ SQL;
         return $this->hydrateFromRow($row);
     }
 
-    public function findByIdPrestashop($id){
+    public function findByIdPrestashop($id)
+    {
 
         $sql = "SELECT * FROM gravure_order WHERE id_prestashop = :id";
         $stmt = $this->connection->prepare($sql);
@@ -74,13 +77,15 @@ SQL;
         $stmt->execute();
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-        if($row == null){
+        if ($row == null) {
             return null;
         }
-        return $this->hydrateFromRow($row);
+        return $row;
     }
 
-    public function findLast(){
+
+    public function findLast()
+    {
 
         $sql = "SELECT MAX(id),id_prestashop FROM `gravure_order` GROUP BY id_prestashop";
         $stmt = $this->connection->prepare($sql);
@@ -90,7 +95,51 @@ SQL;
         return $row;
     }
 
-    public function update(Order $order){
+    public function setChecked($id, $bool){
+        $sql = "UPDATE gravure_order SET 
+        checked = :checked,
+                updated_at  = :updated_at 
+        WHERE id = :id";
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute([
+            'checked' => $bool,
+            'updated_at' => (new \DateTime())->format('Y-m-d h:m:s'),
+            "id" => $id,
+        ]);
+    }
+
+    public function setBox($id, $box){
+        $sql = "UPDATE gravure_order SET 
+        box = :box,
+                updated_at  = :updated_at 
+        WHERE id = :id";
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute([
+            'box' => $box,
+            'updated_at' => (new \DateTime())->format('Y-m-d h:m:s'),
+            "id" => $id,
+        ]);
+    }
+
+    public function cleanBoxAndChecked(){
+        $sql = "UPDATE gravure_order SET 
+        box = :box,
+                checked = :checked,
+                updated_at  = :updated_at 
+          WHERE engrave = 0";
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute([
+            'box' => 0,
+            'checked' => 0,
+            'updated_at' => (new \DateTime())->format('Y-m-d h:m:s'),
+        ]);
+    }
+
+    public function update(Order $order)
+    {
 
         $sql = "UPDATE gravure_order SET 
         box = :box,
@@ -113,11 +162,28 @@ SQL;
             'state_prestashop' => (int)$order->getStatePrestashop(),
             'date_prestashop' => (string)$order->getDatePrestashop(),
             'updated_at' => (new \DateTime())->format('Y-m-d h:m:s'),
-            "id" => (int) $order->getId(),
+            "id" => (int)$order->getId(),
         ]);
     }
 
-    public function delete($id){
+    public function updateStatePrestashop($id, $state)
+    {
+
+        $sql = "UPDATE gravure_order SET 
+        state_prestashop = :state_prestashop,
+                updated_at  = :updated_at 
+        WHERE id = :id";
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute([
+            'state_prestashop' => $state,
+            'updated_at' => (new \DateTime())->format('Y-m-d h:m:s'),
+            "id" => $id,
+        ]);
+    }
+
+    public function delete($id)
+    {
         $sql = "DELETE FROM gravure_order WHERE id = :id";
         $stmt = $this->connection->prepare($sql);
         $stmt->bindValue("id", $id);

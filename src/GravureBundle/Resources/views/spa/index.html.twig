@@ -4,27 +4,29 @@
 {% block gravure %}
     <br>
     <div class="row">
-        <div class="col-sm-2 ">
+        <div class="col-sm-2 " id="NumberGravure">
             <div class="row">
                 <div class="col-sm-8 col-sm-offset-2" style="background-color: #1ABB49;border-radius: 20px; color:white;">En cours de livraison</div>
-                <div class="col-sm-2" style="color: #1ABB49"></div>
+                <div class="col-sm-2" style="color: #1ABB49" id="NumberGravureExpe"></div>
             </div>
             <div class="row">
                 <div class="col-sm-8 col-sm-offset-2" style="background-color: #E79D24;border-radius: 20px; color:white;">En cours de préparation</div>
-                <div class="col-sm-2" style="color: #E79D24"></div>
+                <div class="col-sm-2" style="color: #E79D24" id="NumberGravurePrepa"></div>
             </div>
             <div class="row">
                 <div class="col-sm-8 col-sm-offset-2" style="background-color: #E72322;border-radius: 20px; color:white;"> à envoyer aujourd'hui</div>
-                <div class="col-sm-2" style="color: #E72322"></div>
+                <div class="col-sm-2" style="color: #E72322" id="NumberGravureTotalDay"></div>
             </div>
             <div class="row">
+                <a href="#" data-toggle="modal" data-target="#Modal_NumberGravure_Tomorrow" onclick="getGravureTomorrow();" >
                 <div class="col-sm-8 col-sm-offset-2" style="background-color: #575354;border-radius: 20px; color:white;"> à envoyer demain</div>
-                <div class="col-sm-2" style="color: #575354"></div>
+                </a>
+                <div class="col-sm-2" style="color: #575354" id="NumberGravureTomorrow"></div>
             </div>
         </div>
         <div class="col-sm-2">
             <a>
-                <button class="btn btn-default btn-block" onclick="actualize();" id="btn_actualize" role="button" style="border-radius: 15px;padding: 5%;background-color: #575354;color:white;">
+                <button class="btn btn-default btn-block" onclick="actualize(0);" id="btn_actualize" role="button" style="border-radius: 15px;padding: 5%;background-color: #575354;color:white;">
                     <h2>Actualiser</h2>
                 </button>
             </a>
@@ -36,8 +38,8 @@
             <div id="msg_new_gravure"></div>
             <div>
                 <form class="form-inline">
-                    <input type="text" class="form-control form-control-lg" size="50" id="recherche" placeholder="Je recherche un n° de commande ou de case..."/>
-                    <button onclick="recherche();" type="button" class="btn btn-warning">Rechercher</button>
+                    <input type="text" class="form-control" id="recherche" placeholder="id Prestashop" style="height: 50px; font-size: 60px; width: 450px;"/>
+                    <button onclick="getAnchorBySearch();" type="button" class="btn btn-warning" style="height: 50px; font-size: 25px; width: 200px;">Rechercher</button>
                 </form>
             </div>
         </div>
@@ -47,10 +49,35 @@
             <div id="new_gravure"></div>
         </div>
         <div class="col-sm-2">
+            <div id="div_display_case"></div>
             <div id="div_table">
             </div>
         </div>
     </div>
+
+
+
+
+    {#modal des gravures à envoyer demain#}
+    <div class="modal fade bd-example-modal-lg" id="Modal_NumberGravure_Tomorrow" tabindex="-1" role="dialog" aria-labelledby="Modal_NumberGravure_Tomorrow_Title"  aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+    <div class="modal-header">
+        <h5 class="modal-title" id="Modal_NumberGravure_Tomorrow_Title"> Liste des gravures qui sont tombés après l'heure limite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+             <span aria-hidden="true">&times;</span>
+            </button>
+    </div>
+        <div class="modal-body" id="Modal_NumberGravure_Tomorrow_Body">
+        </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+        </div>
+    </div>
+    </div>
+    </div>
+
+
     {#<div style="padding-bottom:2000px">fsgd</div>#}
 
 
@@ -74,9 +101,9 @@
     <div id="time_ongoing_gravure"></div>
     <div id="ongoing_gravure"></div>
 
-    <a id="btn_download2" href="{{ path('download_pdf_gravure') }}">
-        <button class="btn btn-warning">Télécharger fichiers ML Laser</button>
-    </a>
+    {#<a id="btn_download2" href="{{ path('download_pdf_gravure') }}">#}
+        {#<button class="btn btn-warning">Télécharger fichiers ML Laser</button>#}
+    {#</a>#}
 
     <style>
         input[type='radio'] {
@@ -121,7 +148,26 @@
             position: fixed;
             position: -webkit-sticky;
             top: 0; /* required */
-            padding-top: 300px;
+            padding-top: 340px;
+        }
+
+        #div_display_case {
+            background-color: #C6C4C5;
+            position: fixed;
+            position: -webkit-sticky;
+            top: 50px; /* required */
+            /*padding-top: 0px;*/
+            height: 280px;
+        }
+
+        #NumberGravure{
+            background-color: #EAE8E9;
+            height: 200px;
+            padding: 10px;
+        }
+
+        #NumberGravure .row{
+            padding-top: 10px;
         }
 
         .center-block {
@@ -135,6 +181,8 @@
             top: 75px;
             left: 20px;
         }
+
+
 
     </style>
 

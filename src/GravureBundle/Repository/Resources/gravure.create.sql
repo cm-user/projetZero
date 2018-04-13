@@ -6,7 +6,7 @@ CREATE TABLE `gravure` (
   `id_machine` int,
   `id_status` int,
   `config_id` int NOT NULL,
-  `position` int,
+  `position_gabarit` int,
   `path_jpg` varchar(255) NOT NULL,
   `path_pdf` varchar(255) NOT NULL,
   `created_at` datetime NOT NULL,

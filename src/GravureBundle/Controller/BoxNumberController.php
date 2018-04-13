@@ -6,6 +6,7 @@ use GravureBundle\Entity\BoxNumber;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -141,4 +142,23 @@ class BoxNumberController extends Controller
             ->getForm()
         ;
     }
+
+
+    /**
+     * Displays a form to edit an existing boxNumber entity.
+     *
+     * @Route("/box-number/json", name="box_number_json", options={"expose"=true})
+     * @Method({"GET", "POST"})
+     */
+    public function callBoxNumberAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+        $boxNumber = $em->getRepository('GravureBundle:BoxNumber')->find(1);
+
+
+        return new JsonResponse([$boxNumber->getBoxColumn(),$boxNumber->getBoxRow()]);
+
+
+    }
+
 }

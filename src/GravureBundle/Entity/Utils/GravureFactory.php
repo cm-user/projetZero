@@ -36,21 +36,34 @@ class GravureFactory
         $this->listGravure[] = $gravure;
     }
 
+    public function clearListGravure(){
+        $this->listGravure = [];
+    }
+
     public function createGravureFromQuantity($id_config, $productId, $quantity, $idOrder)
     {
 
         //////Methode pour récupérer l'id produit de chaque gravure pour trouver son produit lié///////
-        $product = $this->container->get('repositories.product')->findByProductId($productId);
-        if ($product == null) {
+        $Product = $this->container->get('repositories.product')->findByProductId($productId);
+
+        var_dump($Product);
+
+
+        if ($Product == null) {
             $idProduct = null;
+//            throw new \Exception("gravure sans id produit");
         } else {
-            $idProduct = $product->getId();
+            $idProduct = $Product['id'];
         }
+
+        $path_jpg = $this->container->get('creator.link.file')->createJpg($id_config, $productId); //creation des liens de l'image
+        $path_pdf = $this->container->get('creator.link.file')->createPdf($id_config, $productId); //creation des liens de l'image
+
 
         //ajoute en fonction de la quantite
         for ($i = 0; $i < $quantity; $i++) {
 
-            $gravure = Gravure::addGravure($idProduct, $idOrder, $id_config);
+            $gravure = Gravure::addGravure($idProduct, $idOrder, $id_config, $path_jpg, $path_pdf);
 
             self::addListGravure($gravure);
         }
@@ -59,26 +72,32 @@ class GravureFactory
 
     public function createGravures(Order $order, $arrayConfigCart)
     {
-
-        $order = $this->container->get('repositories.order')->findByIdPrestashop($order->getIdPrestashop());
-        var_dump($order);
+        //permet de récupérer notre instance Order avec son id
+        $Order = $this->container->get('repositories.order')->findByIdPrestashop($order->getIdPrestashop());
+        var_dump($Order);
         //Si il n'y a qu'un seul produit gravé dans le panier
         if (isset($arrayConfigCart['id'])) {
 
             $id_config = $arrayConfigCart['id'];
+            var_dump($id_config);
             $productId = $arrayConfigCart['id_product'];
+            var_dump($productId);
             $quantity = $arrayConfigCart['quantity'];
+            var_dump($quantity);
 
-            self::createGravureFromQuantity($id_config, $productId, $quantity, $order->getId());
+            self::createGravureFromQuantity($id_config, $productId, $quantity, $Order['id']);
         } //sinon on doit récupérer chaque produit
         else {
             foreach ($arrayConfigCart as $key => $config_cart) {
 
                 $id_config = $arrayConfigCart[$key]['id'];
+                var_dump($id_config);
                 $productId = $arrayConfigCart[$key]['id_product'];
+                var_dump($productId);
                 $quantity = $arrayConfigCart[$key]['quantity'];
+                var_dump($quantity);
 
-                self::createGravureFromQuantity($id_config, $productId, $quantity, $order->getId());
+                self::createGravureFromQuantity($id_config, $productId, $quantity, $Order['id']);
             }
         }
 

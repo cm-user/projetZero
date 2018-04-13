@@ -60,7 +60,7 @@ SQL;
         if($row == null){
             return null;
         }
-        return $this->hydrateFromRow($row);
+        return $row;
     }
 
     public function findById($id){

@@ -24,17 +24,20 @@ class CreatorLinkFile
 
     public function createJpg($config_id, $idProduct){
 
-        $fileName = md5(uniqid()).'.jpg';
-        $current = file_get_contents($this->container->getParameter('url_directory_engraving') . $config_id . '-' . $idProduct . '.jpg'); //recupere contenu du fichier
-        $folder_file = $this->container->getParameter('gravure_jpg_directory') . $fileName ; //  choix du repertoire
+        $fileName = $config_id . '-' . $idProduct .'.jpg';
+        $link = $this->container->getParameter('url_directory_engraving') . $config_id . '-' . $idProduct . '.jpg';
+        var_dump($link);
+        $current = @file_get_contents($this->container->getParameter('url_directory_engraving') . $config_id . '-' . $idProduct . '.jpg'); //recupere contenu du fichier
+        $folder_file = "C:\wamp64\www\projetZero2\web\gravure\jpg\ $fileName" ; //  choix du repertoire
+//        $folder_file = $this->container->getParameter('gravure_jpg_directory') . $fileName ; //  choix du repertoire
         file_put_contents($folder_file, $current); //creation du fichier au bon repertoire avec son nom
 
         return $this->container->getParameter('gravure_jpg_url') . $fileName ;
     }
 
     public function createPdf($config_id, $idProduct){
-        $fileName = md5(uniqid()).'.pdf';
-        $current = file_get_contents($this->container->getParameter('url_directory_engraving') . $config_id . '-' . $idProduct . '.pdf'); //recupere contenu du fichier
+        $fileName = $config_id . '-' . $idProduct .'.pdf';
+        $current = @file_get_contents($this->container->getParameter('url_directory_engraving') . $config_id . '-' . $idProduct . '.pdf'); //recupere contenu du fichier
         $folder_file = $this->container->getParameter('gravure_pdf_directory') . $fileName ; //  choix du repertoire
         file_put_contents($folder_file, $current); //creation du fichier au bon repertoire avec son nom
 

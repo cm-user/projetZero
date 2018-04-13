@@ -22,7 +22,7 @@ class Gravure
     private $pathJpg;
     private $pathPdf;
     private $configId;
-    private $position;
+    private $positionGabarit;
     private $createdAt;
     private $updatedAt;
 
@@ -36,11 +36,11 @@ class Gravure
      * @param $pathJpg
      * @param $pathPdf
      * @param $configId
-     * @param $position
+     * @param $positionGabarit
      * @param $createdAt
      * @param $updatedAt
      */
-    public function __construct($idProduct, $idSession, $idOrder, $idMachine, $idStatus, $pathJpg, $pathPdf, $configId, $position, $createdAt, $updatedAt)
+    public function __construct($idProduct, $idSession, $idOrder, $idMachine, $idStatus, $pathJpg, $pathPdf, $configId, $positionGabarit, $createdAt, $updatedAt)
     {
         $this->idProduct = $idProduct;
         $this->idSession = $idSession;
@@ -50,19 +50,17 @@ class Gravure
         $this->pathJpg = $pathJpg;
         $this->pathPdf = $pathPdf;
         $this->configId = $configId;
-        $this->position = $position;
+        $this->positionGabarit = $positionGabarit;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
     }
 
 
-    public static function addGravure($idProduct, $idOrder, $config_id)
+    public static function addGravure($idProduct, $idOrder, $config_id, $path_jpg, $path_pdf)
     {
-        $creatorLinkFile = new CreatorLinkFile();
         $createdAt = (new \DateTime())->format('Y-m-d h:m:s');
         $updatedAt = (new \DateTime())->format('Y-m-d h:m:s');
-        $path_jpg = $creatorLinkFile->createJpg($config_id, $idProduct);
-        $path_pdf = $creatorLinkFile->createPdf($config_id, $idProduct);
+
         return new self($idProduct, null, $idOrder, null, 1, $path_jpg, $path_pdf, $config_id, null, $createdAt, $updatedAt);
     }
 
@@ -81,6 +79,7 @@ class Gravure
     {
         $this->id = $id;
     }
+
 
     /**
      * @return mixed
@@ -149,9 +148,9 @@ class Gravure
     /**
      * @return mixed
      */
-    public function getPosition()
+    public function getPositionGabarit()
     {
-        return $this->position;
+        return $this->positionGabarit;
     }
 
     /**
@@ -186,7 +185,7 @@ class Gravure
             $data['path_jpg'],
             $data['path_pdf'],
             $data['config_id'],
-            $data['position'],
+            $data['position_gabarit'],
             $data['created_at'],
             $data['updated_at']
         );

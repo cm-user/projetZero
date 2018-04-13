@@ -108,3 +108,9 @@ services:
     creator.link.file:
         class: GravureBundle\Entity\Utils\CreatorLinkFile
         arguments:  ["@service_container"]
+
+
+
+    creator.datetime.limit:
+        class: GravureBundle\Entity\Utils\DateTimeLimit
+        arguments:  ["@doctrine.orm.entity_manager"]
