@@ -16,7 +16,9 @@ class SPAController extends Controller
      */
     public function indexAction()
     {
-        return $this->render('GravureBundle:spa:index.html.twig');
+        $datetime = $this->get('creator.datetime.limit')->getDateTime();
+
+        return $this->render('GravureBundle:spa:index.html.twig',['datetime' => $datetime]);
     }
 
     /**
@@ -214,10 +216,9 @@ class SPAController extends Controller
     private function getNewGravure($last_order)
     {
         $new_last_order = $this->get('repositories.order')->findLast()['id_prestashop']; //récupère l'id de la dernière commande sur prestashop
-        $datetime = $this->get('creator.datetime.limit')->getDateTime();
 
         //récupération de toutes les gravures sans session et qui sont arrivées avant l'heure limite de fin de journée
-        $gravures = $this->get('repositories.gravure')->findAllWithoutSessionByDateLimitAndState($datetime);
+        $gravures = $this->get('repositories.gravure')->findAllWithoutSessionByState();
 
         $formatted = [];
         $time = 0;
@@ -251,12 +252,11 @@ class SPAController extends Controller
     public function getNewGravureAndCleanBoxChecked($last_order){
 
         $new_last_order = $this->get('repositories.order')->findLast()['id_prestashop']; //récupère l'id de la dernière commande sur prestashop
-        $datetime = $this->get('creator.datetime.limit')->getDateTime();
 
         //récupération des commandes qui n'ont pas le statut gravé et met à 0 le numéro de caisse et le checked
         $this->get('repositories.order')->cleanBoxAndChecked();
         //récupération de toutes les gravures sans session et qui sont arrivées avant l'heure limite de fin de journée
-        $gravures = $this->get('repositories.gravure')->findAllWithoutSessionByDateLimitAndState($datetime);
+        $gravures = $this->get('repositories.gravure')->findAllWithoutSessionByState();
 
         $formatted = [];
         $time = 0;
@@ -286,101 +286,6 @@ class SPAController extends Controller
         return $formatted;
     }
 
-    /**
-     * @Route("/order/uncheck/{id_prestashop}", name="order_uncheck", options={"expose"=true})
-     */
-    public function orderUncheckedAction($id_prestashop)
-    {
-        $order = $this->get('repositories.order')->findByIdPrestashop($id_prestashop);
 
-        //modifie la valeur du check en fonction de son etat précédent
-        if ($order['checked'] == 1) {
-            $this->get('repositories.order')->setChecked($order['id'], 0);
-        } else {
-            $this->get('repositories.order')->setChecked($order['id'], 1);
-        }
-
-        return new Response("image uncheck");
-    }
-
-
-    /**
-     * @Route("/order/addBox/{id_prestashop}/{box}", name="order_add_box", options={"expose"=true})
-     */
-    public function orderAddBoxAction($id_prestashop, $box)
-    {
-        $order = $this->get('repositories.order')->findByIdPrestashop($id_prestashop);
-
-        //modifie la valeur du check en fonction de son etat précédent
-        if ($order['checked'] == 1) {
-            $this->get('repositories.order')->setChecked($order['id'], 0);
-            $this->get('repositories.order')->setBox($order['id'], 0);
-        } else {
-            $this->get('repositories.order')->setChecked($order['id'], 1);
-            $this->get('repositories.order')->setBox($order['id'], $box);
-
-        }
-
-
-        return new Response("box change and check");
-    }
-
-    /**
-     * @Route("/gravure/number", name="gravure_number", options={"expose"=true})
-     */
-    public function gravureNumberAction()
-    {
-
-        $datetime = $this->get('creator.datetime.limit')->getDateTime();
-        $response = $this->get('repositories.gravure')->countGravureNumber($datetime);
-
-        return new JsonResponse($response);
-    }
-
-    /**
-     * @Route("/gravure/jpg/{id_prestashop}", name="order_jpg_json", options={"expose"=true})
-     */
-    public function gravureJpgJsonAction($id_prestashop)
-    {
-
-        $gravures = $this->get('repositories.gravure')->findByOrderIdPrestashop($id_prestashop);
-        $formatted = [];
-
-        foreach ($gravures as $gravure) {
-
-            $formatted[] = [
-                'jpg' => $gravure['path_jpg']
-            ];
-        }
-
-        return new JsonResponse($formatted);
-    }
-
-    /**
-     * @Route("/gravure/tomorrow", name="new_gravure_tomorrow", options={"expose"=true})
-     */
-    public function getNewGravureTomorrow(){
-
-        $datetime = $this->get('creator.datetime.limit')->getDateTime();
-
-        //récupération de toutes les gravures sans session et qui sont arrivées après l'heure limite de fin de journée
-        $gravures = $this->get('repositories.gravure')->findAllWithoutSessionAfterDateLimit($datetime);
-
-        $formatted = [];
-
-        foreach ($gravures as $gravure) {
-
-            $formatted[] = [
-                'id' => $gravure['id'],
-                'id_prestashop' => $gravure['id_prestashop'],
-                'jpg' => $gravure['path_jpg'],
-                'pdf' => $gravure['path_pdf'],
-                'id_product' => $gravure['product_id']
-            ];
-        }
-
-        return new JsonResponse($formatted);
-
-    }
 
 }

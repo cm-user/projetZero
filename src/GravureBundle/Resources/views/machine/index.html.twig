@@ -7,6 +7,7 @@
         <thead>
         <tr>
             <th>Nom</th>
+            <th>Color</th>
             <th>Type</th>
             <th>Actions</th>
         </tr>
@@ -16,10 +17,17 @@
         {% if machine.name != "null" %}
             <tr>
                 <td>{{ machine.name }}</td>
+                <td>{{ machine.color }}</td>
                 <td>{{ machine.type }}</td>
                 <td>
                     <a class="btn btn-warning" href="{{ path('machine_edit', { 'id': machine.id }) }}">Modifier</a>
-                </td>
+                {% if machine.by_default == 0 %}
+                        <a class="btn btn-danger" onclick="updateMachineDefault({{ machine.id }})">Mettre cette machine par défaut</a>
+                    </td>
+                {% else %}
+                    <p class="btn btn-info">Machine par défaut</p>
+                    </td>
+                {% endif %}
             </tr>
         {% endif %}
         {% endfor %}
@@ -27,5 +35,22 @@
     </table>
 
     <a class="btn btn-success" href="{{ path('machine_new') }}">Ajouter</a>
+
+    {% block javascripts %}
+        <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+        <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
+        <script>
+            function updateMachineDefault(id) {
+                $.ajax({
+                    url: Routing.generate('machine_default_change', {id: id}),
+                    success: function (result) {
+                       console.log(result);
+                    }
+                });
+                setTimeout(function(){ location.reload(); },2000);
+            }
+        </script>
+
+    {% endblock  %}
 
 {% endblock %}

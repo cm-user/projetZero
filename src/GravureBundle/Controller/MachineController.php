@@ -14,6 +14,7 @@ use GravureBundle\Form\MachineSubmission;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 
@@ -115,6 +116,47 @@ class MachineController extends Controller
             ->setMethod('DELETE')
             ->getForm()
             ;
+    }
+
+//    /**
+//     * @Route("/machine/json", name="machine_json")
+//     */
+//    public function getMachineJsonAction()
+//    {
+//        $machines = $this->get('repositories.machine')->findAllWithoutNull();
+//
+//        return new JsonResponse($machines);
+//    }
+
+    /**
+     * @Route("/machine-use/session/{id}", name="machine_use_session", options={"expose"=true})
+     */
+    public function getMachineJsonAction($id)
+    {
+        $this->get('session')->set('id_machine_used', $id); //on stock le numéro de session
+        $machine = $this->get('repositories.machine')->findById($id);
+
+        return new JsonResponse($machine->getColor());
+    }
+
+    /**
+     * @Route("/default/{id}", name="machine_default_change", options={"expose"=true})
+     */
+    public function updateMachineDefault($id)
+    {
+        $this->get('repositories.machine')->updateDefault($id);
+
+        return new JsonResponse("machine default change");
+    }
+
+    /**
+     * @Route("/default-machine/color", name="machine_default_color", options={"expose"=true})
+     */
+    public function getDefaultMachineColor()
+    {
+       $color = $this->get('repositories.machine')->getDefaultColor();
+
+        return new JsonResponse($color);
     }
 
 }

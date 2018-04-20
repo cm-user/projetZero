@@ -30,21 +30,28 @@ class DbalMachineRepository
     {
         $query = <<<SQL
 INSERT INTO gravure_machine
-    (name, type)
+    (name, color, type)
 VALUES
-    (:name, :type)  
+    (:name, :color, :type)  
 ;
 SQL;
 
         $stmt = $this->connection->prepare($query);
         $stmt->execute([
             'name' => (string)$machine->getName(),
-            'type' => (string)$machine->getType(),
+            'color' => (string)$machine->getColor(),
+            'type' => (string)$machine->getType()
         ]);
     }
 
     public function findAll(){
         $machines = $this->connection->fetchAll('SELECT * FROM gravure_machine');
+
+        return $machines;
+    }
+
+    public function findAllWithoutNull(){
+        $machines = $this->connection->fetchAll('SELECT * FROM `gravure_machine` WHERE name != \'null\'');
 
         return $machines;
     }
@@ -65,12 +72,59 @@ SQL;
 
     public function update(Machine $machine){
 
-        $sql = "UPDATE gravure_machine SET name = :name, type = :type WHERE id = :id";
+        $sql = "UPDATE gravure_machine SET name = :name, type = :type, color = :color, by_default = :by_default WHERE id = :id";
         $stmt = $this->connection->prepare($sql);
         $stmt->execute([
             "name" => (string) $machine->getName(),
+            "color" => (string) $machine->getColor(),
             "type" => (string) $machine->getType(),
+            "by_default" => (int) $machine->getDefault(),
             "id" =>  (int) $machine->getId(),
+        ]);
+    }
+
+    public function getDefaultColor(){
+        $sql = "SELECT * FROM gravure_machine WHERE by_default = :by_default";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("by_default", 1);
+        $stmt->execute();
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if($row == null){
+            return null;
+        }
+
+        $color = $row['color'];
+
+        return $color;
+    }
+
+    public function updateDefault($idNewMachine){
+
+        $sql = "SELECT * FROM gravure_machine WHERE by_default = :by_default";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("by_default", 1);
+        $stmt->execute();
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if($row == null){
+            return null;
+        }
+
+        $idOldMachine = $row['id'];
+
+        $sql = "UPDATE gravure_machine SET by_default = :by_default WHERE id = :id";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute([
+            "by_default" => 0,
+            "id" => $idOldMachine ,
+        ]);
+
+        $sql = "UPDATE gravure_machine SET by_default = :by_default WHERE id = :id";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute([
+            "by_default" => 1,
+            "id" => $idNewMachine ,
         ]);
     }
 

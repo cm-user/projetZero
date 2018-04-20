@@ -1,0 +1,117 @@
+{% extends 'base.html.twig' %}
+
+
+{% block gravure %}
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div class="row">
+        <div class="col-sm-3" id="div_display_gravure"></div>
+        <div class="col-sm-5" id="div_tableau">
+            <div id="div_table"></div>
+            <div>
+                <button class="btn btn-default" onclick="actualize(0);" id="btn_actualize" role="button"
+                        style="border-radius: 15px;padding: 10px;background-color: #575354;color:white;">
+                    <h3>
+                        <i class="glyphicon glyphicon-edit" style="font-size:40px;"></i>
+                        Modifier la session
+                    </h3>
+                </button>
+                <br>
+                <button class="btn btn-default" onclick="actualize(0);" id="btn_actualize" role="button"
+                        style="border-radius: 15px;padding: 10px;background-color: #575354;color:white;">
+                    <h3>
+                        <i class="glyphicon glyphicon-remove-circle" style="font-size:40px;"></i>
+                        Annuler la session
+                    </h3>
+                </button>
+            </div>
+        </div>
+        <div class="col-sm-4" id="div_chain_session">
+
+            <h2>Session N°{{ idSession }}</h2>
+            <div id="div_machine_mode"></div>
+
+            <div  id="div_chain_category"></div>
+            <div id="div_btn">
+            {% for machine in machines %}
+                {% if loop.index0 is even  %}
+                <div class="row">
+                     {% endif %}
+                <button class="btn btn-default machine" onclick="setMachineUsed({{ machine.id }});" id="btn_machine_{{ machine.id }}" role="button"
+                        style="border-radius: 15px;padding: 5px;background-color: {{ machine.color }};color:white;">
+                    <h2>
+                        {{ machine.name }}
+                    </h2>
+                </button>
+                {% if loop.index0 is odd  %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+            </div>
+            <button class="btn btn-default" onclick="actualize(0);" id="btn_gravure_ok" role="button"
+                    style="border-radius: 15px;padding: 5px;background-color: #575354;color:white;">
+                <h1>
+                    OK
+                </h1>
+            </button>
+        </div>
+
+    </div>
+    <style>
+
+        input[type='checkbox'] {
+            transform: scale(4);
+            margin-top: 18px;
+            margin-left: -25px;
+        }
+
+        #table_order {
+            background-color: #E1B7B9;
+        }
+
+        #table_order td {
+            /*padding:20px;*/
+            width: 65px;
+            height: 65px;
+            border: 6px solid white;
+            font-size: large;
+            color: white;
+            font-size: 30px;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        #div_tableau {
+            /*position: fixed;*/
+            /*position: -webkit-sticky;*/
+            /*top: 0; !* required *!*/
+            padding-top: 60px;
+        }
+
+        #div_chain_category td{
+            /*padding:20px;*/
+            /*width:50px;*/
+            /*height: 50px;*/
+            background-color: #EFEFEF;
+            border: 1px solid white;
+            font-size: large;
+            color: black;
+            font-size: 30px;
+            text-decoration: none;
+            text-align:center;
+
+        }
+
+    </style>
+
+{% endblock %}
+
+
+{% block javascripts %}
+    <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+    <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
+    <script src="{{ asset('bundles/gravure/js/gravure_assistant.js') }}"></script>
+{% endblock %}

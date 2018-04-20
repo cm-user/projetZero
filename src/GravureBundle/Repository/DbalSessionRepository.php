@@ -64,6 +64,12 @@ SQL;
         return $this->hydrateFromRow($row);
     }
 
+    public function findMaxId(){
+        $session = $this->connection->fetchAll('SELECT MAX(id) FROM gravure_session');
+
+        return $session[0]['MAX(id)'];
+    }
+
     public function update(Session $session){
 
         $sql = "UPDATE gravure_session SET 

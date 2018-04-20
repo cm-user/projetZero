@@ -13,5 +13,7 @@ class MachineSubmission
 {
 
     public $name;
+    public $color;
     public $type;
+    public $default;
 }

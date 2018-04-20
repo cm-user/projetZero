@@ -79,7 +79,7 @@ SQL;
         return $row;
     }
 
-    public function findAllWithoutSessionByDateLimitAndState($datetime){
+    public function findAllWithoutSessionByState(){
         $sql = 'SELECT 
 gravure.id, 
 gravure_order.id_prestashop, 
@@ -94,16 +94,27 @@ FROM gravure
 LEFT JOIN gravure_order on gravure.id_order = gravure_order.id 
 LEFT JOIN gravure_product on gravure.id_product = gravure_product.id 
 WHERE gravure.id_session IS NULL 
-AND gravure_order.date_prestashop < :datetime
 AND (gravure_order.state_prestashop = 3 OR gravure_order.state_prestashop = 4)
 ORDER BY gravure_order.state_prestashop DESC, gravure_order.id_prestashop';
 
 
         $stmt = $this->connection->prepare($sql);
-        $stmt->bindValue("datetime", $datetime->format('Y-m-d h:m:s'));
         $stmt->execute();
         $gravures = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         return $gravures;
+    }
+
+    public function findColorMachineById($id){
+        $sql = "SELECT gravure_machine.color
+FROM gravure 
+LEFT JOIN gravure_machine ON gravure_machine.id = gravure.id_machine
+WHERE gravure.id = :id";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("id", $id);
+        $stmt->execute();
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        return $row;
     }
 
     public function findAllWithoutSessionAfterDateLimit($datetime){
@@ -127,6 +138,75 @@ ORDER BY gravure_order.state_prestashop DESC, gravure_order.id_prestashop';
         $gravures = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         return $gravures;
 
+    }
+
+    public function findAllWithoutSessionBeforeDateLimit($datetime){
+        $sql = 'SELECT 
+gravure.id, 
+gravure_order.id_prestashop, 
+gravure.path_jpg, 
+gravure.path_pdf, 
+gravure_product.product_id
+FROM gravure 
+LEFT JOIN gravure_order on gravure.id_order = gravure_order.id 
+LEFT JOIN gravure_product on gravure.id_product = gravure_product.id 
+WHERE gravure.id_session IS NULL 
+AND gravure_order.date_prestashop < :datetime
+ORDER BY gravure_order.state_prestashop DESC, gravure_order.id_prestashop';
+
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("datetime", $datetime->format('Y-m-d h:m:s'));
+        $stmt->execute();
+        $gravures = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $gravures;
+
+    }
+
+    public function FindAllWithHighSessionAndNotEngrave(){
+        $sql = 'SELECT gravure.id, 
+gravure_category.surname,
+gravure_order.id_prestashop,
+gravure_category.max_gabarit,
+gravure_machine.color
+FROM gravure 
+LEFT JOIN gravure_order ON gravure.id_order = gravure_order.id 
+LEFT JOIN gravure_product on gravure.id_product= gravure_product.id
+LEFT JOIN gravure_category on gravure_product.id_category = gravure_category.id
+LEFT JOIN gravure_machine ON gravure_machine.id = gravure.id_machine
+WHERE gravure.id_session = (SELECT MAX(id) FROM gravure_session)
+AND gravure_order.engrave = 0
+ORDER BY gravure_category.surname, gravure_machine.color';
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute();
+        $gravures = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $gravures;
+    }
+
+    public function findAllWithChainNumber(){
+        $sql = 'SELECT gravure_order.id_prestashop,
+gravure_order.box,
+gravure_order.gift,
+gravure.id,
+gravure.id_status,
+gravure.path_jpg,
+gravure_chain_session.chain_number,
+gravure_chain_session.series_number,
+gravure_machine.color
+FROM gravure_order
+LEFT JOIN gravure ON gravure.id_order = gravure_order.id
+LEFT JOIN gravure_chain_session ON gravure_chain_session.id_gravure = gravure.id
+LEFT JOIN gravure_product ON gravure_product.id = gravure.id_product
+LEFT JOIN gravure_category ON gravure_category.id = gravure_product.id_category
+LEFT JOIN gravure_machine ON gravure_machine.id = gravure_category.id_machine
+WHERE gravure.id_session = (SELECT MAX(id) FROM gravure_session)
+ORDER BY gravure_order.id_prestashop';
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute();
+        $gravures = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $gravures;
     }
 
     public function findAllByIdOrder($id)
@@ -153,6 +233,19 @@ ORDER BY gravure_order.state_prestashop DESC, gravure_order.id_prestashop';
 
         return $gravures;
 
+    }
+
+    public function findCategoryById($id){
+        $sql = "SELECT gravure_category.surname FROM gravure 
+LEFT JOIN gravure_product ON gravure.id_product = gravure_product.id 
+LEFT JOIN gravure_category ON gravure_product.id_category = gravure_category.id
+WHERE gravure.id = :id";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("id", $id);
+        $stmt->execute();
+        $surname =  $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        return $surname[0]['surname'];
     }
 
     public function countGravureNumber($datetime)
@@ -187,6 +280,18 @@ FROM gravure as g
 LEFT JOIN gravure_order as o on g.id_order = o.id
 where o.engrave = 0
 AND g.id_session IS NULL
+AND o.date_prestashop < :datetime');
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("datetime", $datetime->format('Y-m-d h:m:s'));
+        $stmt->execute();
+        $today = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        $sql =('SELECT COUNT(g.id) 
+FROM gravure as g 
+LEFT JOIN gravure_order as o on g.id_order = o.id
+where o.engrave = 0
+AND g.id_session IS NULL
 AND o.date_prestashop > :datetime');
 
         $stmt = $this->connection->prepare($sql);
@@ -194,7 +299,7 @@ AND o.date_prestashop > :datetime');
         $stmt->execute();
         $tomorrow = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-        return ['NumberExpe' => (int)$expe[0]['COUNT(g.id)'] , 'NumberPrepa' => (int)$prepa[0]['COUNT(g.id)'], 'NumberTomorrow' => (int)$tomorrow[0]['COUNT(g.id)']];
+        return ['NumberExpe' => (int)$expe[0]['COUNT(g.id)'] , 'NumberPrepa' => (int)$prepa[0]['COUNT(g.id)'], 'NumberToday' => (int)$today[0]['COUNT(g.id)'], 'NumberTomorrow' => (int)$tomorrow[0]['COUNT(g.id)']];
     }
 
 //    public function update(Gravure $gravure){

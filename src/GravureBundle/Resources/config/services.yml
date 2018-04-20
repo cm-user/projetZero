@@ -114,3 +114,17 @@ services:
     creator.datetime.limit:
         class: GravureBundle\Entity\Utils\DateTimeLimit
         arguments:  ["@doctrine.orm.entity_manager"]
+
+
+
+    repositories.chain_session:
+        alias: repositories.chain_session.dbal
+
+    repositories.chain_session.dbal:
+        class: GravureBundle\Repository\DbalChainSessionRepository
+        arguments: ["@doctrine.dbal.default_connection"]
+
+    factory.chain_session:
+        class: GravureBundle\Entity\Utils\ChainSessionFactory
+        arguments:  ["@service_container"]
+
