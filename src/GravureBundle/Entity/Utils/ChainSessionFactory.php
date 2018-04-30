@@ -41,8 +41,9 @@ class ChainSessionFactory
 
             $gravureSurname = $gravure['surname'];
 
-
+            //si la gravure a la même catégorie et la même machine lié que la précédente alors on l'ajoute à la même série
             if(($oldGravureSurname == $gravureSurname) && ($gravure['color'] == $oldColor)){
+                //on vérifie avant que le maximum par série ne soit pas atteint
             if($seriesNumber % $gravure['max_gabarit'] == 0){
                 $seriesNumber = 0;
                 $chainNumber++;
@@ -62,7 +63,7 @@ class ChainSessionFactory
                 'id_session' => $idSession,
                 'chain_number' => $chainNumber,
                 'series_number' => $seriesNumber,
-                'color' => $gravure['color'],
+//                'color' => $gravure['color'],
                 'engrave' => 0
             ];
 
@@ -72,19 +73,27 @@ class ChainSessionFactory
 
     }
 
-    public function parse($chainSession){
+    public function parse(){
         $array = [];
-        $compteur = 0;
-        $oldChainNumber = 1;
+//        $compteur = 0;
+//        $oldChainNumber = 1;
 
+        //récupére toutes les chaînes
         $chainNumbers = $this->container->get('repositories.chain_session')->getChainNumberCount();
 
         foreach ($chainNumbers as $chain){
+            //récupére le nom de la catégorie en fonction du numéro de chain
             $surname = $this->container->get('repositories.chain_session')->findCategorySurnameByChainNumber($chain['chain_number']);
-//TODO chercher color
+            //récupére de la même manière la couleur de la machine utilisée pour la chaîne
+            $color = $this->container->get('repositories.chain_session')->findColorByChainNumber($chain['chain_number']);
+
+            $gravures = $this->container->get('repositories.chain_session')->findGravuresIdByChainNumber($chain['chain_number']);
+
             $array[] = [
                 'number' => $chain['COUNT(chain_number)'],
-                'surname' => $surname
+                'surname' => $surname,
+                'color' => $color,
+                'gravures' => $gravures
             ];
         }
 
@@ -108,7 +117,7 @@ class ChainSessionFactory
 //
 //
 //        }
-        return $array;
+        return $array; //retourne un tableau contenant le nombre de chain par série, la catégorie et la couleur lié à la machine utilisé
     }
 
 }

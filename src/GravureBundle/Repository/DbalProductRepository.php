@@ -63,6 +63,23 @@ SQL;
         return $row;
     }
 
+    public function findMachineByIdProduct($id){
+        $sql = "SELECT gravure_machine.id
+FROM gravure_product
+LEFT JOIN gravure_category ON gravure_category.id = gravure_product.id_category
+LEFT JOIN gravure_machine ON gravure_machine.id = gravure_category.id_machine
+WHERE gravure_product.id = :id";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("id", $id);
+        $stmt->execute();
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if($row == null){
+            return null;
+        }
+        return $row['id'];
+    }
+
     public function findById($id){
 
         $sql = "SELECT * FROM gravure_product WHERE id = :id";

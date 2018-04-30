@@ -56,12 +56,12 @@ class Gravure
     }
 
 
-    public static function addGravure($idProduct, $idOrder, $config_id, $path_jpg, $path_pdf)
+    public static function addGravure($idProduct, $idOrder, $idMachine, $config_id, $path_jpg, $path_pdf)
     {
         $createdAt = (new \DateTime())->format('Y-m-d h:m:s');
         $updatedAt = (new \DateTime())->format('Y-m-d h:m:s');
 
-        return new self($idProduct, null, $idOrder, null, 1, $path_jpg, $path_pdf, $config_id, null, $createdAt, $updatedAt);
+        return new self($idProduct, null, $idOrder, $idMachine, 1, $path_jpg, $path_pdf, $config_id, null, $createdAt, $updatedAt);
     }
 
     /**

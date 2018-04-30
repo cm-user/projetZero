@@ -99,6 +99,22 @@ SQL;
         return $color;
     }
 
+    public function getDefaultId(){
+        $sql = "SELECT * FROM gravure_machine WHERE by_default = :by_default";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("by_default", 1);
+        $stmt->execute();
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if($row == null){
+            return null;
+        }
+
+        $color = $row['id'];
+
+        return $color;
+    }
+
     public function updateDefault($idNewMachine){
 
         $sql = "SELECT * FROM gravure_machine WHERE by_default = :by_default";

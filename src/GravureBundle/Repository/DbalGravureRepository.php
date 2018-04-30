@@ -46,7 +46,7 @@ SQL;
             'id_product' => $gravure->getIdProduct(),
             'id_session' => null,
             'id_order' => (int)$gravure->getIdOrder(),
-            'id_machine' => null,
+            'id_machine' => (int) $gravure->getIdMachine(),
             'id_status' => 1,
             'path_jpg' => (string)$gravure->getPathJpg(),
             'path_pdf' => (string)$gravure->getPathPdf(),
@@ -115,6 +115,31 @@ WHERE gravure.id = :id";
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         return $row;
+    }
+
+    public function updateMachine($id, $idMachine){
+        $sql = "UPDATE `gravure` SET `id_machine`= :id_machine
+WHERE gravure.id = :id";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("id_machine", $idMachine);
+        $stmt->bindValue("id", $id);
+        $stmt->execute();
+    }
+
+    public function findColorMachineForceById($id){
+        $sql = "SELECT gravure_category.id_machine FROM gravure
+LEFT JOIN gravure_product on gravure.id_product= gravure_product.id
+LEFT JOIN gravure_category on gravure_product.id_category = gravure_category.id
+WHERE gravure.id = :id";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("id", $id);
+        $stmt->execute();
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        if($row == null){
+            return null;
+        }
+        return $row['id_machine'];
     }
 
     public function findAllWithoutSessionAfterDateLimit($datetime){

@@ -133,7 +133,7 @@ class MachineController extends Controller
      */
     public function getMachineJsonAction($id)
     {
-        $this->get('session')->set('id_machine_used', $id); //on stock le numéro de session
+        $this->get('session')->set('id_machine_used', $id); //on stock l'id machine
         $machine = $this->get('repositories.machine')->findById($id);
 
         return new JsonResponse($machine->getColor());

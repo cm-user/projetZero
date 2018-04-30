@@ -9,11 +9,12 @@ function createChainSession() {
     $.ajax({
         url: Routing.generate('gravure_assistant_begin'), //enregistre en bdd
         success: function (result) {
-            $elem = "<table><thead><td>Nb</td><td>Produits</td><td>Sélec.</td></thead><tbody>";
+            $elem = "<table><thead style='background-color: #EFEFEF;'><td>Nb</td><td>Produits</td><td>Sélec.</td></thead><tbody>";
             $.each(result, function (key, val) {
-                $elem += "<tr>";
+                $elem += "<tr style=\"background-color: " + val['color'] + ";\">";
                 $elem += "<td>" + val['number'] + "</td>";
-                $elem += "<td>" + val['surname'] + "</td>";
+                $elem += "<td> <a onclick=\"addListenerChangeColorCase("+ key+1 +",'" +val['color'] +"');\">" + val['surname'] + "</a></td>";
+                $elem += "<td><a onclick=\"setArrayColorMachineDefault([" + val['gravures'] + "]);\"><i class=\"glyphicon glyphicon-check\" style=\"font-size:20px; padding: 25%;color: lightgrey;\"></i></a></td>";
                 $elem += "</tr>";
             });
             $elem += "</tody></table>";
@@ -27,7 +28,7 @@ function createChainSession() {
 function buildTable() {
 
     $.ajax({
-        url: Routing.generate('box_number_json'), //enregistre en bdd
+        url: Routing.generate('box_number_json'),
         success: function (result) {
             var number_columns = result[0];
             var number_rows = result[1];
@@ -78,7 +79,7 @@ function hydrateTable() {
     var old_id_order = ""; //nom de la catégorie antérieur
     var array_gravure = [];
     $.ajax({
-        url: Routing.generate('gravure_chain_number_json'), //enregistre en bdd
+        url: Routing.generate('gravure_chain_number_json'),
         success: function (result) {
             $.each(result, function (key, val) {
                 //à la première itération on recupère le numéro de commande
@@ -138,8 +139,8 @@ function addListenerCase(array_gravure) {
 function addListenerClic(number) {
     $("#case" + number).click(function(){
         $("#div_display_gravure > div").hide(); // cache toutes les images
-        $("#table_order td").css("background-color", "#E1B7B9"); //remet toutes les cases à la m
-        $("#case" + number).css("background-color", "#D82228");
+        $("#table_order td").css("background-color", "#E1B7B9"); //remet toutes les cases à la même couleur
+        $("#case" + number).css("background-color", "#D82228"); //change uniquement la couleur de la caisse
         $("#DisplayCase_" + number).show();
         // $("#div_display_case").css('width', '225px');
 
@@ -158,10 +159,26 @@ function getColorMachineDefault() {
 
 //Modifie la couleur de la ligne par la couleur de la machine par défaut
 function setColorMachineDefault(idGravure) {
+    $.ajax({
+        url: Routing.generate('gravure_change_machine_default', {id : idGravure}),
+        success: function (result) {
+            console.log(result);
+        }
+    });
     $("#row_gravure_" + idGravure).css("background-color", color_machine); //change la couleur de la ligne ciblée
 }
 
+//modifie la couleur de toutes les gravures liée à la chaîne
+function setArrayColorMachineDefault(gravures){
+    for(i=0;i<gravures.length;i++){
+        setColorMachineDefault(gravures[i]);
+    }
+    setTimeout(function(){ createChainSession(); },1000); //maj des chaînes
+    setTimeout(function(){ hydrateTable(); },2000); //maj des données dans le tableau
+}
 
-
-
-
+//Change la couleur des cases en fonction de la machine au clic sur une catégorie
+function addListenerChangeColorCase(number, color) {
+    console.log(number);
+    console.log(color);
+}

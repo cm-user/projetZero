@@ -174,4 +174,23 @@ class GravureController extends Controller
         return new JsonResponse($formatted);
     }
 
+    /**
+     * @Route("/gravure/default-machine/{id}", name="gravure_change_machine_default", options={"expose"=true})
+     */
+    public function setDefaultMachineFront($id)
+    {
+        $machine = $this->get('repositories.gravure')->findColorMachineForceById($id);
+        //vérifie que la catégorie de la gravure ne soit pas liée à une machine
+        if($machine != null){
+        $response = "machine did not change for this gravure : $id";
+        }
+        else { //sinon on peut changer la machine de la gravure
+        $idMachine = $this->get('session')->get('id_machine_used'); //on stock l'id machine
+        $this->get('repositories.gravure')->updateMachine($id, $idMachine);
+        $response = "machine changed for this gravure : $id";
+        }
+
+        return new JsonResponse($response);
+    }
+
 }

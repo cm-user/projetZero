@@ -46,14 +46,21 @@ class GravureFactory
         //////Methode pour récupérer l'id produit de chaque gravure pour trouver son produit lié///////
         $Product = $this->container->get('repositories.product')->findByProductId($productId);
 
-        var_dump($Product);
+//        var_dump($Product);
 
 
         if ($Product == null) {
             $idProduct = null;
+            $idMachine = null;
 //            throw new \Exception("gravure sans id produit");
         } else {
             $idProduct = $Product['id'];
+            $idMachine = $this->container->get('repositories.product')->findMachineByIdProduct($idProduct);
+        }
+
+        //si il n'y a pas de machine liée à la catégorie, on renseigne la machine par défaut
+        if($idMachine == null){
+            $idMachine = $this->container->get('repositories.machine')->getDefaultId();
         }
 
         $path_jpg = $this->container->get('creator.link.file')->createJpg($id_config, $productId); //creation des liens de l'image
@@ -63,7 +70,7 @@ class GravureFactory
         //ajoute en fonction de la quantite
         for ($i = 0; $i < $quantity; $i++) {
 
-            $gravure = Gravure::addGravure($idProduct, $idOrder, $id_config, $path_jpg, $path_pdf);
+            $gravure = Gravure::addGravure($idProduct, $idOrder, $idMachine, $id_config, $path_jpg, $path_pdf);
 
             self::addListGravure($gravure);
         }

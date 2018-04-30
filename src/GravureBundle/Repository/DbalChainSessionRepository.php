@@ -72,6 +72,40 @@ WHERE gravure_chain_session.chain_number = :chain_number';
         return $surnames[0]['surname'];
     }
 
+    public function findColorByChainNumber($chainNumber){
+        $sql = 'SELECT gravure_machine.color
+FROM gravure_chain_session 
+LEFT JOIN gravure ON gravure_chain_session.id_gravure = gravure.id
+LEFT JOIN gravure_machine ON gravure_machine.id = gravure.id_machine
+WHERE gravure_chain_session.chain_number = :chain_number';
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("chain_number", $chainNumber);
+        $stmt->execute();
+        $colors = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $colors[0]['color'];
+    }
+
+    public function findGravuresIdByChainNumber($chainNumber){
+        $sql = 'SELECT gravure.id
+FROM gravure_chain_session 
+LEFT JOIN gravure ON gravure_chain_session.id_gravure = gravure.id
+WHERE gravure_chain_session.chain_number = :chain_number';
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("chain_number", $chainNumber);
+        $stmt->execute();
+        $gravures = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        $array = [];
+        foreach ($gravures as $gravure){
+            $array[] = $gravure['id'];
+        }
+
+        return $array;
+
+    }
+
 
     public function cleanTable(){
         $query = <<<SQL
