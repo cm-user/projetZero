@@ -154,9 +154,10 @@ class MachineController extends Controller
      */
     public function getDefaultMachineColor()
     {
-       $color = $this->get('repositories.machine')->getDefaultColor();
+       $machine = $this->get('repositories.machine')->getDefaultColor();
+       $this->get('session')->set('id_machine_used', $machine['id']); //on stock l'id machine
 
-        return new JsonResponse($color);
+        return new JsonResponse($machine);
     }
 
 }

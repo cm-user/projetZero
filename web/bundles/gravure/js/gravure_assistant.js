@@ -1,5 +1,5 @@
 var array_box = []; //tableau stockant les id_prestashop des commandes
-var color_machine = "";
+var color_machine = ""; //contient la couleur de la machine sélectionné
 
 buildTable(); //construit le tableau pour afficher les caisses
 createChainSession(); // construit la chaîne de série de gravure de la session en cours
@@ -7,14 +7,14 @@ getColorMachineDefault(); //renseigne la couleur de la machine par défaut
 
 function createChainSession() {
     $.ajax({
-        url: Routing.generate('gravure_assistant_begin'), //enregistre en bdd
+        url: Routing.generate('gravure_assistant_begin'),
         success: function (result) {
             $elem = "<table><thead style='background-color: #EFEFEF;'><td>Nb</td><td>Produits</td><td>Sélec.</td></thead><tbody>";
             $.each(result, function (key, val) {
-                $elem += "<tr style=\"background-color: " + val['color'] + ";\">";
+                $elem += "<tr style=\"background-color: " + val['color'] + ";\" id=\"chain_number_" + (key+1) + "\">";
                 $elem += "<td>" + val['number'] + "</td>";
-                $elem += "<td> <a onclick=\"addListenerChangeColorCase("+ key+1 +",'" +val['color'] +"');\">" + val['surname'] + "</a></td>";
-                $elem += "<td><a onclick=\"setArrayColorMachineDefault([" + val['gravures'] + "]);\"><i class=\"glyphicon glyphicon-check\" style=\"font-size:20px; padding: 25%;color: lightgrey;\"></i></a></td>";
+                $elem += "<td><a onclick=\"addListenerChangeColorCase("+ (key+1) +",'" +val['color'] +"');\">" + val['surname'] + "</a></td>";
+                $elem += "<td><a onclick=\"setArrayColorMachineDefault([" + val['gravures'] + "]);\"><i class=\"glyphicon glyphicon-retweet\" style=\"\"></i></a></td>";
                 $elem += "</tr>";
             });
             $elem += "</tody></table>";
@@ -110,55 +110,76 @@ function addListenerCase(array_gravure) {
 
     var numberBox = array_gravure[0]['box'];
 
-    $elem = "<div class='row' style='margin-left: 30px;'><table><thead><th style='font-size:50px;background-color: #EFE7E7;'>" + array_gravure[0]['id_prestashop'] + "</th><th style='font-size:20px;background-color:#EEDEDE;padding: 10%; '>Machine</th></thead><tbody>";
+    $elem = "<div class='row' style='margin-left: 30px;'><table><thead><th style='font-size:50px;background-color: #EFE7E7;'>" + array_gravure[0]['id_prestashop'] + "</th><th style='font-size:20px;background-color:#EEDEDE;padding: 10%;width:160px; '>Machine</th></thead><tbody>";
 
     $("#case" + numberBox).html(numberBox); //affiche le numéro de caisse
     for (i=0; i < array_gravure.length; i++){
         $("#case" + numberBox).addClass("chain_" + array_gravure[i]['chain_number']); //ajout d'une classe avec le numéro de chaine
         if(array_gravure[i]['colorCategory'] != null){
-            $elem += "<tr style=\"background-color:" + array_gravure[i]['colorCategory'] + ";\"><td style='padding: 3%;'><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'></div></td>"
+            $elem += "<tr style=\"background-color:" + array_gravure[i]['colorCategory'] + ";\"><td style='padding: 3%;'><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'></div></td>";
             $elem += "<td></td></tr>";
         }
         else if(array_gravure[i]['colorGravure'] != null){
             $elem += "<tr id=\"row_gravure_" + array_gravure[i]['id'] + "\" style=\"background-color:" + array_gravure[i]['colorGravure'] + ";\"><td style='padding: 3%;'><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'></div></td>";
-            $elem += "<td style='padding: 3%;'><a onclick=\"setColorMachineDefault(" + array_gravure[i]['id'] +");\"><i class=\"glyphicon glyphicon-check\" style=\"font-size:80px; padding: 25%;color: lightgrey;\"></i></a></td></tr>";
+            $elem += "<td style='padding: 3%;'><a onclick=\"setColorMachineSession(" + array_gravure[i]['id'] +"," + 0 + ");\"><i class=\"glyphicon glyphicon-retweet\" style=\"font-size:80px; padding: 25%;color: lightgrey;\"></i></a></td></tr>";
         }
         else {
             $elem += "<tr id=\"row_gravure_" + array_gravure[i]['id'] + "\" style=\"background-color:" + color_machine + ";\"><td style='padding: 3%;'><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'></div></td>";
-            $elem += "<td style='padding: 3%;'><a onclick=\"setColorMachineDefault(" + array_gravure[i]['id'] +");\"><i class=\"glyphicon glyphicon-check\" style=\"font-size:80px; padding: 25%;color: lightgrey;\"></i></a></td></tr>";
+            $elem += "<td style='padding: 3%;'><a onclick=\"setColorMachineSession(" + array_gravure[i]['id'] +"," + 0 + ");\"><i class=\"glyphicon glyphicon-retweet\" style=\"font-size:80px; padding: 25%;color: lightgrey;\"></i></a></td></tr>";
         }
 
         addListenerClic(numberBox); //ajout d'un listener au click affiche les images
     }
     $elem += "</tbody></table></div>";
 
-    $("#DisplayCase_" + numberBox).append($elem);
+    $("#DisplayCase_" + numberBox).html($elem);
 }
 
 //ajout d'un listener au click affiche les images
 function addListenerClic(number) {
     $("#case" + number).click(function(){
+        var array_number_case = []; //tableau contenant les numéros de cases lié à la chaîne
+
         $("#div_display_gravure > div").hide(); // cache toutes les images
+
+        $("#table_order td" ).each(function( i ) {
+            if ( this.style.backgroundColor !== "rgb(225, 183, 185)" ) {
+                console.log("push tableau");
+                array_number_case.push((i+1));
+            }
+        });
+
         $("#table_order td").css("background-color", "#E1B7B9"); //remet toutes les cases à la même couleur
-        $("#case" + number).css("background-color", "#D82228"); //change uniquement la couleur de la caisse
+
+        $.each(array_number_case, function( index, value ) {
+            console.log(value);
+            $("#case" + value).css("background-color", color_machine); //change uniquement la couleur de la caisse
+            $("#case" + value).css("opacity", "0.5"); //change uniquement la couleur de la caisse
+        });
+
+        array_number_case = []; //vide le tableau
+
+        $("#case" + number).css("background-color", color_machine); //change uniquement la couleur de la caisse
+        $("#case" + number).css("opacity", "1"); //change uniquement la couleur de la caisse
         $("#DisplayCase_" + number).show();
         // $("#div_display_case").css('width', '225px');
 
     });
 }
 
-//renseigne la couleur de la machine par défaut
+//renseigne la couleur de la machine par défaut à la session et à la variable color_machine
 function getColorMachineDefault() {
     $.ajax({
         url: Routing.generate('machine_default_color'),
         success: function (result) {
-            color_machine = result ;
+            color_machine = result['color'] ; //renseigne la couleur à la variable
+            setMachineUsed(result['id']); //met en évidence le bouton lié à la machine par défaut
         }
     });
 }
 
-//Modifie la couleur de la ligne par la couleur de la machine par défaut
-function setColorMachineDefault(idGravure) {
+//Modifie la couleur de la ligne par la couleur de la machine de la session
+function setColorMachineSession(idGravure, bool) {
     $.ajax({
         url: Routing.generate('gravure_change_machine_default', {id : idGravure}),
         success: function (result) {
@@ -166,19 +187,40 @@ function setColorMachineDefault(idGravure) {
         }
     });
     $("#row_gravure_" + idGravure).css("background-color", color_machine); //change la couleur de la ligne ciblée
+    //si bool vaut 0, cela signifie qu'une seule gravure change de machine, on met donc à jour le tableau des chaînes
+    if(bool == 0){
+        updateChainSessionAndTable();
+    }
 }
 
 //modifie la couleur de toutes les gravures liée à la chaîne
 function setArrayColorMachineDefault(gravures){
     for(i=0;i<gravures.length;i++){
-        setColorMachineDefault(gravures[i]);
+        setColorMachineSession(gravures[i], 1);
     }
-    setTimeout(function(){ createChainSession(); },1000); //maj des chaînes
-    setTimeout(function(){ hydrateTable(); },2000); //maj des données dans le tableau
+    updateChainSessionAndTable();
 }
 
 //Change la couleur des cases en fonction de la machine au clic sur une catégorie
 function addListenerChangeColorCase(number, color) {
-    console.log(number);
-    console.log(color);
+    // $("#chain_number_" + number).css("border", "5px solid black");
+    // $("#chain_number_2").css("border", "5px solid black");
+    $("#chain_number_2").css("opacity", "0.2");
+    // $("#chain_number_2 tr").css("background-color", "black");
+    $("#div_chain_category tbody tr").css("opacity", "0.7");
+    $("#chain_number_" + number).css("opacity", "1");
+
+
+    $("#div_display_gravure > div").hide(); //masque les gravures
+    $("#table_order td").css("background-color", "#E1B7B9"); //remet toutes les cases à la même couleur
+    $(".chain_"+number).css("background-color", color); //change de couleur les cases contenant un produit de la catégorie
+    $(".chain_"+number).css("opacity", "1"); //remet l'opacité pour ces cases à 1
+
+}
+
+//Mise à jour du tableau contenant les chaînes et du tableau pour les caisses
+function updateChainSessionAndTable() {
+    setTimeout(function(){ createChainSession(); },1000); //maj des chaînes
+    $('#table_order td').removeClass(); //supprime les classes des cases avant de les mettre à jour
+    setTimeout(function(){ hydrateTable(); },2000); //maj des données dans le tableau
 }

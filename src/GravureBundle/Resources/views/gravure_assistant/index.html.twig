@@ -21,11 +21,11 @@
                 </button>
                 <br>
                 <button class="btn btn-default" onclick="actualize(0);" id="btn_actualize" role="button"
-                        style="border-radius: 15px;padding: 10px;background-color: #575354;color:white;">
-                    <h3>
-                        <i class="glyphicon glyphicon-remove-circle" style="font-size:40px;"></i>
+                        style="border-radius: 15px;background-color: #575354;color:white;">
+                    <h4>
+                        <i class="glyphicon glyphicon-trash" style="font-size:30px;"></i>
                         Annuler la session
-                    </h3>
+                    </h4>
                 </button>
             </div>
         </div>
@@ -95,15 +95,28 @@
             /*padding:20px;*/
             /*width:50px;*/
             /*height: 50px;*/
-            border: 1px solid white;
+            /*border: 1px solid white;*/
             font-size: large;
             color: black;
             font-size: 30px;
             text-decoration: none;
             text-align:center;
-
         }
 
+        #div_chain_category i{
+            font-size:20px;
+            padding: 25%;
+            color: lightgrey;
+        }
+
+        #div_chain_category a{
+            color: black;
+        }
+
+        a:link
+        {
+            text-decoration:none;
+        }
     </style>
 
 {% endblock %}

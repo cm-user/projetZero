@@ -17,7 +17,7 @@ class GravureAssistantController extends Controller
     public function indexAction()
     {
         //TODO Ajout d'un numéro de session aux gravures
-        //TODO Changer leurs statut
+        //TODO Changer leurs statut en EN COURS
 
         $idSession = $this->get('repositories.session')->findMaxId();//recherche de la dernière session créé
         $machines = $this->get('repositories.machine')->findAllWithoutNull();//sélection de toutes les machines

@@ -12,7 +12,7 @@ CREATE TABLE `gravure` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
-  FOREIGN KEY (id_object) REFERENCES gravure_product(id),
+  FOREIGN KEY (id_product) REFERENCES gravure_product(id),
   FOREIGN KEY (id_session) REFERENCES gravure_session(id),
   FOREIGN KEY (id_order) REFERENCES gravure_order(id),
   FOREIGN KEY (id_machine) REFERENCES gravure_machine(id),

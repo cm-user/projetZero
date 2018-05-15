@@ -94,9 +94,7 @@ SQL;
             return null;
         }
 
-        $color = $row['color'];
-
-        return $color;
+        return $row;
     }
 
     public function getDefaultId(){
