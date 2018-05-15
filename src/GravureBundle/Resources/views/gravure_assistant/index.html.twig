@@ -15,7 +15,7 @@
                 <button class="btn btn-default" onclick="actualize(0);" id="btn_actualize" role="button"
                         style="border-radius: 15px;padding: 10px;background-color: #575354;color:white;">
                     <h3>
-                        <i class="glyphicon glyphicon-edit" style="font-size:40px;"></i>
+                        <i class="glyphicon glyphicon-edit" style="font-size:35px;"></i>
                         Modifier la session
                     </h3>
                 </button>
@@ -23,7 +23,7 @@
                 <button class="btn btn-default" onclick="actualize(0);" id="btn_actualize" role="button"
                         style="border-radius: 15px;background-color: #575354;color:white;">
                     <h4>
-                        <i class="glyphicon glyphicon-trash" style="font-size:30px;"></i>
+                        <i class="glyphicon glyphicon-trash" style="font-size:20px;"></i>
                         Annuler la session
                     </h4>
                 </button>
@@ -85,17 +85,10 @@
         }
 
         #div_tableau {
-            /*position: fixed;*/
-            /*position: -webkit-sticky;*/
-            /*top: 0; !* required *!*/
             padding-top: 60px;
         }
 
         #div_chain_category td{
-            /*padding:20px;*/
-            /*width:50px;*/
-            /*height: 50px;*/
-            /*border: 1px solid white;*/
             font-size: large;
             color: black;
             font-size: 30px;
@@ -104,8 +97,8 @@
         }
 
         #div_chain_category i{
-            font-size:20px;
-            padding: 25%;
+            font-size:25px;
+            padding: 10%;
             color: lightgrey;
         }
 
@@ -113,10 +106,32 @@
             color: black;
         }
 
-        a:link
-        {
-            text-decoration:none;
+        #div_chain_category table{
+            width : 80%;
         }
+
+        .btn-picto{
+            /*text-align: center;*/
+            cursor: pointer;
+            background-color: white;
+            border: none;
+            border-radius:5px;
+            box-shadow: 0 9px #95a5a6;
+            margin:5%;
+        }
+        .btn-picto:hover{
+            background-color: whitesmoke;
+        }
+        .btn-picto:active {
+            background-color: whitesmoke;
+            box-shadow: 0 5px #95a5a6;
+            transform: translateY(4px);
+        }
+
+        /*a:link*/
+        /*{*/
+            /*text-decoration:none;*/
+        /*}*/
     </style>
 
 {% endblock %}

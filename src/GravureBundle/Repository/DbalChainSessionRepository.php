@@ -106,6 +106,28 @@ WHERE gravure_chain_session.chain_number = :chain_number';
 
     }
 
+    public function isLockedByMachineDefault($idGravure){
+        $sql = 'SELECT gravure_category.id_machine
+FROM gravure_chain_session 
+LEFT JOIN gravure ON gravure_chain_session.id_gravure = gravure.id
+LEFT JOIN gravure_product on gravure.id_product = gravure_product.id
+LEFT JOIN gravure_category on gravure_product.id_category = gravure_category.id
+WHERE gravure.id = :id ';
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("id", $idGravure);
+        $stmt->execute();
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+
+        if($row['id_machine'] == null){
+            return 0;
+        }
+        else {
+            return 1;
+        }
+    }
+
 
     public function cleanTable(){
         $query = <<<SQL

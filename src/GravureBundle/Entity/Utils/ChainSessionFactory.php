@@ -43,7 +43,7 @@ class ChainSessionFactory
 
             //si la gravure a la même catégorie et la même machine lié que la précédente alors on l'ajoute à la même série
             if(($oldGravureSurname == $gravureSurname) && ($gravure['color'] == $oldColor)){
-                //on vérifie avant que le maximum par série ne soit pas atteint
+                //on vérifie que le maximum par série ne soit pas atteint
             if($seriesNumber % $gravure['max_gabarit'] == 0){
                 $seriesNumber = 0;
                 $chainNumber++;
@@ -86,14 +86,17 @@ class ChainSessionFactory
             $surname = $this->container->get('repositories.chain_session')->findCategorySurnameByChainNumber($chain['chain_number']);
             //récupére de la même manière la couleur de la machine utilisée pour la chaîne
             $color = $this->container->get('repositories.chain_session')->findColorByChainNumber($chain['chain_number']);
-
+            //récupére les gravures comprises dans cette chaîne
             $gravures = $this->container->get('repositories.chain_session')->findGravuresIdByChainNumber($chain['chain_number']);
+
+            $locked = $this->container->get('repositories.chain_session')->isLockedByMachineDefault($gravures[0]);
 
             $array[] = [
                 'number' => $chain['COUNT(chain_number)'],
                 'surname' => $surname,
                 'color' => $color,
-                'gravures' => $gravures
+                'gravures' => $gravures,
+                'locked' => $locked
             ];
         }
 

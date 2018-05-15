@@ -9,12 +9,12 @@ function createChainSession() {
     $.ajax({
         url: Routing.generate('gravure_assistant_begin'),
         success: function (result) {
-            $elem = "<table><thead style='background-color: #EFEFEF;'><td>Nb</td><td>Produits</td><td>Sélec.</td></thead><tbody>";
+            $elem = "<table><thead style='background-color: #EFEFEF;'><td>Nb</td><td>Produits</td><td>Modifier</td></thead><tbody>";
             $.each(result, function (key, val) {
                 $elem += "<tr style=\"background-color: " + val['color'] + ";\" id=\"chain_number_" + (key+1) + "\">";
                 $elem += "<td>" + val['number'] + "</td>";
                 $elem += "<td><a onclick=\"addListenerChangeColorCase("+ (key+1) +",'" +val['color'] +"');\">" + val['surname'] + "</a></td>";
-                $elem += "<td><a onclick=\"setArrayColorMachineDefault([" + val['gravures'] + "]);\"><i class=\"glyphicon glyphicon-retweet\" style=\"\"></i></a></td>";
+                $elem += val['locked'] == 0 ? "<td><button class='btn-picto' onclick=\"setArrayColorMachineDefault([" + val['gravures'] + "]);\"><i class=\"glyphicon glyphicon-retweet\" style=\"\"></i></button> </td>" : "<td></td>";
                 $elem += "</tr>";
             });
             $elem += "</tody></table>";
@@ -110,7 +110,7 @@ function addListenerCase(array_gravure) {
 
     var numberBox = array_gravure[0]['box'];
 
-    $elem = "<div class='row' style='margin-left: 30px;'><table><thead><th style='font-size:50px;background-color: #EFE7E7;'>" + array_gravure[0]['id_prestashop'] + "</th><th style='font-size:20px;background-color:#EEDEDE;padding: 10%;width:160px; '>Machine</th></thead><tbody>";
+    $elem = "<div class='row' style='margin-left: 30px;'><table><thead><th style='font-size:50px;background-color: #EFE7E7;'>" + array_gravure[0]['id_prestashop'] + "</th><th style='font-size:20px;background-color:#EEDEDE;padding: 10%;width:160px; '>Modifier</th></thead><tbody>";
 
     $("#case" + numberBox).html(numberBox); //affiche le numéro de caisse
     for (i=0; i < array_gravure.length; i++){
@@ -121,11 +121,11 @@ function addListenerCase(array_gravure) {
         }
         else if(array_gravure[i]['colorGravure'] != null){
             $elem += "<tr id=\"row_gravure_" + array_gravure[i]['id'] + "\" style=\"background-color:" + array_gravure[i]['colorGravure'] + ";\"><td style='padding: 3%;'><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'></div></td>";
-            $elem += "<td style='padding: 3%;'><a onclick=\"setColorMachineSession(" + array_gravure[i]['id'] +"," + 0 + ");\"><i class=\"glyphicon glyphicon-retweet\" style=\"font-size:80px; padding: 25%;color: lightgrey;\"></i></a></td></tr>";
+            $elem += "<td style='padding: 3%;'><button class='btn-picto' onclick=\"setColorMachineSession(" + array_gravure[i]['id'] +"," + 0 + ");\"><i class=\"glyphicon glyphicon-retweet\" style=\"font-size:60px; padding: 25%;color: lightgrey;\"></i></button></td></tr>";
         }
         else {
             $elem += "<tr id=\"row_gravure_" + array_gravure[i]['id'] + "\" style=\"background-color:" + color_machine + ";\"><td style='padding: 3%;'><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'></div></td>";
-            $elem += "<td style='padding: 3%;'><a onclick=\"setColorMachineSession(" + array_gravure[i]['id'] +"," + 0 + ");\"><i class=\"glyphicon glyphicon-retweet\" style=\"font-size:80px; padding: 25%;color: lightgrey;\"></i></a></td></tr>";
+            $elem += "<td style='padding: 3%;'><button class='btn-picto' onclick=\"setColorMachineSession(" + array_gravure[i]['id'] +"," + 0 + ");\"><i class=\"glyphicon glyphicon-retweet\" style=\"font-size:60px; padding: 25%;color: red;\"></i></button></td></tr>";
         }
 
         addListenerClic(numberBox); //ajout d'un listener au click affiche les images
@@ -144,23 +144,32 @@ function addListenerClic(number) {
 
         $("#table_order td" ).each(function( i ) {
             if ( this.style.backgroundColor !== "rgb(225, 183, 185)" ) {
-                console.log("push tableau");
                 array_number_case.push((i+1));
             }
+            $(this).css("opacity", "1"); //remet l'opacité à 1
         });
 
         $("#table_order td").css("background-color", "#E1B7B9"); //remet toutes les cases à la même couleur
 
         $.each(array_number_case, function( index, value ) {
-            console.log(value);
             $("#case" + value).css("background-color", color_machine); //change uniquement la couleur de la caisse
-            $("#case" + value).css("opacity", "0.5"); //change uniquement la couleur de la caisse
+            $("#case" + value).css("opacity", "0.5"); //met l'opacité à 0.5 pour les cases lié à la chain
         });
 
         array_number_case = []; //vide le tableau
 
-        $("#case" + number).css("background-color", color_machine); //change uniquement la couleur de la caisse
-        $("#case" + number).css("opacity", "1"); //change uniquement la couleur de la caisse
+        //vérifie que la case cliqué soit lié à la chain en cours
+        if($("#case" + number).css("background-color") !== "rgb(225, 183, 185)"){
+            $("#case" + number).css("opacity", "1"); //met l'opacité à 1 pour la case cliqué
+        }
+        else { //si l'utilisateur clique sur une case lié à une autre chain
+            $("#table_order td").css("background-color", "#E1B7B9"); //remet toutes les cases à la même couleur
+            $("#table_order td").css("opacity", "1"); //remet l'opacité à 1 pour toutes les cases
+            $("#case" + number).css("background-color", color_machine); //change uniquement la couleur de la caisse
+            $("#div_chain_category tbody tr").css("opacity", "1"); //remet l'opacité à 1 pour toutes les lignes des chaînes
+        }
+
+
         $("#DisplayCase_" + number).show();
         // $("#div_display_case").css('width', '225px');
 
@@ -191,6 +200,8 @@ function setColorMachineSession(idGravure, bool) {
     if(bool == 0){
         updateChainSessionAndTable();
     }
+    // $("#div_display_gravure > div").hide(); //masque les gravures
+    // $("#table_order td").css("background-color", "#E1B7B9"); //remet toutes les cases à la même couleur
 }
 
 //modifie la couleur de toutes les gravures liée à la chaîne
@@ -203,13 +214,8 @@ function setArrayColorMachineDefault(gravures){
 
 //Change la couleur des cases en fonction de la machine au clic sur une catégorie
 function addListenerChangeColorCase(number, color) {
-    // $("#chain_number_" + number).css("border", "5px solid black");
-    // $("#chain_number_2").css("border", "5px solid black");
-    $("#chain_number_2").css("opacity", "0.2");
-    // $("#chain_number_2 tr").css("background-color", "black");
-    $("#div_chain_category tbody tr").css("opacity", "0.7");
-    $("#chain_number_" + number).css("opacity", "1");
-
+    $("#div_chain_category tbody tr").css("opacity", "0.7"); //baisse l'opacité de toutes les lignes des chaînes
+    $("#chain_number_" + number).css("opacity", "1"); //augmente l'opacité de la ligne cliqué
 
     $("#div_display_gravure > div").hide(); //masque les gravures
     $("#table_order td").css("background-color", "#E1B7B9"); //remet toutes les cases à la même couleur
