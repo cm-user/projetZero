@@ -135,7 +135,6 @@ class MachineController extends Controller
     {
         $this->get('session')->set('id_machine_used', $id); //on stock l'id machine
         $machine = $this->get('repositories.machine')->findById($id);
-
         return new JsonResponse($machine->getColor());
     }
 

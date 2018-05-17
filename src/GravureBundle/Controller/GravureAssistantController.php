@@ -6,13 +6,17 @@ namespace GravureBundle\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 
+/**
+ * @Route("assistant")
+ */
 class GravureAssistantController extends Controller
 {
 
     /**
-     * @Route("/assistant", name="gravure_assistant_index")
+     * @Route("/", name="gravure_assistant_index")
      */
     public function indexAction()
     {
@@ -31,7 +35,7 @@ class GravureAssistantController extends Controller
 
 
     /**
-     * @Route("/assistant/begin", name="gravure_assistant_begin", options={"expose"=true})
+     * @Route("/begin", name="gravure_assistant_begin", options={"expose"=true})
      */
     public function getTheChainSession()
     {
@@ -49,5 +53,27 @@ class GravureAssistantController extends Controller
         return new JsonResponse($response);
     }
 
+    /**
+     * @Route("/download-pdf/send-mail", name="download_gravure_pdf")
+     */
+    public function DownloadAndSendMailAction()
+    {
+
+        //TODO Changer le statut des gravures
+        //TODO récupérer les gravures avec ce statut, récupérer celles fait par une machine pdf et les autres par machine mail
+
+
+        //partie téléchargement
+        $response = new Response();
+        $response->setContent(file_get_contents($this->getParameter("gravure_pdf_directory") . "20-10.pdf"));
+        $response->headers->set('Content-Type', 'application/force-download'); // modification du content-type pour forcer le téléchargement (sinon le navigateur internet essaie d'afficher le document)
+        $response->headers->set('Content-Transfer-Encoding', 'Binary');
+        $response->headers->set('Content-Length', filesize($this->getParameter("gravure_pdf_directory") . "20-10.pdf"));
+        $response->headers->set('Content-disposition', 'filename=6-10.pdf' );
+        ob_end_clean();
+//        self::clearFolder($chemin);//
+
+        return $response;
+    }
 
 }

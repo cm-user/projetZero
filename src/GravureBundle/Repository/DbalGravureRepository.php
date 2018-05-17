@@ -218,7 +218,8 @@ gravure.id_status,
 gravure.path_jpg,
 gravure_chain_session.chain_number,
 gravure_chain_session.series_number,
-gravure_machine.color
+gravure_machine.color,
+gravure_product.alias
 FROM gravure_order
 LEFT JOIN gravure ON gravure.id_order = gravure_order.id
 LEFT JOIN gravure_chain_session ON gravure_chain_session.id_gravure = gravure.id

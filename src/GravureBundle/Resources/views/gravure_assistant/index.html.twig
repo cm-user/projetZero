@@ -34,32 +34,60 @@
             <h2>Session N°{{ idSession }}</h2>
             <div id="div_machine_mode"></div>
 
-            <div  id="div_chain_category"></div>
-            <div id="div_btn">
-            {% for machine in machines %}
-                {% if loop.index0 is even  %}
-                <div class="row">
-                     {% endif %}
-                <button class="btn btn-default machine" onclick="setMachineUsed({{ machine.id }});" id="btn_machine_{{ machine.id }}" role="button"
-                        style="border-radius: 15px;padding: 5px;background-color: {{ machine.color }};color:white;">
-                    <h2>
-                        {{ machine.name }}
-                    </h2>
-                </button>
-                {% if loop.index0 is odd  %}
+            <div id="div_chain_category"></div>
+            <div id="div_btn" class="row">
+                {% for machine in machines %}
+                    {#{% if loop.index0 is even %}#}
+                    <div class="col-sm-5">
+                        {#{% endif %}#}
+                        <button class="btn btn-default btn-block machine" onclick="setMachineUsed({{ machine.id }});"
+                                id="btn_machine_{{ machine.id }}" role="button"
+                                style="border-radius: 15px;padding: 5px;background-color: {{ machine.color }};color:white;">
+                            <h2>
+                                {{ machine.name }}
+                            </h2>
+                        </button>
+                        {#{% if loop.index0 is odd %}#}
                     </div>
-                {% endif %}
-            {% endfor %}
+                    {#{% endif %}#}
+                {% endfor %}
             </div>
-            <button class="btn btn-default" onclick="actualize(0);" id="btn_gravure_ok" role="button"
-                    style="border-radius: 15px;padding: 5px;background-color: #575354;color:white;">
-                <h1>
-                    OK
-                </h1>
+        {#<a href="#" data-toggle="modal" data-target="#Modal_Alert">#}
+            <a href="{{ path('download_gravure_pdf') }}" >
+            <button class="btn btn-default" id="btn_gravure_ok" role="button" onclick="beginSessionGravure();"
+                    style="border-radius: 15px;padding: 1% 5%;background-color: #575354;color:white;">
+                {#<a href="#" data-toggle="modal" data-target="#Modal_Alert">#}
+                    <h1>
+                        OK
+                    </h1>
+                {#</a>#}
             </button>
+            {#</a>#}
+        </a>
         </div>
-
     </div>
+
+    {#modal pour le bouton OK afin d'avertir l'utilisateur de vérifier son dossier et ses mails#}
+    {#<div class="modal fade bd-example-modal" id="Modal_Alert" tabindex="-1" role="dialog"#}
+         {#aria-labelledby="Modal_Alert_Title" aria-hidden="true">#}
+        {#<div class="modal-dialog modal-lg" role="document">#}
+            {#<div class="modal-content">#}
+                {#<div class="modal-header">#}
+                    {#<h5 class="modal-title" id="Modal_Alert_Title"></h5>#}
+                    {#<button type="button" class="close" data-dismiss="modal" aria-label="Close">#}
+                        {#<span aria-hidden="true">&times;</span>#}
+                    {#</button>#}
+                {#</div>#}
+                {#<div class="modal-body" id="Modal_Alert_Body">#}
+                    {#<h2></h2>#}
+                {#</div>#}
+                {#<div class="modal-footer">#}
+                    {#<button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>#}
+                {#</div>#}
+            {#</div>#}
+        {#</div>#}
+    {#</div>#}
+
     <style>
 
         input[type='checkbox'] {
@@ -82,46 +110,57 @@
             font-size: 30px;
             text-decoration: none;
             text-align: center;
+            cursor: pointer;
         }
 
         #div_tableau {
             padding-top: 60px;
         }
 
-        #div_chain_category td{
+        #div_chain_category td {
             font-size: large;
             color: black;
             font-size: 30px;
             text-decoration: none;
-            text-align:center;
+            text-align: center;
         }
 
-        #div_chain_category i{
-            font-size:25px;
+        #div_chain_category i {
+            font-size: 25px;
             padding: 10%;
             color: lightgrey;
         }
 
-        #div_chain_category a{
+        #div_chain_category a {
             color: black;
         }
 
-        #div_chain_category table{
-            width : 80%;
+        #div_chain_category table {
+            width: 80%;
         }
 
-        .btn-picto{
+        #div_btn {
+            margin-top: 5%;
+        }
+
+        #div_btn button {
+            margin: 5% 5% 5% auto;
+        }
+
+        .btn-picto {
             /*text-align: center;*/
             cursor: pointer;
             background-color: white;
             border: none;
-            border-radius:5px;
+            border-radius: 5px;
             box-shadow: 0 9px #95a5a6;
-            margin:5%;
+            margin: 5%;
         }
-        .btn-picto:hover{
+
+        .btn-picto:hover {
             background-color: whitesmoke;
         }
+
         .btn-picto:active {
             background-color: whitesmoke;
             box-shadow: 0 5px #95a5a6;
@@ -130,7 +169,7 @@
 
         /*a:link*/
         /*{*/
-            /*text-decoration:none;*/
+        /*text-decoration:none;*/
         /*}*/
     </style>
 

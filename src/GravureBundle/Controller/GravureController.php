@@ -165,7 +165,8 @@ class GravureController extends Controller
                 'chain_number' => $gravure['chain_number'],
                 'colorCategory' => $gravure['color'],
                 'colorGravure' => $colorGravure['color'],
-                'series_number' => $gravure['series_number']
+                'series_number' => $gravure['series_number'],
+                'alias' => $gravure['alias']
             ];
 
 
