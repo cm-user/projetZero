@@ -22,6 +22,9 @@ parameters:
     url_directory_engraving: 'https://cadeaumaestro.newquest.fr/modules/nq_config/files/'
 #    url_directory_engraving: 'https://cadeau-maestro.com/modules/nq_config/files/'
     bond: '%kernel.project_dir%/web/bond'
+    status_EN_CHAIN: 4
+    status_EN_COURS: 3
+    gravure_zip_directory: '%kernel.project_dir%/web/gravure/zip/'
 
 
 framework:

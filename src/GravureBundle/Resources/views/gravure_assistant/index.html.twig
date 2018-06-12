@@ -52,8 +52,9 @@
                     {#{% endif %}#}
                 {% endfor %}
             </div>
-        {#<a href="#" data-toggle="modal" data-target="#Modal_Alert">#}
+        {#<a href="{{ path('download_gravure_pdf') }}" data-toggle="modal" data-target="#Modal_Alert">#}
             <a href="{{ path('download_gravure_pdf') }}" >
+            {#<button class="btn btn-default" id="btn_gravure_ok" role="button" #}
             <button class="btn btn-default" id="btn_gravure_ok" role="button" onclick="beginSessionGravure();"
                     style="border-radius: 15px;padding: 1% 5%;background-color: #575354;color:white;">
                 {#<a href="#" data-toggle="modal" data-target="#Modal_Alert">#}
@@ -68,25 +69,26 @@
     </div>
 
     {#modal pour le bouton OK afin d'avertir l'utilisateur de vérifier son dossier et ses mails#}
-    {#<div class="modal fade bd-example-modal" id="Modal_Alert" tabindex="-1" role="dialog"#}
-         {#aria-labelledby="Modal_Alert_Title" aria-hidden="true">#}
-        {#<div class="modal-dialog modal-lg" role="document">#}
-            {#<div class="modal-content">#}
-                {#<div class="modal-header">#}
-                    {#<h5 class="modal-title" id="Modal_Alert_Title"></h5>#}
-                    {#<button type="button" class="close" data-dismiss="modal" aria-label="Close">#}
-                        {#<span aria-hidden="true">&times;</span>#}
-                    {#</button>#}
-                {#</div>#}
-                {#<div class="modal-body" id="Modal_Alert_Body">#}
-                    {#<h2></h2>#}
-                {#</div>#}
-                {#<div class="modal-footer">#}
-                    {#<button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>#}
-                {#</div>#}
-            {#</div>#}
-        {#</div>#}
-    {#</div>#}
+    <div class="modal fade bd-example-modal" id="Modal_Alert" tabindex="-1" role="dialog"
+         aria-labelledby="Modal_Alert_Title" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="Modal_Alert_Title"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="Modal_Alert_Body">
+                    <h2>Les pdf vont être téléchargés et les mails envoyés, merci de vérifier.</h2>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info">Passer à l'étape suivante</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <style>
 
@@ -96,14 +98,11 @@
             margin-left: -25px;
         }
 
-        #table_order {
-            background-color: #E1B7B9;
-        }
-
         #table_order td {
             /*padding:20px;*/
             width: 65px;
             height: 65px;
+            background-color: #E1B7B9;
             border: 6px solid white;
             font-size: large;
             color: white;

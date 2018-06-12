@@ -162,8 +162,28 @@ function addListenerClic(number) {
         var array_number_case = []; //tableau contenant les numéros de cases lié à la chaîne
 
         $("#div_display_gravure > div").hide(); // cache toutes les images
-        setColorBlackForCaseFull(); //remet les cases non vide à la même couleur
 
+
+
+        if($("#case" + number).css("background-color") !== "rgb(0, 0, 0)"){
+            //parcours de toutes les cases pour récupérer uniquement les cases liées à la chaîne
+            $("#table_order td" ).each(function( i ) {
+                if ( this.style.backgroundColor !== "black" && this.style.backgroundColor !== "" ) { //vérifie que la couleur ne soit ni noir ni celle par défaut
+                    array_number_case.push((i+1));
+                }
+            });
+            setColorBlackForCaseFull(); //remet les cases non vide à la même couleur
+            //met les case liées à la chaîne à la même couleur que cette dernière
+            array_number_case.forEach(function(element) {
+                $("#case" + element).css("background-color", color_chain); //change la couleur des cases par celle de la chaîne
+            });
+
+            array_number_case = []; // vide le tableau
+        }
+        else{
+            $("#div_chain_category tbody tr").css("opacity", "1"); //remet l'opacité à 1 pour toutes les lignes des chaînes
+            setColorBlackForCaseFull(); //remet les cases non vide à la même couleur
+        }
         // $("#table_order td" ).each(function( i ) {
         //     console.log(this.style.backgroundColor );
         //     if ( this.style.backgroundColor !== "rgba(0, 0, 0, 0)" || this.style.backgroundColor !== "rgb(225, 183, 185)" ) {
@@ -195,7 +215,6 @@ function addListenerClic(number) {
         //     $("#div_chain_category tbody tr").css("opacity", "1"); //remet l'opacité à 1 pour toutes les lignes des chaînes
         // }
 
-        $("#div_chain_category tbody tr").css("opacity", "1"); //remet l'opacité à 1 pour toutes les lignes des chaînes
         // $("#case" + number).css("background-color", color_machine); //change uniquement la couleur de la caisse
         $("#case" + number).css("opacity", "0.7"); //change uniquement la couleur de la caisse
 
@@ -239,10 +258,10 @@ function setColorMachineSession(idGravure, bool) {
         numberCase = $("#row_gravure_" + idGravure).parent().closest('div').parent().attr('id').replace("DisplayCase_", ""); //cherche le numéro de case de la gravure
         $("#case" + numberCase).css("background-color", color_machine); //change uniquement la couleur de la caisse
     }
-    else {
-
-
-    }
+    // else {
+    //
+    //
+    // }
 
 
     // $("#div_display_gravure > div").hide(); //masque les gravures
@@ -309,5 +328,6 @@ function setColorBlackForCaseFull() {
 
 //Téléchargement des pdf, envoie du mail, et affichage des messages à l'utilisateur avant de commençer à graver
 function beginSessionGravure(){
-alert("Les pdf vont être téléchargés et les mails envoyés, merci de vérifier.");
+    $('#Modal_Alert').modal();
+    $("#Modal_Alert").modal('show');
 }

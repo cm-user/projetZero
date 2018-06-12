@@ -8,6 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
+use ZipArchive;
 
 /**
  * @Route("assistant")
@@ -30,7 +31,7 @@ class GravureAssistantController extends Controller
         $this->get('session')->set('number_session', $idSession); //on stock le numéro de session
 //        var_dump($this->get('session')->get('number_session'));
 
-        return $this->render('GravureBundle:gravure_assistant:index.html.twig', [ 'idSession' => $idSession, 'machines' => $machines]);
+        return $this->render('GravureBundle:gravure_assistant:index.html.twig', ['idSession' => $idSession, 'machines' => $machines]);
     }
 
 
@@ -39,7 +40,7 @@ class GravureAssistantController extends Controller
      */
     public function getTheChainSession()
     {
-
+        //TODO gérer le cas pour l'utilisateur clique sur modifier la session alors que des chaînes sont en cours de gravure
         //récupére toutes les gravures qui vont être gravées
         $gravures = $this->get('repositories.gravure')->FindAllWithHighSessionAndNotEngrave();
         //construit la chaîne qui réunit les gravures par séries et par catégories
@@ -54,26 +55,105 @@ class GravureAssistantController extends Controller
     }
 
     /**
-     * @Route("/download-pdf/send-mail", name="download_gravure_pdf")
+     * @Route("/download-pdf/send-mail", name="download_gravure_pdf", options={"expose"=true})
      */
     public function DownloadAndSendMailAction()
     {
 
-        //TODO Changer le statut des gravures
-        //TODO récupérer les gravures avec ce statut, récupérer celles fait par une machine pdf et les autres par machine mail
+        $em = $this->getDoctrine()->getEntityManager();
 
+
+        //TODO gérer le cas de la position du gabarit -> verouiller le gabarit au lancement de la gravure
+        $this->get('repositories.gravure')->updateStatusForGravureInChainSession($this->getParameter('status_EN_CHAIN'), $this->getParameter('status_EN_COURS')); //passe le statut de en chaîne à en cours pour les gravures liées à la session en cours
+        //TODO récupérer les gravures avec ce statut, récupérer celles fait par une machine pdf et les autres par machine mail
+        $mailGravures = $this->get('repositories.gravure')->findAllWithStatusOnLoadAndMailMachine($this->getParameter('status_EN_COURS'));
+        $PDFGravures = $this->get('repositories.gravure')->findAllWithStatusOnloadAndPDFMachine($this->getParameter('status_EN_COURS'));
+
+
+        $mails = $em->getRepository('GravureBundle:Mail')->findAll();
+
+//        foreach ($mails as $mail){
+//        self::sendMail($mail->getEmail(), $mailGravures[0]['id_session'], $mailGravures);
+//        }
+
+        $zip = new ZipArchive();
+
+        $ZIPFileName = $this->getParameter("gravure_zip_directory") . "GRAVURE.zip";
+
+        if ($zip->open($ZIPFileName) == TRUE)
+            if ($zip->open($ZIPFileName, ZipArchive::CREATE) === true) {
+
+
+                if ($PDFGravures == []) {
+                    $file = fopen($this->getParameter("gravure_zip_directory") . "NO_PDF.txt", "w");
+                    fclose($file);
+                    $zip->addFile($this->getParameter("gravure_zip_directory") . 'NO_PDF.txt', 'NO_PDF.txt'); //Ajout d'un fichier txt vide si il n'y a aucun pdf
+                } else {
+                    foreach ($PDFGravures as $PDFGravure) {
+//                    $content = file_get_contents($PDFGravure['path_pdf']);
+                        $file = str_replace('http://tools.cadeau-maestro.com/gravure/pdf/', '', $PDFGravure['path_pdf']);
+//                        $file = file_get_contents($file);
+                        dump($this->getParameter("gravure_zip_directory") . $file);die;
+//                    file_put_contents($file, $file); //creation du fichier au bon repertoire
+
+                        $zip->addFile($this->getParameter("gravure_zip_directory") . $file,  $file); //Ajout du fichier au ZIP dans un dossier
+
+                    }
+                }
+            }
+
+        // Et on referme l'archive.
+        $zip->close();
 
         //partie téléchargement
         $response = new Response();
-        $response->setContent(file_get_contents($this->getParameter("gravure_pdf_directory") . "20-10.pdf"));
+        $response->setContent(file_get_contents($ZIPFileName));
         $response->headers->set('Content-Type', 'application/force-download'); // modification du content-type pour forcer le téléchargement (sinon le navigateur internet essaie d'afficher le document)
         $response->headers->set('Content-Transfer-Encoding', 'Binary');
-        $response->headers->set('Content-Length', filesize($this->getParameter("gravure_pdf_directory") . "20-10.pdf"));
-        $response->headers->set('Content-disposition', 'filename=6-10.pdf' );
+        $response->headers->set('Content-Length', filesize($ZIPFileName));
+        $response->headers->set('Content-disposition', 'filename=GRAVURE.zip');
         ob_end_clean();
-//        self::clearFolder($chemin);//
+        self::clearFolder($this->getParameter("gravure_zip_directory"));
 
         return $response;
+    }
+
+    private function sendMail($mail, $header, $mailGravures)
+    {
+        $message = (new \Swift_Message('mail de gravure pour la session N°' . $header))
+            ->setFrom('contact@cadeau-maestro.com')
+            ->setTo($mail)
+            ->setBody(
+                $this->renderView(
+                    '@Gravure/mail/mail_gravures.html.twig',
+                    array('gravures' => $mailGravures)
+                ),
+                'text/html'
+            );
+
+        $this->get('mailer')
+            ->send($message);
+    }
+
+    /**
+     * Supprime le contenu d'un dossier
+     * sans supprimer le dossier lui-même
+     */
+    private function clearFolder($folder)
+    {
+        // 1 ouvrir le dossier
+        $dossier = opendir($folder);
+        //2)Tant que le dossier est pas vide
+        while ($fichier = readdir($dossier)) {
+            //3) Sans compter . et ..
+            if ($fichier != "." && $fichier != "..") {
+                //On selectionne le fichier et on le supprime
+                $Vidage = $folder . $fichier;
+                unlink($Vidage);
+            }
+        }
+        //Fermer le dossier vide
+        closedir($dossier);
     }
 
 }

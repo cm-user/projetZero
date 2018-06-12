@@ -126,6 +126,49 @@ WHERE gravure.id = :id";
         $stmt->execute();
     }
 
+    public function updateStatusForGravureInChainSession($statusEnChain, $statusEnCours){
+        $sql = "UPDATE gravure SET id_status = :en_cours WHERE id_status = :en_chain ";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("en_chain", $statusEnChain);
+        $stmt->bindValue("en_cours", $statusEnCours);
+        $stmt->execute();
+    }
+
+    public function findAllWithStatusOnloadAndPDFMachine($statusEnCours){
+        $sql = 'SELECT * FROM `gravure` LEFT JOIN gravure_machine on gravure_machine.id = gravure.id_machine WHERE gravure.id_status = :en_cours AND gravure_machine.type = "pdf" ';
+
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("en_cours", $statusEnCours);
+        $stmt->execute();
+        $gravures = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $gravures;
+    }
+
+    public function findAllWithStatusOnLoadAndMailMachine($statusEnCours){
+        $sql = 'SELECT 
+gravure.id,
+gravure.id_session,
+gravure_order.id_prestashop, 
+gravure_order.box,
+gravure.path_jpg,
+gravure_text.name_block,
+gravure_text.value
+FROM `gravure` 
+LEFT JOIN gravure_machine ON gravure_machine.id = gravure.id_machine 
+LEFT JOIN gravure_link_gravure_text ON gravure_link_gravure_text.id_gravure = gravure.id
+LEFT JOIN gravure_text ON gravure_text.id = gravure_link_gravure_text.id_text
+LEFT JOIN gravure_order ON gravure_order.id = gravure.id_order
+WHERE gravure.id_status = :en_cours 
+AND gravure_machine.type = "mail"';
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("en_cours", $statusEnCours);
+        $stmt->execute();
+        $gravures = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $gravures;
+    }
+
     public function findColorMachineForceById($id){
         $sql = "SELECT gravure_category.id_machine FROM gravure
 LEFT JOIN gravure_product on gravure.id_product= gravure_product.id

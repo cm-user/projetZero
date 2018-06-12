@@ -1,0 +1,10 @@
+<h1>Bonjour,</h1>
+
+<p>Voici les gravures et leurs textes:</p>
+
+{% for gravure in gravures %}
+    <td><img src="{{ gravure.path_jpg }}"></td>
+    <td>gravure.name_block</td>
+    <td>gravure.value</td>
+
+{% endfor %}
