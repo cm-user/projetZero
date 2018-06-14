@@ -90,7 +90,8 @@ class GravureController extends Controller
     /**
      * @Route("/gravure/tomorrow", name="new_gravure_tomorrow", options={"expose"=true})
      */
-    public function getNewGravureTomorrow(){
+    public function getNewGravureTomorrow()
+    {
 
         $datetime = $this->get('creator.datetime.limit')->getDateTime();
 
@@ -117,7 +118,8 @@ class GravureController extends Controller
     /**
      * @Route("/gravure/today", name="new_gravure_today", options={"expose"=true})
      */
-    public function getNewGravureToday(){
+    public function getNewGravureToday()
+    {
 
         $datetime = $this->get('creator.datetime.limit')->getDateTime();
 
@@ -144,7 +146,8 @@ class GravureController extends Controller
     /**
      * @Route("/gravure/chain-number/json", name="gravure_chain_number_json", options={"expose"=true})
      */
-    public function getGravureWithChainNumber(){
+    public function getGravureWithChainNumber()
+    {
 
         //récupération de toutes les gravures sans session et qui sont arrivées après l'heure limite de fin de journée
         $gravures = $this->get('repositories.gravure')->findAllWithChainNumber();
@@ -182,16 +185,25 @@ class GravureController extends Controller
     {
         $machine = $this->get('repositories.gravure')->findColorMachineForceById($id);
         //vérifie que la catégorie de la gravure ne soit pas liée à une machine
-        if($machine != null){
-        $response = "machine did not change for this gravure : $id";
-        }
-        else { //sinon on peut changer la machine de la gravure
-        $idMachine = $this->get('session')->get('id_machine_used'); //on stock l'id machine
-        $this->get('repositories.gravure')->updateMachine($id, $idMachine);
-        $response = "machine changed for this gravure : $id";
+        if ($machine != null) {
+            $response = "machine did not change for this gravure : $id";
+        } else { //sinon on peut changer la machine de la gravure
+            $idMachine = $this->get('session')->get('id_machine_used'); //on stock l'id machine
+            $this->get('repositories.gravure')->updateMachine($id, $idMachine);
+            $response = "machine changed for this gravure : $id";
         }
 
         return new JsonResponse($response);
+    }
+
+    /**
+     * @Route("/gravure/status/on-load/{chainNumber}", name="gravure_status_on_load", options={"expose"=true})
+     */
+    public function setStatusOnLoad($chainNumber)
+    {
+        $this->get('repositories.gravure')->setStatusByChainNumber($this->getParameter('status_EN_COURS'), $chainNumber);
+
+        return new JsonResponse("Changement de statut effectué");
     }
 
 }

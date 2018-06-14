@@ -86,10 +86,12 @@ WHERE gravure_chain_session.chain_number = :chain_number';
         return $colors[0]['color'];
     }
 
-    public function findGravuresIdByChainNumber($chainNumber){
-        $sql = 'SELECT gravure.id, gravure.id_status
+    public function findGravuresByChainNumber($chainNumber){
+        $sql = 'SELECT gravure.id, gravure.id_status, gravure.path_jpg, gravure_product.alias, o.box, o.gift
 FROM gravure_chain_session 
 LEFT JOIN gravure ON gravure_chain_session.id_gravure = gravure.id
+LEFT JOIN gravure_product  on gravure.id_product = gravure_product.id
+LEFT JOIN gravure_order o on gravure.id_order = o.id
 WHERE gravure_chain_session.chain_number = :chain_number';
 
         $stmt = $this->connection->prepare($sql);

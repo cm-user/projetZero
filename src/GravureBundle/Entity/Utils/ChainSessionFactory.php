@@ -87,13 +87,16 @@ class ChainSessionFactory
             //récupére de la même manière la couleur de la machine utilisée pour la chaîne
             $color = $this->container->get('repositories.chain_session')->findColorByChainNumber($chain['chain_number']);
             //récupére les gravures comprises dans cette chaîne
-            $gravures = $this->container->get('repositories.chain_session')->findGravuresIdByChainNumber($chain['chain_number']);
+            $gravures = $this->container->get('repositories.chain_session')->findGravuresByChainNumber($chain['chain_number']);
 
 
-            $arrayIdGravure = [];
-            foreach ($gravures as $gravure){
-                $arrayIdGravure[] = $gravure['id'];
-            }
+//            $arrayIdGravure = [];
+//            $arrayPathJpgGravure = [];
+//            $arrayGravure
+//            foreach ($gravures as $gravure){
+//                $arrayIdGravure[] = $gravure['id'];
+//                $arrayPathJpgGravure[] = $gravure['path_jpg'];
+//            }
 
             $locked = $this->container->get('repositories.chain_session')->isLockedByMachineDefault($gravures[0]['id']);
 
@@ -102,7 +105,7 @@ class ChainSessionFactory
                 'path_gabarit' => $categories[0]['path_gabarit'],
                 'name_gabarit' => $categories[0]['name_gabarit'],
                 'color' => $color,
-                'gravures' => $arrayIdGravure,
+                'gravures' => $gravures,
                 'locked' => $locked,
                 'status' => $gravures[0]['id_status'],
                 'chain_number' => $chain['chain_number']

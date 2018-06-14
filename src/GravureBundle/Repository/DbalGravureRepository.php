@@ -243,6 +243,17 @@ ORDER BY gravure_order.state_prestashop DESC, gravure_order.id_prestashop';
 
     }
 
+    public function setStatusByChainNumber($status, $chainNumber){
+        $sql = "UPDATE gravure
+ SET id_status = :id_status 
+ LEFT JOIN gravur
+ WHERE chain_number = :chain_number ";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("id_status", $status);
+        $stmt->bindValue("chain_number", $chainNumber);
+        $stmt->execute();
+    }
+
     public function FindAllWithHighSessionAndNotEngrave(){
         $sql = 'SELECT gravure.id, 
 gravure_category.surname,
