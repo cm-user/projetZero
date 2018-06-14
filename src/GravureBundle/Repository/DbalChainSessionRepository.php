@@ -57,8 +57,8 @@ GROUP BY chain_number');
         return $chainNumbers;
     }
 
-    public function findCategorySurnameByChainNumber($chainNumber){
-        $sql = 'SELECT gravure_category.surname
+    public function findCategorySurnameAndGabaritByChainNumber($chainNumber){
+        $sql = 'SELECT gravure_category.surname, gravure_category.path_gabarit, gravure_category.name_gabarit
 FROM gravure_chain_session 
 LEFT JOIN gravure ON gravure_chain_session.id_gravure = gravure.id
 LEFT JOIN gravure_product on gravure.id_product = gravure_product.id
@@ -68,8 +68,8 @@ WHERE gravure_chain_session.chain_number = :chain_number';
         $stmt = $this->connection->prepare($sql);
         $stmt->bindValue("chain_number", $chainNumber);
         $stmt->execute();
-        $surnames = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        return $surnames[0]['surname'];
+        $categories = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $categories;
     }
 
     public function findColorByChainNumber($chainNumber){
@@ -87,7 +87,7 @@ WHERE gravure_chain_session.chain_number = :chain_number';
     }
 
     public function findGravuresIdByChainNumber($chainNumber){
-        $sql = 'SELECT gravure.id
+        $sql = 'SELECT gravure.id, gravure.id_status
 FROM gravure_chain_session 
 LEFT JOIN gravure ON gravure_chain_session.id_gravure = gravure.id
 WHERE gravure_chain_session.chain_number = :chain_number';
@@ -97,12 +97,7 @@ WHERE gravure_chain_session.chain_number = :chain_number';
         $stmt->execute();
         $gravures = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-        $array = [];
-        foreach ($gravures as $gravure){
-            $array[] = $gravure['id'];
-        }
-
-        return $array;
+        return $gravures;
 
     }
 

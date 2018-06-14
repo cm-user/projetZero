@@ -10,12 +10,12 @@ setTimeout(function(){ setColorBlackForCaseFull(); },4000);//remet les cases non
 
 function createChainSession() {
     $.ajax({
-        url: Routing.generate('gravure_assistant_begin'),
+        url: Routing.generate('selection_serie_chain'),
         success: function (result) {
             $elem = "<table><thead style='background-color: #EFEFEF;'><td>Nb</td><td>Produits</td><td>Modifier</td></thead><tbody>";
             $.each(result, function (key, val) {
                 $elem += "<tr style=\"background-color: " + val['color'] + ";\" id=\"chain_number_" + (key+1) + "\">";
-                $elem += "<td>" + val['number'] + "</td>";
+                $elem += "<td>" + val['gravures'].length + "</td>";
                 $elem += "<td><a style=\"display:block;width:100%;height:100%; cursor: pointer;\" onclick=\"addListenerChangeColorCase("+ (key+1) +",'" +val['color'] +"');\">" + val['surname'] + "</a></td>";
                 // $elem += "<a onclick=\"addListenerChangeColorCase("+ (key+1) +",'" +val['color'] +"');\"><td>" + val['surname'] + "</td></a>";
                 $elem += val['locked'] == 0 ? "<td><button class='btn-picto' onclick=\"setArrayColorMachineDefault([" + val['gravures'] + "],'" +(key+1)+ "');\"><i class=\"glyphicon glyphicon-retweet\" style=\"\"></i></button> </td>" : "<td></td>";

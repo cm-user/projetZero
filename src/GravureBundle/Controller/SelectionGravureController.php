@@ -8,17 +8,19 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
-
-class SPAController extends Controller
+/**
+ * @Route("gravure")
+ */
+class SelectionGravureController extends Controller
 {
     /**
-     * @Route("/", name="spa_index")
+     * @Route("/", name="selection_gravure_index")
      */
     public function indexAction()
     {
         $datetime = $this->get('creator.datetime.limit')->getDateTime();
 
-        return $this->render('GravureBundle:spa:index.html.twig',['datetime' => $datetime]);
+        return $this->render('@Gravure/gravure/selection_gravure.html.twig',['datetime' => $datetime]);
     }
 
     /**

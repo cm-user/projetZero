@@ -83,20 +83,29 @@ class ChainSessionFactory
 
         foreach ($chainNumbers as $chain){
             //récupére le nom de la catégorie en fonction du numéro de chain
-            $surname = $this->container->get('repositories.chain_session')->findCategorySurnameByChainNumber($chain['chain_number']);
+            $categories = $this->container->get('repositories.chain_session')->findCategorySurnameAndGabaritByChainNumber($chain['chain_number']);
             //récupére de la même manière la couleur de la machine utilisée pour la chaîne
             $color = $this->container->get('repositories.chain_session')->findColorByChainNumber($chain['chain_number']);
             //récupére les gravures comprises dans cette chaîne
             $gravures = $this->container->get('repositories.chain_session')->findGravuresIdByChainNumber($chain['chain_number']);
 
-            $locked = $this->container->get('repositories.chain_session')->isLockedByMachineDefault($gravures[0]);
+
+            $arrayIdGravure = [];
+            foreach ($gravures as $gravure){
+                $arrayIdGravure[] = $gravure['id'];
+            }
+
+            $locked = $this->container->get('repositories.chain_session')->isLockedByMachineDefault($gravures[0]['id']);
 
             $array[] = [
-                'number' => $chain['COUNT(chain_number)'],
-                'surname' => $surname,
+                'surname' => $categories[0]['surname'],
+                'path_gabarit' => $categories[0]['path_gabarit'],
+                'name_gabarit' => $categories[0]['name_gabarit'],
                 'color' => $color,
-                'gravures' => $gravures,
-                'locked' => $locked
+                'gravures' => $arrayIdGravure,
+                'locked' => $locked,
+                'status' => $gravures[0]['id_status'],
+                'chain_number' => $chain['chain_number']
             ];
         }
 

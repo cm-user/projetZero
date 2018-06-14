@@ -135,7 +135,19 @@ WHERE gravure.id = :id";
     }
 
     public function findAllWithStatusOnloadAndPDFMachine($statusEnCours){
-        $sql = 'SELECT * FROM `gravure` LEFT JOIN gravure_machine on gravure_machine.id = gravure.id_machine WHERE gravure.id_status = :en_cours AND gravure_machine.type = "pdf" ';
+        $sql = 'SELECT 
+gravure.id,
+gravure.path_pdf,
+gravure_category.surname,
+gravure_category.folder,
+gravure_category.max_gabarit
+FROM `gravure` 
+LEFT JOIN gravure_machine on gravure_machine.id = gravure.id_machine 
+LEFT JOIN gravure_product on gravure_product.id = gravure.id_product
+LEFT JOIN gravure_category on gravure_category.id = gravure_product.id_category
+WHERE gravure.id_status = :en_cours 
+AND gravure_machine.type = "pdf"
+ORDER BY gravure_category.surname';
 
 
         $stmt = $this->connection->prepare($sql);

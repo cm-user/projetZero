@@ -11,32 +11,31 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use ZipArchive;
 
 /**
- * @Route("assistant")
+ * @Route("serie")
  */
-class GravureAssistantController extends Controller
+class SelectionSerieController extends Controller
 {
 
     /**
-     * @Route("/", name="gravure_assistant_index")
+     * @Route("/", name="selection_serie_index")
      */
     public function indexAction()
     {
         //TODO Ajout d'un numéro de session aux gravures
-        //TODO Changer leurs statut en EN COURS
+        //TODO Changer leurs statut en EN CHAIN
 
         $idSession = $this->get('repositories.session')->findMaxId();//recherche de la dernière session créé
         $machines = $this->get('repositories.machine')->findAllWithoutNull();//sélection de toutes les machines
 
-
+        //TODO pourquoi?
         $this->get('session')->set('number_session', $idSession); //on stock le numéro de session
-//        var_dump($this->get('session')->get('number_session'));
 
-        return $this->render('GravureBundle:gravure_assistant:index.html.twig', ['idSession' => $idSession, 'machines' => $machines]);
+        return $this->render('@Gravure/gravure/selection_serie.html.twig', ['idSession' => $idSession, 'machines' => $machines]);
     }
 
 
     /**
-     * @Route("/begin", name="gravure_assistant_begin", options={"expose"=true})
+     * @Route("/begin", name="selection_serie_chain", options={"expose"=true})
      */
     public function getTheChainSession()
     {
@@ -64,10 +63,10 @@ class GravureAssistantController extends Controller
 
 
         //TODO gérer le cas de la position du gabarit -> verouiller le gabarit au lancement de la gravure
-        $this->get('repositories.gravure')->updateStatusForGravureInChainSession($this->getParameter('status_EN_CHAIN'), $this->getParameter('status_EN_COURS')); //passe le statut de en chaîne à en cours pour les gravures liées à la session en cours
-        //TODO récupérer les gravures avec ce statut, récupérer celles fait par une machine pdf et les autres par machine mail
-        $mailGravures = $this->get('repositories.gravure')->findAllWithStatusOnLoadAndMailMachine($this->getParameter('status_EN_COURS'));
-        $PDFGravures = $this->get('repositories.gravure')->findAllWithStatusOnloadAndPDFMachine($this->getParameter('status_EN_COURS'));
+//        $this->get('repositories.gravure')->updateStatusForGravureInChainSession($this->getParameter('status_EN_CHAIN'), $this->getParameter('status_EN_COURS')); //passe le statut de en chaîne à en cours pour les gravures liées à la session en cours
+        //sélectionne les gravures ayant le statut EN_CHAIN et faites soit par une machine ayant besoin des mails soit par une machine ayant besoin des pdf
+        $mailGravures = $this->get('repositories.gravure')->findAllWithStatusOnLoadAndMailMachine($this->getParameter('status_EN_CHAIN'));
+        $PDFGravures = $this->get('repositories.gravure')->findAllWithStatusOnloadAndPDFMachine($this->getParameter('status_EN_CHAIN'));
 
 
         $mails = $em->getRepository('GravureBundle:Mail')->findAll();
@@ -80,23 +79,44 @@ class GravureAssistantController extends Controller
 
         $ZIPFileName = $this->getParameter("gravure_zip_directory") . "GRAVURE.zip";
 
+
         if ($zip->open($ZIPFileName) == TRUE)
             if ($zip->open($ZIPFileName, ZipArchive::CREATE) === true) {
 
 
                 if ($PDFGravures == []) {
-                    $file = fopen($this->getParameter("gravure_zip_directory") . "NO_PDF.txt", "w");
-                    fclose($file);
+                    $fileTxt = fopen($this->getParameter("gravure_zip_directory") . "NO_PDF.txt", "w");
+                    fclose($fileTxt);
                     $zip->addFile($this->getParameter("gravure_zip_directory") . 'NO_PDF.txt', 'NO_PDF.txt'); //Ajout d'un fichier txt vide si il n'y a aucun pdf
                 } else {
-                    foreach ($PDFGravures as $PDFGravure) {
-//                    $content = file_get_contents($PDFGravure['path_pdf']);
-                        $file = str_replace('http://tools.cadeau-maestro.com/gravure/pdf/', '', $PDFGravure['path_pdf']);
-//                        $file = file_get_contents($file);
-                        dump($this->getParameter("gravure_zip_directory") . $file);die;
-//                    file_put_contents($file, $file); //creation du fichier au bon repertoire
+                    $counterSurname = 0; //compteur pour déterminer le nombre de gravure par dossier
+                    $counterFolder = 1; //compteur pour spécifier le nom du dossier
+                    $oldDirectoryName = ''; //nom de l'ancienne catégorie avant itération
 
-                        $zip->addFile($this->getParameter("gravure_zip_directory") . $file,  $file); //Ajout du fichier au ZIP dans un dossier
+                    foreach ($PDFGravures as $PDFGravure) {
+                        $directoryName = $PDFGravure['folder'];
+
+                        if ($oldDirectoryName == $directoryName) { //vérifie que les deux gravures soient de la même catégorie
+                            if ($counterSurname % $PDFGravure['max_gabarit'] == 0) { //vérifie que le nombre de gravure par dossier ne soit pas dépassé
+                                $counterSurname = 0;
+                                $counterFolder++; //incrémente le compteur du dossier afin d'en créer un nouveau
+                            }
+
+                        }
+                        else {
+                            $counterSurname = 0;
+                            $counterFolder = 1;
+
+                        }
+
+                        $counterSurname++;
+
+                        $file = str_replace('http://tools.cadeau-maestro.com/gravure/pdf/', '', $PDFGravure['path_pdf']); //récupére le nom du fichier
+                        $fileName = $PDFGravure['surname'] . '(' . $counterSurname . ').pdf';  //création du nom du fichier avec son numéro
+
+                        $zip->addFile($this->getParameter("gravure_pdf_directory") . $file, "$directoryName($counterFolder)/$fileName"); //Ajout du fichier au ZIP
+
+                        $oldDirectoryName = $directoryName;
 
                     }
                 }
@@ -113,7 +133,7 @@ class GravureAssistantController extends Controller
         $response->headers->set('Content-Length', filesize($ZIPFileName));
         $response->headers->set('Content-disposition', 'filename=GRAVURE.zip');
         ob_end_clean();
-        self::clearFolder($this->getParameter("gravure_zip_directory"));
+        self::clearFolder($this->getParameter("gravure_zip_directory")); //efface tout le contenu du dossier
 
         return $response;
     }

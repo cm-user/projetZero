@@ -373,62 +373,62 @@ function getGravureTomorrow() {
         success: function (result) {
             $.each(result, function (key, val) {
 
-                    //à la première itération on recupère le numéro de commande
-                    id_order = val['id_prestashop'];
+                //à la première itération on recupère le numéro de commande
+                id_order = val['id_prestashop'];
 
-                    //vérifie que la catégorie précédente était différente, si c'est le cas on crée un nouveau tableau
-                    if (id_order != old_id_order) {
+                //vérifie que la catégorie précédente était différente, si c'est le cas on crée un nouveau tableau
+                if (id_order != old_id_order) {
 
-                        $elem += "</tr>";
-                        if (compteur_order != 0) {
-                            $elem += "</table>";
-                            $elem += "</div>";
-                            $elem += compteur_order % 2 == 0 ? "</div>" : ""; //ferme la row avant d'en ouvrir une nouvelle
-                        }
-
-                        $elem += compteur_order % 2 == 0 ? "<div class=\"row\">" : ""; //affiche une row lorsque le nombre est de X
-                        $elem += "<div class=\"col-sm-6\" >";
-                        $elem += "<table class=\"table\"> <tr style=\"background-color:#6C6A6B; height:97px;\">";
-                        $elem += "<td><span style=\"font-size: 45px ;text-transform: uppercase; \">"; //nom de la catégorie
-                        $elem += id_order; //nom de la catégorie
-                        $elem += "</span></td>"; //nom de la catégorie
-                        $elem += "<td></td>";
-                        $elem += "</tr>";
-                        compteur_order++; //incrémentation du compteur
+                    $elem += "</tr>";
+                    if (compteur_order != 0) {
+                        $elem += "</table>";
+                        $elem += "</div>";
+                        $elem += compteur_order % 2 == 0 ? "</div>" : ""; //ferme la row avant d'en ouvrir une nouvelle
                     }
 
-                    $elem +=  "<tr  style=\"background-color:#6C6A6B;\">" ;
-                    $elem += "<td><a href=\"#\" data-toggle=\"modal\" data-target=\"#Modal_Picture_" + val['id'] + "\"><img src=\"" + val['jpg'] + " \" width='100'></a></td>";
+                    $elem += compteur_order % 2 == 0 ? "<div class=\"row\">" : ""; //affiche une row lorsque le nombre est de X
+                    $elem += "<div class=\"col-sm-6\" >";
+                    $elem += "<table class=\"table\"> <tr style=\"background-color:#6C6A6B; height:97px;\">";
+                    $elem += "<td><span style=\"font-size: 45px ;text-transform: uppercase; \">"; //nom de la catégorie
+                    $elem += id_order; //nom de la catégorie
+                    $elem += "</span></td>"; //nom de la catégorie
+                    $elem += "<td></td>";
+                    $elem += "</tr>";
+                    compteur_order++; //incrémentation du compteur
+                }
 
-                    if (val['id_product'] == null) {
-                        $elem += "<td><div class=\"alert alert-danger\" role=\"alert\">Alerte ce produit n'a pas de catégorie</div><a class=\"btn btn-warning\" id=\"add_" + val['id'] + "\" href=\"/projetZero2/web/app_dev.php/engraving/category/new/" + val['id_product'] + "\">Ajouter cette catégorie</a></td>";
-                        arrayIdPrestashop.push(val['id_prestashop']);
-                    }
-                    else {
-                        $elem += "<td></td>"
-                    }
+                $elem +=  "<tr  style=\"background-color:#6C6A6B;\">" ;
+                $elem += "<td><a href=\"#\" data-toggle=\"modal\" data-target=\"#Modal_Picture_" + val['id'] + "\"><img src=\"" + val['jpg'] + " \" width='100'></a></td>";
 
-                    //modal
-                    $elem += "<div class=\"modal fade bd-example-modal-lg\" id=\"Modal_Picture_" + val['id'] + "\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"Modal_Picture_title_" + val['id'] + "\" aria-hidden=\"true\">";
-                    $elem += "<div class=\"modal-dialog modal-lg\" role=\"document\">";
-                    $elem += "<div class=\"modal-content\">";
-                    $elem += "<div class=\"modal-header\">";
-                    $elem += "<h5 class=\"modal-title\" id=\"Modal_Picture_title_" + val['id'] + "\"></h5>";
-                    $elem += "<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">";
-                    $elem += "<span aria-hidden=\"true\">&times;</span>";
-                    $elem += "</button>";
-                    $elem += "</div>";
-                    $elem += "<div class=\"modal-body\">";
-                    $elem += "<img src=\"" + val['jpg'] + " \" width=\'750\'>";
-                    $elem += "</div>";
-                    $elem += "<div class=\"modal-footer\">";
-                    $elem += "<button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Fermer</button>";
-                    $elem += "</div>";
-                    $elem += "</div>";
-                    $elem += "</div>";
-                    $elem += "</div>";
+                if (val['id_product'] == null) {
+                    $elem += "<td><div class=\"alert alert-danger\" role=\"alert\">Alerte ce produit n'a pas de catégorie</div><a class=\"btn btn-warning\" id=\"add_" + val['id'] + "\" href=\"/projetZero2/web/app_dev.php/engraving/category/new/" + val['id_product'] + "\">Ajouter cette catégorie</a></td>";
+                    arrayIdPrestashop.push(val['id_prestashop']);
+                }
+                else {
+                    $elem += "<td></td>"
+                }
 
-                    old_id_order = val['id_prestashop'];
+                //modal
+                $elem += "<div class=\"modal fade bd-example-modal-lg\" id=\"Modal_Picture_" + val['id'] + "\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"Modal_Picture_title_" + val['id'] + "\" aria-hidden=\"true\">";
+                $elem += "<div class=\"modal-dialog modal-lg\" role=\"document\">";
+                $elem += "<div class=\"modal-content\">";
+                $elem += "<div class=\"modal-header\">";
+                $elem += "<h5 class=\"modal-title\" id=\"Modal_Picture_title_" + val['id'] + "\"></h5>";
+                $elem += "<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">";
+                $elem += "<span aria-hidden=\"true\">&times;</span>";
+                $elem += "</button>";
+                $elem += "</div>";
+                $elem += "<div class=\"modal-body\">";
+                $elem += "<img src=\"" + val['jpg'] + " \" width=\'750\'>";
+                $elem += "</div>";
+                $elem += "<div class=\"modal-footer\">";
+                $elem += "<button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Fermer</button>";
+                $elem += "</div>";
+                $elem += "</div>";
+                $elem += "</div>";
+                $elem += "</div>";
+
+                old_id_order = val['id_prestashop'];
 
 
             });
