@@ -92,11 +92,25 @@ class ChainSessionFactory
 
 //            $arrayIdGravure = [];
 //            $arrayPathJpgGravure = [];
-//            $arrayGravure
-//            foreach ($gravures as $gravure){
-//                $arrayIdGravure[] = $gravure['id'];
-//                $arrayPathJpgGravure[] = $gravure['path_jpg'];
-//            }
+            $arrayGravureText = [];
+            foreach ($gravures as $gravure){
+
+                $texts = $this->container->get('repositories.gravure_text')->findTextByIdGravure($gravure['id']);
+
+                foreach ($texts as $text){
+
+                    $arrayGravureText[] = [
+                      $gravure['id'] => [
+                          'name_block' => $text->getNameBlock(),
+                          'value' => $text->getValue()
+                      ]
+                    ];
+
+                }
+
+                $arrayIdGravure[] = $gravure['id'];
+                $arrayPathJpgGravure[] = $gravure['path_jpg'];
+            }
 
             $locked = $this->container->get('repositories.chain_session')->isLockedByMachineDefault($gravures[0]['id']);
 
@@ -106,8 +120,10 @@ class ChainSessionFactory
                 'name_gabarit' => $categories[0]['name_gabarit'],
                 'color' => $color,
                 'gravures' => $gravures,
+                'texts' => $arrayGravureText,
                 'locked' => $locked,
                 'status' => $gravures[0]['id_status'],
+                'machine' => $gravures[0]['type'],
                 'chain_number' => $chain['chain_number']
             ];
         }

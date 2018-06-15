@@ -49,7 +49,10 @@ SQL;
 
     public function findTextByIdGravure($id){
 
-        $sql = "SELECT * FROM gravure WHERE id_gravure = :id";
+        $sql = "SELECT gravure_link_gravure_text.id_gravure, gravure_text.name_block, gravure_text.value
+FROM `gravure_link_gravure_text` 
+LEFT JOIN gravure_text ON gravure_link_gravure_text.id_text = gravure_text.id
+WHERE gravure_link_gravure_text.id_gravure = :id";
         $stmt = $this->connection->prepare($sql);
         $stmt->bindValue("id", $id);
         $stmt->execute();

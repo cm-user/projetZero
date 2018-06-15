@@ -201,9 +201,15 @@ class GravureController extends Controller
      */
     public function setStatusOnLoad($chainNumber)
     {
-        $this->get('repositories.gravure')->setStatusByChainNumber($this->getParameter('status_EN_COURS'), $chainNumber);
+        $request = $this->get('repositories.gravure')->setStatusByChainNumber($this->getParameter('status_EN_COURS'), $chainNumber);
 
-        return new JsonResponse("Changement de statut effectué");
+        if($request == true){
+            return new JsonResponse("Changement de statut effectué");
+        }
+        else {
+            return new JsonResponse("Impossible de modifier le statut des gravures lié à la chaîn N° " . $chainNumber);
+        }
+
     }
 
 }

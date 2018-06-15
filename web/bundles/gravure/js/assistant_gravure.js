@@ -18,65 +18,29 @@ function createChainSession() {
                 $elem += "<td>" + val['gravures'].length + "</td>";
                 $elem += "<td><a style=\"display:block;width:100%;height:100%; cursor: pointer;\" onclick=\"addListenerChangeColorCase(" + (key + 1) + ",'" + val['color'] + "');\">" + val['surname'] + "</a></td>";
                 if (val['status'] == EN_COURS) {
-                    $elem += "<td> En cours...</td>";
+                    $elem += "<td id=\"case_status_" + val['chain_number'] + "\"> En Cours...</td>";
                 }
                 else if (val['status'] == TERMINE) {
-                    $elem += "<td>Terminé</td>";
+                    $elem += "<td id=\"case_status_" + val['chain_number'] + "\">Terminé</td>";
                 }
                 else {
-                    $elem += "<td></td>";
+                    $elem += "<td id=\"case_status_" + val['chain_number'] + "\"></td>";
                 }
                 $elem += "</tr>";
 
                 //TODO voir pour le cas du gabarit
 
-                $elem2 += "<div class=\"modal fade bd-example-modal-lg\" id=\"Modal_Serie_Gravure_" + val['chain_number'] + "\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"Modal_Serie_Gravure_Title_" + val['chain_number'] + "\" aria-hidden=\"true\">";
-                $elem2 += "<div class=\"modal-dialog modal-lg\" role=\"document\">";
-                $elem2 += "<div class=\"modal-content\">";
-                $elem2 += "<div class=\"modal-header\">";
-                $elem2 += "<h3 class=\"modal-title\" id=\"Modal_Serie_Gravure_Title_" + val['chain_number'] + "\" style=\"color:" + val['color'] + "\"> Série " + val['surname'] + "s  </h3>";
-                $elem2 += "<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">";
-                $elem2 += "<span aria-hidden=\"true\">&times;</span>";
-                $elem2 += "</button>";
-                $elem2 += "</div>";
-                $elem2 += "<div class=\"modal-body\">";
 
-                $elem2 += "<div class='row'>";
-                $elem2 += "<div class=\"col-sm-3\">" +
-                    "<img src=\"" + val['path_gabarit'] + "\" style='max-height: 300px; max-width: 300px' >" +
-                    "<h3>Gabarit : " + val['name_gabarit'] + "</h3>" +
-                    "<p>Positionnez les produits suivants sur ce gabarit dans le bon ordre.</p>" +
-                    "</div>";
-
-                for (var i = 0; i < val['gravures'].length; i++) {
-                    // $elem2 += "<p>" + val['gravures'][i]['id'] + "</p>";
-                    $elem2 += "<div class=\"col-sm-3\" align='center'>";
-                    $elem2 += "<h3 style='background-color:black; color:white; text-align: center; margin: 0px 90px;'>Position " + (i+1) + "</h3>";
-                    $elem2 += "<img src=\"" + val['gravures'][i]['path_jpg'] + "\" style='max-height: 300px; max-width: 300px' >" ;
-                    $elem2 += "<i><h4 style='text-align: center;'>" + val['gravures'][i]['alias'] + "</h4></i>";
-                    $elem2 += "<h2 style='background-color:#FF6B6B; color:white;'> Case " + val['gravures'][i]['box'] + "</h2>";
-                    $elem2 += "</div>";
-
+                //vérifie le type de la machine pour la chaîn afin d'afficher une modal plus pertinente
+                if (val['machine'] == 'mail') {
+                    $elem2 += addModalForMachineMail(val);
                 }
-
-                $elem2 += "</div>";
-
-                $elem2 += "<div class='row' id=\"div_button_engrave_launch_" +val['chain_number'] + "\"><br><br><button class=\"btn btn-default\" onclick='displayMessageValidation(" + val['chain_number'] + ");' role=\"button\"\n" +
-                    "                        style=\"border-radius: 15px;padding: 10px;background-color: #575354;color:white;\">\n" +
-                    "                    <h3>\n" +
-                    "                        <i class=\"glyphicon glyphicon-download-alt\" style=\"font-size:35px;\"></i>\n" +
-                    "                        Gravure\n" +
-                    "                    </h3>\n" +
-                    "                </button></div>";
-
-                $elem2 += "<div id=\"msg_validation_engrave_" + val['chain_number'] + "\"></div>";
-
-
-                $elem2 += "</div>";
-                $elem2 += "</div>";
-                $elem2 += "</div>";
-                $elem2 += "</div>";
-
+                else if (val['machine'] == 'pdf') {
+                    $elem2 += addModalForMachinePdf(val);
+                }
+                else {
+                    alert("une gravure n'a pas de machine liée");
+                }
 
 
             });
@@ -300,33 +264,52 @@ function setColorBlackForCaseFull() {
 
 //affiche un message pour l'utilisateur pour confirmer la gravure
 function displayMessageValidation(chain_number) {
-
-    $elem = "<h3>Avez-vous bien lancer la gravure ? </h3>" ;
-    $elem += "<b><h3> Illustrator -> Logiciel de gravure -> Machine Laser</h3></b>";
-    $elem += "<button class='btn btn-success' onclick=\"setStatusGravure(" + chain_number + ");\"><h3>Oui, j'ai bien lancé la gravure</h3></button>";
-    $elem += "<button class='btn btn-danger' onclick=\"closeMessageValidationEngrave(" + chain_number + ");\"><h3>Non, pas encore</h3></button>";
-
-    $('#msg_validation_engrave_' + chain_number).html($elem);
+    $('#msg_validation_engrave_' + chain_number).show();
 }
 
 //change le statut en COURS pour les gravures liées à cette chaîne
-function setStatusGravure(chain_number) {
+function setStatusGravureOnLoad(chain_number) {
     $.ajax({
         url: Routing.generate('gravure_status_on_load', {chainNumber: chain_number}),
         success: function (result) {
 
-            $("#Modal_Serie_Gravure_" + chain_number).modal('hide');
-            closeMessageValidationEngrave(chain_number);
-            //TODO afficher un nouveau bouton dans la modal pour dire que la gravure est terminé
-            $("#div_button_engrave_launch_" + chain_number).html("<br><button class=\"btn btn-default\" onclick='displayMessageValidation(" + val['chain_number'] + ");' role=\"button\" \n" +
-                "                                           style=\"border-radius: 15px;padding: 10px;background-color: #575354;color:white;\"> \n" +
-                "                                       <h3> +\n" +
-                "                                            <i class=\"glyphicon glyphicon-download-alt\" style=\"font-size:35px;\"></i> \n" +
-                "                                            Gravé et Rangé\n" +
-                "                                       </h3>\n" +
-                "                                   </button>");
+            $("#Modal_Serie_Gravure_" + chain_number).modal('hide'); //ferme la modal
+            $("div_button_engrave_launch_" + chain_number).hide(); //masque le bouton gravure
+            closeMessageValidationEngrave(chain_number); //masque le message pour valider la gravure
+            $("#case_status_" + chain_number).html("En Cours...");
 
-            //TODO ajouter En cours dans le tableau
+            $elem = "";
+            $elem += "<br><button class=\"btn btn-default\" data-toggle=\"collapse\" data-target=\"#collapse_arrangement_box_" + chain_number + "\" aria-expanded=\"false\" aria-controls=\"collapse_arrangement_box_" + chain_number + "\" \n" +
+                "                                           style=\"border-radius: 15px;padding: 10px;background-color: #575354;color:white;\"> \n" +
+                "                                       <h3> \n" +
+                "                                            <i class=\"glyphicon glyphicon-ok\" style=\"font-size:35px;\"></i> Gravé et Rangé\n" +
+                "                                       </h3>\n" +
+                "                                   </button>";
+
+            $elem += "<div class=\"collapse\" id=\"collapse_arrangement_box_" + chain_number + "\">\n" +
+                "Coucou " +
+                "</div>";
+
+
+            // $elem += "<br><button class=\"btn btn-default\" data-toggle=\"modal\" data-backdrop=\"static\" role=\"button\" data-target=\"#Modal_Confirmation_Finish_Gravure_" + chain_number + "\" \n" +
+            //     "                                           style=\"border-radius: 15px;padding: 10px;background-color: #575354;color:white;\"> \n" +
+            //     "                                       <h3> \n" +
+            //     "                                            <i class=\"glyphicon glyphicon-ok\" style=\"font-size:35px;\"></i> Gravé et Rangé\n" +
+            //     "                                       </h3>\n" +
+            //     "                                   </button>";
+
+            // $elem += "<div class=\"modal fade\" id=\"Modal_Confirmation_Finish_Gravure_" + chain_number + "\" tabindex=\"1\" role=\"dialog\" aria-hidden=\"true\">\n" +
+            //     "  <div class=\"modal-dialog modal-dialog-centered\" role=\"document\">\n" +
+            //     "    <div class=\"modal-content\">\n" +
+            //     "      <div class=\"modal-body\">\n" +
+            //     "        <h1>Avez-vous bien ranger les gravures ? </h1>\n" +
+            //     "      </div>\n" +
+            //     "    </div>\n" +
+            //     "  </div>\n" +
+            //     "</div>";
+
+            $("#div_button_engrave_launch_" + chain_number).html($elem);
+
 
         },
         error: function (result) {
@@ -335,7 +318,147 @@ function setStatusGravure(chain_number) {
     });
 }
 
+function displayModalConfirmation(chain_number) {
+}
 
-function closeMessageValidationEngrave(chain_number){
+//change le statut en TERMINE pour les gravures et fait disparaître la chaîne du tableau
+function setStatusGravureFinish(chain_number) {
+
+}
+
+function closeMessageValidationEngrave(chain_number) {
     $('#msg_validation_engrave_' + chain_number).hide();
+}
+
+function addModalForMachinePdf(val) {
+
+    $elem2 = "<div class=\"modal fade bd-example-modal-lg\" id=\"Modal_Serie_Gravure_" + val['chain_number'] + "\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"Modal_Serie_Gravure_Title_" + val['chain_number'] + "\" aria-hidden=\"true\">";
+    $elem2 += "<div class=\"modal-dialog modal-lg\" role=\"document\">";
+    $elem2 += "<div class=\"modal-content\">";
+    $elem2 += "<div class=\"modal-header\">";
+    $elem2 += "<h3 class=\"modal-title\" id=\"Modal_Serie_Gravure_Title_" + val['chain_number'] + "\" style=\"color:" + val['color'] + "\"> Série " + val['surname'] + "s  </h3>";
+    $elem2 += "<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">";
+    $elem2 += "<span aria-hidden=\"true\">&times;</span>";
+    $elem2 += "</button>";
+    $elem2 += "</div>";
+    $elem2 += "<div class=\"modal-body\">";
+
+    $elem2 += "<div class='row'>";
+    $elem2 += "<div class=\"col-sm-3\">" +
+        "<img src=\"" + val['path_gabarit'] + "\" style='max-height: 300px; max-width: 300px' >" +
+        "<h3>Gabarit : " + val['name_gabarit'] + "</h3>" +
+        "<p>Positionnez les produits suivants sur ce gabarit dans le bon ordre.</p>" +
+        "</div>";
+
+    for (var i = 0; i < val['gravures'].length; i++) {
+        $elem2 += "<div class=\"col-sm-3\" align='center'>";
+        $elem2 += "<h3 style='background-color:black; color:white; text-align: center; margin: 0px 90px;'>Position " + (i + 1) + "</h3>";
+        $elem2 += "<img src=\"" + val['gravures'][i]['path_jpg'] + "\" style='max-height: 300px; max-width: 300px' >";
+        $elem2 += "<i><h4 style='text-align: center;'>" + val['gravures'][i]['alias'] + "</h4></i>";
+
+        $elem2 += "<button class=\"btn btn-primary\" type=\"button\" data-toggle=\"collapse\" " +
+            "data-target=\"#collapse_text_" + val['gravures'][i]['id'] + "\" aria-expanded=\"false\" aria-controls=\"collapse_text_" + val['gravures'][i]['id'] + "\">\n" +
+            "    Voir les textes \n" +
+            "  </button>";
+
+        $elem2 += " <div class=\"collapse\" id=\"collapse_text_" + val['gravures'][i]['id'] + "\"> <div class=\"card card-body\"> <table class='table-bordered table-striped' style='width: 100%; font-size: 20px;'>";
+
+        val['texts'].forEach(function (element) {
+            if (element[val['gravures'][i]['id']] != undefined) { //vérifie que l'index de l'objet existe si oui ajout des textes
+                $elem2 += "<tr>";
+                $elem2 += "<td>" + element[val['gravures'][i]['id']]['name_block'] + "</td>";
+                $elem2 += "<td>" + element[val['gravures'][i]['id']]['value'] + "</td>";
+                $elem2 += "</tr>";
+            }
+        });
+        $elem2 += "</table></div></div>";
+        $elem2 += "<h2 style='background-color:#FF6B6B; color:white;'> Case " + val['gravures'][i]['box'] + "</h2>";
+        $elem2 += "</div>";
+    }
+
+    $elem2 += "</div>";
+
+    $elem2 += "<div class='row' id=\"div_button_engrave_launch_" + val['chain_number'] + "\"><br><br><button class=\"btn btn-default\" onclick='displayMessageValidation(" + val['chain_number'] + ");' role=\"button\"\n" +
+        "                        style=\"border-radius: 15px;padding: 10px;background-color: #575354;color:white;\">\n" +
+        "                    <h3>\n" +
+        "                        <i class=\"glyphicon glyphicon-download-alt\" style=\"font-size:35px;\"></i>\n" +
+        "                        Gravure\n" +
+        "                    </h3>\n" +
+        "                </button></div>";
+
+    $elem2 += "<div id=\"msg_validation_engrave_" + val['chain_number'] + "\" hidden>";
+    $elem2 += "<h3>Avez-vous bien lancer la gravure ? </h3>";
+    $elem2 += "<b><h3> Illustrator -> Logiciel de gravure -> Machine Laser</h3></b>";
+    $elem2 += "<h3> Vérifiez la correspondance entre les prévisualitions ci-dessus et les fichiers de votre plan de travail</h3>";
+    $elem2 += "<button class='btn btn-success' onclick=\"setStatusGravureOnLoad(" + val['chain_number'] + ");\"><h3>Oui, j'ai bien lancé la gravure</h3></button>";
+    $elem2 += "<button class='btn btn-danger' onclick=\"closeMessageValidationEngrave(" + val['chain_number'] + ");\"><h3>Non, pas encore</h3></button>";
+    $elem2 += "</div>";
+
+    $elem2 += "</div>";
+    $elem2 += "</div>";
+    $elem2 += "</div>";
+    $elem2 += "</div>";
+
+    return $elem2;
+}
+
+function addModalForMachineMail(val) {
+
+    $elem2 = "<div class=\"modal fade bd-example-modal-lg\" id=\"Modal_Serie_Gravure_" + val['chain_number'] + "\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"Modal_Serie_Gravure_Title_" + val['chain_number'] + "\" aria-hidden=\"true\">";
+    $elem2 += "<div class=\"modal-dialog modal-lg\" role=\"document\">";
+    $elem2 += "<div class=\"modal-content\">";
+    $elem2 += "<div class=\"modal-header\">";
+    $elem2 += "<h3 class=\"modal-title\" id=\"Modal_Serie_Gravure_Title_" + val['chain_number'] + "\" style=\"color:" + val['color'] + "\"> Série " + val['surname'] + "s  </h3>";
+    $elem2 += "<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">";
+    $elem2 += "<span aria-hidden=\"true\">&times;</span>";
+    $elem2 += "</button>";
+    $elem2 += "</div>";
+    $elem2 += "<div class=\"modal-body\">";
+
+    $elem2 += "<div class='row'>";
+
+    for (var i = 0; i < val['gravures'].length; i++) {
+        $elem2 += "<div class=\"col-sm-3\" align='center'>";
+        $elem2 += "<img src=\"" + val['gravures'][i]['path_jpg'] + "\" style='max-height: 300px; max-width: 300px' >";
+        $elem2 += "<i><h4 style='text-align: center;'>" + val['gravures'][i]['alias'] + "</h4></i>";
+
+        $elem2 += "<table class='table-bordered table-striped' style='width: 100%; font-size: 20px;'>";
+
+        val['texts'].forEach(function (element) {
+            if (element[val['gravures'][i]['id']] != undefined) { //vérifie que l'index de l'objet existe si oui ajout des textes
+                $elem2 += "<tr>";
+                $elem2 += "<td>" + element[val['gravures'][i]['id']]['name_block'] + "</td>";
+                $elem2 += "<td>" + element[val['gravures'][i]['id']]['value'] + "</td>";
+                $elem2 += "</tr>";
+            }
+        });
+        $elem2 += "</table>";
+        $elem2 += "<h2 style='background-color:#FF6B6B; color:white;'> Case " + val['gravures'][i]['box'] + "</h2>";
+        $elem2 += "</div>";
+    }
+
+    $elem2 += "</div>";
+
+    $elem2 += "<div class='row' id=\"div_button_engrave_launch_" + val['chain_number'] + "\"><br><br><button class=\"btn btn-default\" onclick='displayMessageValidation(" + val['chain_number'] + ");' role=\"button\"\n" +
+        "                        style=\"border-radius: 15px;padding: 10px;background-color: #575354;color:white;\">\n" +
+        "                    <h3>\n" +
+        "                        <i class=\"glyphicon glyphicon-download-alt\" style=\"font-size:35px;\"></i>\n" +
+        "                        Gravure\n" +
+        "                    </h3>\n" +
+        "                </button></div>";
+
+    $elem2 += "<div id=\"msg_validation_engrave_" + val['chain_number'] + "\" hidden>";
+    $elem2 += "<h3>Avez-vous bien lancer la gravure ? </h3>";
+    $elem2 += "<b><h3> Illustrator -> Logiciel de gravure -> Machine Laser</h3></b>";
+    $elem2 += "<h3> Vérifiez la correspondance entre les prévisualitions ci-dessus et les fichiers de votre plan de travail</h3>";
+    $elem2 += "<button class='btn btn-success' onclick=\"setStatusGravureOnLoad(" + val['chain_number'] + ");\"><h3>Oui, j'ai bien lancé la gravure</h3></button>";
+    $elem2 += "<button class='btn btn-danger' onclick=\"closeMessageValidationEngrave(" + val['chain_number'] + ");\"><h3>Non, pas encore</h3></button>";
+    $elem2 += "</div>";
+
+    $elem2 += "</div>";
+    $elem2 += "</div>";
+    $elem2 += "</div>";
+    $elem2 += "</div>";
+
+    return $elem2;
 }

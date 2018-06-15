@@ -1,8 +1,6 @@
 services:
-#    gravure.example:
-#        class: GravureBundle\Example
-#        arguments: ["@service_id", "plain_value", "%parameter%"]
 
+#Machine
     machine_submit:
         class: GravureBundle\Entity\Domain\Machine
 
@@ -14,7 +12,7 @@ services:
         arguments: ["@doctrine.dbal.default_connection"]
 
 
-
+#Category
     category_submit:
         class: GravureBundle\Entity\Domain\Category
 
@@ -31,7 +29,7 @@ services:
         tags:
            - { name : twig.extension }
 
-
+#Product
     repositories.product:
         alias: repositories.product.dbal
 
@@ -46,7 +44,7 @@ services:
                - { name : twig.extension }
 
 
-
+#Text
     text_submit:
         class: GravureBundle\Entity\Domain\Text
 
@@ -57,8 +55,15 @@ services:
         class: GravureBundle\Repository\DbalTextRepository
         arguments: ["@doctrine.dbal.default_connection"]
 
+#GravureText
+    repositories.gravure_text:
+        alias: repositories.gravure_text.dbal
 
+    repositories.gravure_text.dbal:
+        class: GravureBundle\Repository\DbalGravureTextRepository
+        arguments: ["@doctrine.dbal.default_connection"]
 
+#Session
     repositories.session:
         alias: repositories.session.dbal
 
@@ -67,7 +72,7 @@ services:
         arguments: ["@doctrine.dbal.default_connection"]
 
 
-
+#Status
     repositories.status:
         alias: repositories.status.dbal
 
@@ -76,7 +81,7 @@ services:
         arguments: ["@doctrine.dbal.default_connection"]
 
 
-
+#Order
     repositories.order:
         alias: repositories.order.dbal
 
@@ -91,7 +96,7 @@ services:
            - { name : twig.extension }
 
 
-
+#Gravure
     repositories.gravure:
         alias: repositories.gravure.dbal
 
@@ -104,19 +109,19 @@ services:
         arguments:  ["@service_container"]
 
 
-
+#CreatorLinkFile
     creator.link.file:
         class: GravureBundle\Entity\Utils\CreatorLinkFile
         arguments:  ["@service_container"]
 
 
-
+#DateTimeLimit
     creator.datetime.limit:
         class: GravureBundle\Entity\Utils\DateTimeLimit
         arguments:  ["@doctrine.orm.entity_manager"]
 
 
-
+#ChainSession
     repositories.chain_session:
         alias: repositories.chain_session.dbal
 

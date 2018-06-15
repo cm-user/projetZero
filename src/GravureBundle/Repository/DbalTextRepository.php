@@ -63,7 +63,6 @@ SQL;
 
         //selectionne l'id de la table Text
         $idText = self::findLast();
-        var_dump($idText['MAX(id)']);
 
 
         //insere l'id de la table gravure et l'id de la table text dans la table gravure_link qui servira de liaison
