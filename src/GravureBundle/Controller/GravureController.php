@@ -148,9 +148,8 @@ class GravureController extends Controller
      */
     public function getGravureWithChainNumber()
     {
-
         //récupération de toutes les gravures sans session et qui sont arrivées après l'heure limite de fin de journée
-        $gravures = $this->get('repositories.gravure')->findAllWithChainNumber();
+        $gravures = $this->get('repositories.gravure')->findAllWithHighSessionAndStatusNotFinish($this->getParameter('status_TERMINE'));
 
         $formatted = [];
 
@@ -163,7 +162,6 @@ class GravureController extends Controller
                 'id_prestashop' => $gravure['id_prestashop'],
                 'jpg' => $gravure['path_jpg'],
                 'box' => $gravure['box'],
-                'gift' => $gravure['gift'],
                 'status' => $gravure['id_status'],
                 'chain_number' => $gravure['chain_number'],
                 'colorCategory' => $gravure['color'],
@@ -201,7 +199,8 @@ class GravureController extends Controller
      */
     public function setStatusOnLoad($chainNumber)
     {
-        $request = $this->get('repositories.gravure')->setStatusByChainNumber($this->getParameter('status_EN_COURS'), $chainNumber);
+        $request = $this->get('repositories.gravure')->setStatusByChainNumber($this->getParameter('status_EN_COURS'), $chainNumber); //modification du statut pour les gravures liées à la chaîne
+        $this->get('repositories.chain_session')->setLockedPosition($chainNumber);  // verouillage de la chaîne
 
         if($request == true){
             return new JsonResponse("Changement de statut effectué");
@@ -209,6 +208,43 @@ class GravureController extends Controller
         else {
             return new JsonResponse("Impossible de modifier le statut des gravures lié à la chaîn N° " . $chainNumber);
         }
+
+    }
+
+    /**
+     * @Route("/gravure/status/finish/{chainNumber}", name="gravure_status_finish", options={"expose"=true})
+     */
+    public function setStatusFinish($chainNumber)
+    {
+        $this->get('repositories.gravure')->setStatusByChainNumber($this->getParameter('status_TERMINE'), $chainNumber); //modification du statut pour les gravures liées à la chaîne
+
+        $orders = $this->get('repositories.gravure')->findOrderByChainNumber($chainNumber); // récupére les commandes liées à la chaîne
+
+        if ($orders != null){
+            $arrayOrderWithGift = [];
+            $arrayOrderWithoutGift = [];
+            foreach ($orders as $order){
+                $orderFinish = $this->get('repositories.order')->isEngraved($this->getParameter('status_TERMINE'), $order['id_order']); //récupére la commande si toutes ses gravures sont terminées
+                if($orderFinish != null){
+                    $this->get('repositories.order')->setEngrave($order['id_order']); //Renseigne que la commande est gravé
+                    if($orderFinish[0]['gift'] == 1){
+                        $arrayOrderWithGift[] = $orderFinish[0]['box'];
+                    }
+                    else{
+                        $arrayOrderWithoutGift[] = $orderFinish[0]['box'];
+                    }
+                }
+            }
+
+            return new JsonResponse([
+                $arrayOrderWithoutGift == [] ? '' : 'Amener la ou les caisse(s) N° ' . implode(",", $arrayOrderWithoutGift) . ' à l\'expé' ,
+                $arrayOrderWithGift == [] ? '' : ' Amener la ou les caisse(s) N° ' . implode(",", $arrayOrderWithGift) . ' au paquet cadeau'
+            ]);
+        }
+        else {
+            return new JsonResponse(0); //Aucune commande n'est prête
+        }
+
 
     }
 

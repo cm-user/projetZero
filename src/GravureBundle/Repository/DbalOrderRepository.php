@@ -182,6 +182,39 @@ SQL;
         ]);
     }
 
+    public function setEngrave($id){
+        $sql = "UPDATE gravure_order SET 
+        engrave = 1,
+                updated_at  = :updated_at 
+        WHERE id = :id";
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute([
+            'updated_at' => (new \DateTime())->format('Y-m-d h:m:s'),
+            "id" => $id,
+        ]);
+    }
+
+    public function isEngraved($status, $idOrder){
+        $sql = "SELECT * FROM gravure_order
+LEFT JOIN gravure ON gravure.id_order = gravure_order.id
+WHERE gravure_order.id = :id_order AND gravure.id_status = :id_status
+AND (SELECT COUNT(id) FROM gravure WHERE id_order = :id_order AND gravure.id_status = :id_status) 
+=
+(SELECT COUNT(id) FROM gravure WHERE id_order = :id_order)";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("id_status", $status);
+        $stmt->bindValue("id_order", $idOrder);
+        $stmt->execute();
+        $orders = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $orders;
+
+        if ($orders == null) {
+            return null;
+        }
+        return $orders;
+    }
+
     public function delete($id)
     {
         $sql = "DELETE FROM gravure_order WHERE id = :id";

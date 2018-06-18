@@ -57,6 +57,29 @@ SQL;
         ]);
     }
 
+    public function findAllIsLockedByPosition(){
+        $sql = "SELECT gravure.id, 
+gravure_category.surname,
+gravure_order.id_prestashop,
+gravure_category.max_gabarit,
+gravure_machine.color,
+gravure.id_status,
+gravure_chain_session.series_number
+FROM gravure
+LEFT JOIN gravure_order ON gravure.id_order = gravure_order.id 
+LEFT JOIN gravure_product on gravure.id_product= gravure_product.id
+LEFT JOIN gravure_category on gravure_product.id_category = gravure_category.id
+LEFT JOIN gravure_machine ON gravure_machine.id = gravure.id_machine
+LEFT JOIN gravure_chain_session ON gravure_chain_session.id_gravure = gravure.id
+ WHERE gravure_chain_session.locked_position = 1";
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute();
+        $row = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        return $row;
+    }
+
     public function findById($id){
 
         $sql = "SELECT * FROM gravure WHERE id = :id";
@@ -256,12 +279,27 @@ ORDER BY gravure_order.state_prestashop DESC, gravure_order.id_prestashop';
         return $stmt;
     }
 
+    public function findOrderByChainNumber($chainNumber){
+        $sql = 'SELECT id_order
+FROM gravure
+ WHERE gravure.id IN
+  (SELECT id_gravure FROM gravure_chain_session WHERE chain_number = :chain_number)
+  GROUP BY id_order';
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("chain_number", $chainNumber);
+        $stmt->execute();
+        $orders = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $orders;
+    }
+
     public function FindAllWithHighSessionAndNotEngrave(){
         $sql = 'SELECT gravure.id, 
 gravure_category.surname,
 gravure_order.id_prestashop,
 gravure_category.max_gabarit,
-gravure_machine.color
+gravure_machine.color,
+gravure.id_status
 FROM gravure 
 LEFT JOIN gravure_order ON gravure.id_order = gravure_order.id 
 LEFT JOIN gravure_product on gravure.id_product= gravure_product.id
@@ -277,10 +315,9 @@ ORDER BY gravure_category.surname, gravure_machine.color';
         return $gravures;
     }
 
-    public function findAllWithChainNumber(){
+    public function findAllWithHighSessionAndStatusNotFinish($status){
         $sql = 'SELECT gravure_order.id_prestashop,
 gravure_order.box,
-gravure_order.gift,
 gravure.id,
 gravure.id_status,
 gravure.path_jpg,
@@ -295,9 +332,11 @@ LEFT JOIN gravure_product ON gravure_product.id = gravure.id_product
 LEFT JOIN gravure_category ON gravure_category.id = gravure_product.id_category
 LEFT JOIN gravure_machine ON gravure_machine.id = gravure_category.id_machine
 WHERE gravure.id_session = (SELECT MAX(id) FROM gravure_session)
+AND gravure.id_status <> :id_status
 ORDER BY gravure_order.id_prestashop';
 
         $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("id_status", $status);
         $stmt->execute();
         $gravures = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         return $gravures;

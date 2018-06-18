@@ -4,7 +4,7 @@ CREATE TABLE `gravure_chain_session` (
   `id_session` int,
   `chain_number` int NOT NULL,
   `series_number` int NOT NULL,
-  `engrave` bool DEFAULT '0',
+  `locked_position` bool DEFAULT '0',
   PRIMARY KEY (`id`),
   FOREIGN KEY (id_gravure) REFERENCES gravure(id),
   FOREIGN KEY (id_session) REFERENCES gravure_session(id)

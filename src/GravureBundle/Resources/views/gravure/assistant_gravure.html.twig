@@ -39,6 +39,16 @@
         </div>
     </div>
 
+    {#modal pour avertir l'utilisateur si des commandes sont terminées#}
+    <div class="modal fade" id="Modal_Engrave_Finish" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-body" id="Modal_Engrave_Finish_Body">
+                </div>
+            </div>
+        </div>
+    </div>
+
     {#modal pour le bouton OK afin d'avertir l'utilisateur de vérifier son dossier et ses mails#}
     {#<div class="modal fade bd-example-modal" id="Modal_Alert" tabindex="-1" role="dialog"#}
          {#aria-labelledby="Modal_Alert_Title" aria-hidden="true">#}
@@ -65,8 +75,7 @@
 
         input[type='checkbox'] {
             transform: scale(4);
-            margin-top: 18px;
-            margin-left: -25px;
+            margin: 20px 0px;
         }
 
         #table_order td {

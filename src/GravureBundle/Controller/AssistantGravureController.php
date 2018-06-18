@@ -39,11 +39,11 @@ class AssistantGravureController extends Controller
      */
     public function getTheChainSession()
     {
-        //TODO gérer le cas pour l'utilisateur clique sur modifier la session alors que des chaînes sont en cours de gravure
+        $lockedGravures = $this->get('repositories.gravure')->findAllIsLockedByPosition();
         //récupére toutes les gravures qui vont être gravées
         $gravures = $this->get('repositories.gravure')->FindAllWithHighSessionAndNotEngrave();
         //construit la chaîne qui réunit les gravures par séries et par catégories
-        $chainSession = $this->get('factory.chain_session')->sortGravure($gravures);
+        $chainSession = $this->get('factory.chain_session')->sortGravure($gravures, $lockedGravures);
         $this->get('repositories.chain_session')->cleanTable(); //efface la table
         $this->get('repositories.chain_session')->save($chainSession); //remplit à nouveau la table
 

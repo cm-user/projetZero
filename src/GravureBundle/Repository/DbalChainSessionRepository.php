@@ -31,9 +31,9 @@ class DbalChainSessionRepository
 
             $query = <<<SQL
 INSERT INTO gravure_chain_session
-    (id_gravure, id_session, chain_number, series_number, engrave)
+    (id_gravure, id_session, chain_number, series_number, locked_position)
 VALUES
-    (:id_gravure, :id_session, :chain_number, :series_number, :engrave)
+    (:id_gravure, :id_session, :chain_number, :series_number, :locked_position)
 ;
 SQL;
 
@@ -43,10 +43,22 @@ SQL;
                 'id_session' => $chain['id_session'],
                 'chain_number' => $chain['chain_number'],
                 'series_number' => $chain['series_number'],
-                'engrave' => $chain['engrave'],
+                'locked_position' => $chain['locked_position'],
             ]);
 
         }
+    }
+
+    public function setLockedPosition($chain_number){
+        $sql = "UPDATE gravure_chain_session
+ SET locked_position = 1 
+ WHERE chain_number = :chain_number";
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("chain_number", $chain_number);
+        $stmt->execute();
+
+        return $stmt;
     }
 
     public function getChainNumberCount(){
