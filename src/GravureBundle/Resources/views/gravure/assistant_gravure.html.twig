@@ -49,6 +49,25 @@
         </div>
     </div>
 
+    {#modal lorsque la session est terminé#}
+    <div class="modal fade" id="Modal_Session_Finish" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Session N°{{ idSession }} terminée</h2>
+                </div>
+                <div class="modal-body" id="Modal_Session_Finish_Body" style="height:100px">
+                    <div class="col-sm-6">
+                        <button class='btn btn-info'>Démarrer une nouvelle session</button>
+                    </div>
+                    <div class="col-sm-6">
+                        <button class="btn btn-info">Voir l'archive de la session</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {#modal pour le bouton OK afin d'avertir l'utilisateur de vérifier son dossier et ses mails#}
     {#<div class="modal fade bd-example-modal" id="Modal_Alert" tabindex="-1" role="dialog"#}
          {#aria-labelledby="Modal_Alert_Title" aria-hidden="true">#}

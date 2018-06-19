@@ -71,7 +71,8 @@ LEFT JOIN gravure_product on gravure.id_product= gravure_product.id
 LEFT JOIN gravure_category on gravure_product.id_category = gravure_category.id
 LEFT JOIN gravure_machine ON gravure_machine.id = gravure.id_machine
 LEFT JOIN gravure_chain_session ON gravure_chain_session.id_gravure = gravure.id
- WHERE gravure_chain_session.locked_position = 1";
+ WHERE gravure_chain_session.locked_position = 1
+ AND gravure_order.engrave = 0";
 
         $stmt = $this->connection->prepare($sql);
         $stmt->execute();
