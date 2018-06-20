@@ -12,7 +12,7 @@
         <div class="col-sm-5" id="div_tableau">
             <div id="div_table"></div>
             <div>
-                <button class="btn btn-default" onclick="actualize(0);"  role="button"
+                <button class="btn btn-default" onclick="actualize(1);"  role="button"
                         style="border-radius: 15px;padding: 10px;background-color: #575354;color:white;">
                     <h3>
                         <i class="glyphicon glyphicon-edit" style="font-size:35px;"></i>
@@ -20,7 +20,7 @@
                     </h3>
                 </button>
                 <br>
-                <button class="btn btn-default" onclick="actualize(0);"  role="button"
+                <button class="btn btn-default" onclick="cancelSession();"  role="button"
                         style="border-radius: 15px;background-color: #575354;color:white;">
                     <h4>
                         <i class="glyphicon glyphicon-trash" style="font-size:20px;"></i>
@@ -56,12 +56,12 @@
                 <div class="modal-header">
                     <h2>Session N°{{ idSession }} terminée</h2>
                 </div>
-                <div class="modal-body" id="Modal_Session_Finish_Body" style="height:100px">
+                <div class="modal-body" id="Modal_Session_Finish_Body" style="height:100px;">
                     <div class="col-sm-6">
-                        <button class='btn btn-info'>Démarrer une nouvelle session</button>
+                        <a href="{{ path('selection_gravure_index') }}"> <button class='btn btn-info'>Démarrer une nouvelle session</button> </a>
                     </div>
                     <div class="col-sm-6">
-                        <button class="btn btn-info">Voir l'archive de la session</button>
+                        <a href="{{ path('gravure_session_show', {'id' : idSession }) }}"> <button class="btn btn-info">Voir l'archive de la session</button> </a>
                     </div>
                 </div>
             </div>

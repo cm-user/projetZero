@@ -220,13 +220,23 @@ class SelectionGravureController extends Controller
         $new_last_order = $this->get('repositories.order')->findLast()['id_prestashop']; //récupère l'id de la dernière commande sur prestashop
 
         //récupération de toutes les gravures sans session et qui sont arrivées avant l'heure limite de fin de journée
-        $gravures = $this->get('repositories.gravure')->findAllWithoutSessionByState();
+        $gravures = $this->get('repositories.gravure')->findAllWithoutSessionAndHighSessionOnloadByState($this->getParameter('status_TERMINE'));
+
+        $orderInChainSession = $this->get('repositories.gravure')->findOrderInChainSession(); //récupére les commandes qui ont des gravures dans les chaînes en cours
 
         $formatted = [];
         $time = 0;
 
         foreach ($gravures as $gravure) {
             $time += $gravure['time']; //calcul du temps total
+
+            //vérifie si la commande de la gravure a d'autres gravures dans la chaîne
+            if(in_array($gravure['id_order'], $orderInChainSession)){
+                $orderLocked = 1;
+            }
+            else {
+                $orderLocked = 0;
+            }
 
             $formatted[] = [
                 'id' => $gravure['id'],

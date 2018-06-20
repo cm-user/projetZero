@@ -57,7 +57,7 @@ SQL;
         ]);
     }
 
-    public function findAllIsLockedByPosition(){
+    public function findAllIsLockedByPositionAndNotFinish($status){
         $sql = "SELECT gravure.id, 
 gravure_category.surname,
 gravure_order.id_prestashop,
@@ -72,9 +72,11 @@ LEFT JOIN gravure_category on gravure_product.id_category = gravure_category.id
 LEFT JOIN gravure_machine ON gravure_machine.id = gravure.id_machine
 LEFT JOIN gravure_chain_session ON gravure_chain_session.id_gravure = gravure.id
  WHERE gravure_chain_session.locked_position = 1
+ AND gravure.id_status <> :status
  AND gravure_order.engrave = 0";
 
         $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("status", $status);
         $stmt->execute();
         $row = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -103,26 +105,29 @@ LEFT JOIN gravure_chain_session ON gravure_chain_session.id_gravure = gravure.id
         return $row;
     }
 
-    public function findAllWithoutSessionByState(){
-        $sql = 'SELECT 
-gravure.id, 
-gravure_order.id_prestashop, 
-gravure_order.state_prestashop, 
-gravure.path_jpg, 
-gravure.path_pdf, 
-gravure_product.product_id, 
-gravure_order.checked, 
-gravure_product.time,
-gravure_order.box 
-FROM gravure 
-LEFT JOIN gravure_order on gravure.id_order = gravure_order.id 
-LEFT JOIN gravure_product on gravure.id_product = gravure_product.id 
-WHERE gravure.id_session IS NULL 
-AND (gravure_order.state_prestashop = 3 OR gravure_order.state_prestashop = 4)
+    public function findAllWithoutSessionAndHighSessionOnloadByState($status){
+        $sql = 'SELECT
+  gravure.id,
+  gravure.id_order AS id_order,
+  gravure_order.id_prestashop,
+  gravure_order.state_prestashop,
+  gravure.path_jpg,
+  gravure.path_pdf,
+  gravure_product.product_id,
+  gravure_order.checked,
+  gravure_product.time,
+  gravure_order.box
+FROM gravure
+  LEFT JOIN gravure_order on gravure.id_order = gravure_order.id
+  LEFT JOIN gravure_product on gravure.id_product = gravure_product.id
+WHERE (gravure.id_session IS NULL OR gravure.id_session = (SELECT MAX(id) FROM gravure_session))
+  AND (gravure_order.state_prestashop = 3 OR gravure_order.state_prestashop = 4)
+  AND gravure.id_status <> :id_status
 ORDER BY gravure_order.state_prestashop DESC, gravure_order.id_prestashop';
 
 
         $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("id_status", $status);
         $stmt->execute();
         $gravures = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         return $gravures;
@@ -267,6 +272,7 @@ ORDER BY gravure_order.state_prestashop DESC, gravure_order.id_prestashop';
 
     }
 
+
     public function setStatusByChainNumber($status, $chainNumber){
         $sql = "UPDATE gravure
  SET id_status = :id_status 
@@ -294,7 +300,19 @@ FROM gravure
         return $orders;
     }
 
-    public function FindAllWithHighSessionAndNotEngrave(){
+    public function findOrderInChainSession(){
+        $sql = 'SELECT id_order
+FROM gravure
+WHERE gravure.id IN (SELECT id_gravure FROM gravure_chain_session)
+GROUP BY id_order';
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute();
+        $orders = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $orders;
+    }
+
+    public function FindAllWithHighSessionAndNotEngraveNotFinish($status){
         $sql = 'SELECT gravure.id, 
 gravure_category.surname,
 gravure_order.id_prestashop,
@@ -308,9 +326,11 @@ LEFT JOIN gravure_category on gravure_product.id_category = gravure_category.id
 LEFT JOIN gravure_machine ON gravure_machine.id = gravure.id_machine
 WHERE gravure.id_session = (SELECT MAX(id) FROM gravure_session)
 AND gravure_order.engrave = 0
+AND gravure.id_status <> :status
 ORDER BY gravure_category.surname, gravure_machine.color';
 
         $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("status", $status);
         $stmt->execute();
         $gravures = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         return $gravures;

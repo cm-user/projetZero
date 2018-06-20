@@ -248,4 +248,38 @@ class GravureController extends Controller
 
     }
 
+    /**
+     * @Route("/gravure/cancel/finish/{chainNumber}", name="gravure_cancel_finish", options={"expose"=true})
+     */
+    public function cancelFinish($chainNumber)
+    {
+        $request = $this->get('repositories.gravure')->setStatusByChainNumber($this->getParameter('status_EN_COURS'), $chainNumber); //modification du statut pour les gravures liées à la chaîne
+        $this->get('repositories.order')->setCancelEngrave($chainNumber); //change le statut des commandes en passant engrave à 0
+        $this->get('repositories.chain_session')->setLockedPosition($chainNumber);  // verouillage de la chaîne
+
+        if($request == true){
+            return new JsonResponse("Changement de statut effectué");
+        }
+        else {
+            return new JsonResponse("Impossible de modifier le statut des gravures lié à la chaîn N° " . $chainNumber);
+        }
+
+    }
+
+    /**
+     * @Route("/gravure/edit/session/", name="gravure_edit_session", options={"expose"=true})
+     */
+    public function editSession($chainNumber)
+    {
+        $gravures = $this->get('repositories.gravure')->findAllInSession($this->getParameter('status_EN_COURS')); //modification du statut pour les gravures liées à la chaîne
+
+        if($request == true){
+            return new JsonResponse("Changement de statut effectué");
+        }
+        else {
+            return new JsonResponse("Impossible de modifier le statut des gravures lié à la chaîn N° " . $chainNumber);
+        }
+
+    }
+
 }

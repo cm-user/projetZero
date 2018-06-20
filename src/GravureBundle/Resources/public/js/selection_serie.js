@@ -18,7 +18,7 @@ function createChainSession() {
                 $elem += "<td>" + val['gravures'].length + "</td>";
                 $elem += "<td><a style=\"display:block;width:100%;height:100%; cursor: pointer;\" onclick=\"addListenerChangeColorCase("+ (key+1) +",'" +val['color'] +"');\">" + val['surname'] + "</a></td>";
                 // $elem += "<a onclick=\"addListenerChangeColorCase("+ (key+1) +",'" +val['color'] +"');\"><td>" + val['surname'] + "</td></a>";
-                $elem += val['locked'] == 0 ? "<td><button class='btn-picto' onclick=\"setArrayColorMachineDefault([" + val['gravures'] + "],'" +(key+1)+ "');\"><i class=\"glyphicon glyphicon-retweet\" style=\"\"></i></button> </td>" : "<td></td>";
+                $elem += val['locked'] == 0 ? "<td><button class='btn-picto' onclick=\"setArrayColorMachineDefault([" + val['gravures'] + "],'" + (key+1) + "');\"><i class=\"glyphicon glyphicon-retweet\" style=\"\"></i></button> </td>" : "<td></td>";
                 $elem += "</tr>";
             });
             $elem += "</tody></table>";
@@ -104,7 +104,7 @@ function hydrateTable() {
                     addListenerCase(array_gravure); //ajout du numéro de caisse au tableau
                     array_gravure = []; //vide le tableau
                 }
-                else if(result.length-1 == key){
+                if(result.length-1 == key){
                     array_gravure.push({'jpg' : val['jpg'], 'colorGravure':val['colorGravure'], 'colorCategory':val['colorCategory'], 'id':val['id'], 'chain_number':val['chain_number'], 'box':val['box'], 'id_prestashop':val['id_prestashop'], 'alias':val['alias']}); //ajout dans le tableau les id des gravures
                     addListenerCase(array_gravure); //ajout du numéro de caisse au tableau
                     array_gravure = []; //vide le tableau

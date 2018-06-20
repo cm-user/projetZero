@@ -35,4 +35,17 @@ class SessionController extends Controller
             'sessions' => $sessions,
         ));
     }
+
+    /**
+     * @Route("/show/{id}", name="gravure_session_show")
+     * @Method("GET")
+     */
+    public function showAction($id)
+    {
+
+        return $this->render('GravureBundle:session:show.html.twig', array(
+
+        ));
+    }
+
 }

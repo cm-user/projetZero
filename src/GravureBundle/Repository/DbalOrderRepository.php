@@ -215,6 +215,20 @@ AND (SELECT COUNT(id) FROM gravure WHERE id_order = :id_order AND gravure.id_sta
         return $orders;
     }
 
+    public function setCancelEngrave($chainNumber){
+        $sql = "UPDATE gravure_order
+ SET engrave = 0 
+ WHERE id IN
+  (SELECT gravure.id_order FROM gravure
+   LEFT JOIN gravure_chain_session ON gravure_chain_session.id_gravure = gravure.id
+   WHERE chain_number = :chain_number) ";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("chain_number", $chainNumber);
+        $stmt->execute();
+
+        return $stmt;
+    }
+
     public function delete($id)
     {
         $sql = "DELETE FROM gravure_order WHERE id = :id";

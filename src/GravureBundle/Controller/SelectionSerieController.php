@@ -39,9 +39,9 @@ class SelectionSerieController extends Controller
      */
     public function getTheChainSession()
     {
-        $lockedGravures = $this->get('repositories.gravure')->findAllIsLockedByPosition();
+        $lockedGravures = $this->get('repositories.gravure')->findAllIsLockedByPositionAndNotFinish($this->getParameter('status_TERMINE'));
         //récupére toutes les gravures qui vont être gravées
-        $gravures = $this->get('repositories.gravure')->FindAllWithHighSessionAndNotEngrave();
+        $gravures = $this->get('repositories.gravure')->FindAllWithHighSessionAndNotEngraveNotFinish($this->getParameter('status_TERMINE'));
         //construit la chaîne qui réunit les gravures par séries et par catégories
         $chainSession = $this->get('factory.chain_session')->sortGravure($gravures, $lockedGravures);
         $this->get('repositories.chain_session')->cleanTable(); //efface la table

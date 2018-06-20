@@ -18,7 +18,7 @@ function createChainSession() {
                 $elem += "<td>" + val['gravures'].length + "</td>";
                 $elem += "<td><a style=\"display:block;width:100%;height:100%; cursor: pointer;\" onclick=\"addListenerChangeColorCase("+ (key+1) +",'" +val['color'] +"');\">" + val['surname'] + "</a></td>";
                 // $elem += "<a onclick=\"addListenerChangeColorCase("+ (key+1) +",'" +val['color'] +"');\"><td>" + val['surname'] + "</td></a>";
-                $elem += val['locked'] == 0 ? "<td><button class='btn-picto' onclick=\"setArrayColorMachineDefault([" + val['gravures'] + "],'" +(key+1)+ "');\"><i class=\"glyphicon glyphicon-retweet\" style=\"\"></i></button> </td>" : "<td></td>";
+                $elem += val['locked'] == 0 ? "<td><button class='btn-picto' onclick=\"setArrayColorMachineDefault([" + val['gravures'] + "],'" + (key+1) + "');\"><i class=\"glyphicon glyphicon-retweet\" style=\"\"></i></button> </td>" : "<td></td>";
                 $elem += "</tr>";
             });
             $elem += "</tody></table>";
@@ -104,7 +104,7 @@ function hydrateTable() {
                     addListenerCase(array_gravure); //ajout du numéro de caisse au tableau
                     array_gravure = []; //vide le tableau
                 }
-                else if(result.length-1 == key){
+                if(result.length-1 == key){
                     array_gravure.push({'jpg' : val['jpg'], 'colorGravure':val['colorGravure'], 'colorCategory':val['colorCategory'], 'id':val['id'], 'chain_number':val['chain_number'], 'box':val['box'], 'id_prestashop':val['id_prestashop'], 'alias':val['alias']}); //ajout dans le tableau les id des gravures
                     addListenerCase(array_gravure); //ajout du numéro de caisse au tableau
                     array_gravure = []; //vide le tableau
@@ -202,7 +202,7 @@ function addListenerClic(number) {
         // //vérifie que la case cliqué soit lié à la chain en cours
         // console.log($("#case" + number).css("background-color"));
         // if($("#case" + number).css("background-color") !== "rgba(0, 0, 0, 0)"){
-        //     $("#case" + number).css("opacity", "0.7"); //met l'opacité à 0.9 pour la case cliqué
+        //     $("#case" + number).css("opacity", "²"); //met l'opacité à 0.9 pour la case cliqué
         //     console.log("dans le if");
         // }
         // else { //si l'utilisateur clique sur une case lié à une autre chain
@@ -216,7 +216,7 @@ function addListenerClic(number) {
         // }
 
         // $("#case" + number).css("background-color", color_machine); //change uniquement la couleur de la caisse
-        $("#case" + number).css("opacity", "0.7"); //change uniquement la couleur de la caisse
+        $("#case" + number).css("opacity", "0.5"); //change uniquement la couleur de la caisse
 
         $("#DisplayCase_" + number).show(); //affiche les gravures de la case
         // $("#div_display_case").css('width', '225px');
@@ -289,7 +289,7 @@ function setArrayColorMachineDefault(gravures, number){
 
 //Change la couleur des cases en fonction de la machine au clic sur une catégorie
 function addListenerChangeColorCase(number, color) {
-    $("#div_chain_category tbody tr").css("opacity", "0.7"); //baisse l'opacité de toutes les lignes des chaînes
+    $("#div_chain_category tbody tr").css("opacity", "0.5"); //baisse l'opacité de toutes les lignes des chaînes
     $("#chain_number_" + number).css("opacity", "1"); //augmente l'opacité de la ligne cliqué
     color_chain = color; // ajout de la couleur de la chaîne cliqué dans la variable color_chain
 

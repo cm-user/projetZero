@@ -112,6 +112,7 @@ function hydrateTable() {
     $.ajax({
         url: Routing.generate('gravure_chain_number_json'),
         success: function (result) {
+            console.log(result);
             $.each(result, function (key, val) {
                 //à la première itération on recupère le numéro de commande
                 id_order = val['id_prestashop'];
@@ -121,7 +122,7 @@ function hydrateTable() {
                     addListenerCase(array_gravure); //ajout du numéro de caisse au tableau
                     array_gravure = []; //vide le tableau
                 }
-                else if (result.length - 1 == key) {
+                 if (result.length - 1 == key) {
                     array_gravure.push({
                         'jpg': val['jpg'],
                         'colorGravure': val['colorGravure'],
@@ -595,7 +596,7 @@ function copyText(idGravure, blockName) {
 
 function cancelFinishEngrave(chain_number) {
     $.ajax({
-        url: Routing.generate('gravure_status_on_load', {chainNumber: chain_number}),
+        url: Routing.generate('gravure_cancel_finish', {chainNumber: chain_number}),
         success: function (result) {
             $("#Modal_Engrave_Finish").modal('hide');
         },
@@ -603,4 +604,16 @@ function cancelFinishEngrave(chain_number) {
             alert("Une erreur s'est produite avec le serveur, veuillez actualiser la page.");
         }
     });
+}
+
+function cancelSession() {
+    // $.ajax({
+    //     url: Routing.generate('gravure_cancel_session'),
+    //     success: function (result) {
+    //         $("#Modal_Engrave_Finish").modal('hide');
+    //     },
+    //     error: function (result) {
+    //         alert("Une erreur s'est produite avec le serveur, veuillez actualiser la page.");
+    //     }
+    // });
 }
