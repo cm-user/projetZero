@@ -92,8 +92,6 @@ class ChainSessionFactory
 
     public function parse(){
         $array = [];
-//        $compteur = 0;
-//        $oldChainNumber = 1;
 
         //récupére toutes les chaînes
         $chainNumbers = $this->container->get('repositories.chain_session')->getChainNumberCount();
@@ -106,9 +104,6 @@ class ChainSessionFactory
             //récupére les gravures comprises dans cette chaîne
             $gravures = $this->container->get('repositories.chain_session')->findGravuresByChainNumber($chain['chain_number']);
 
-
-//            $arrayIdGravure = [];
-//            $arrayPathJpgGravure = [];
             $arrayGravureText = [];
             foreach ($gravures as $gravure){
 
@@ -145,26 +140,6 @@ class ChainSessionFactory
             ];
         }
 
-//        foreach ($chainSession as $chain){
-//            $chainNumber = $chain['chain_number'];
-//
-//            if($chainNumber != $oldChainNumber){
-//
-//                $nameCategory = $this->container->get('repositories.gravure')->findCategoryById($chain['id_gravure']);
-//                    $array[] = [
-//                      'number' => $compteur,
-//                        'chain_number' => $oldChainNumber,
-//                      'surname' => $nameCategory
-//                    ];
-//                        $compteur = 1;
-//                $oldChainNumber = $chain['chain_number'];
-//            }
-//            else{
-//                $compteur++;
-//            }
-//
-//
-//        }
         return $array; //retourne un tableau contenant le nombre de chain par série, la catégorie et la couleur lié à la machine utilisé
     }
 

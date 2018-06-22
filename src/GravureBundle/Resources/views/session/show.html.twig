@@ -1,9 +1,55 @@
 {% extends 'base.html.twig' %}
 
-
 {% block body %}
-    <h1>Archive de la session N° </h1>
+    <h1>Archive de la session N° {{ idSession }}</h1>
+
+    {% for order in orders %}
+
+        <div class="row">
+
+            <h2>{{ order.id_prestashop }}</h2>
 
 
+            {% for gravure in order.gravures %}
+                <div class="col-sm-4">
+
+                    <img src="{{ gravure.path_jpg }}">
+
+                    <table class="table">
+                        <tr>
+                            <td>{{ order.alias }}</td>
+                            <td>{{ gravure.updated_at }}</td>
+                        </tr>
+                    </table>
+
+                    <button class="btn btn-info" data-toggle="collapse" data-target="#collapseText_{{ gravure.id }}"
+                            aria-expanded="false" aria-controls="collapseText_{{ gravure.id }}"> Voir Texte
+                    </button>
+                    <div class="collapse" id="collapseText_{{ gravure.id }}">
+                        <div class="card card-body">
+                            <table class='table-bordered table-striped' style='width: 100%; font-size: 20px;'>
+                    {% for text in gravure.texts %}
+                <tr>
+                    <td>{{ text.name_block }}</td>
+                    <td>{{ text.value }}</td>
+                </tr>
+                    {% endfor %}
+                            </table>
+                        </div>
+                    </div>
+                    <a href="{{ path('gravure_session_download_pdf', {id: gravure.id}) }}"><button class="btn btn-warning">Télécharger le PDF</button></a>
+                </div>
+            {% endfor %}
+        </div>
+        <hr>
+    {% endfor %}
+
+    <style>
+        img{
+            width: 100%;
+            height: 350px;
+        }
+
+    </style>
 
 {% endblock %}

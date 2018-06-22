@@ -46,13 +46,9 @@ class GravureFactory
         //////Methode pour récupérer l'id produit de chaque gravure pour trouver son produit lié///////
         $Product = $this->container->get('repositories.product')->findByProductId($productId);
 
-//        var_dump($Product);
-
-
         if ($Product == null) {
             $idProduct = null;
             $idMachine = null;
-//            throw new \Exception("gravure sans id produit");
         } else {
             $idProduct = $Product['id'];
             $idMachine = $this->container->get('repositories.product')->findMachineByIdProduct($idProduct);
@@ -81,29 +77,20 @@ class GravureFactory
     {
         //permet de récupérer notre instance Order avec son id
         $Order = $this->container->get('repositories.order')->findByIdPrestashop($order->getIdPrestashop());
-        var_dump($Order);
         //Si il n'y a qu'un seul produit gravé dans le panier
         if (isset($arrayConfigCart['id'])) {
 
             $id_config = $arrayConfigCart['id'];
-            var_dump($id_config);
             $productId = $arrayConfigCart['id_product'];
-            var_dump($productId);
             $quantity = $arrayConfigCart['quantity'];
-            var_dump($quantity);
 
             self::createGravureFromQuantity($id_config, $productId, $quantity, $Order['id']);
         } //sinon on doit récupérer chaque produit
         else {
             foreach ($arrayConfigCart as $key => $config_cart) {
-
                 $id_config = $arrayConfigCart[$key]['id'];
-                var_dump($id_config);
                 $productId = $arrayConfigCart[$key]['id_product'];
-                var_dump($productId);
                 $quantity = $arrayConfigCart[$key]['quantity'];
-                var_dump($quantity);
-
                 self::createGravureFromQuantity($id_config, $productId, $quantity, $Order['id']);
             }
         }

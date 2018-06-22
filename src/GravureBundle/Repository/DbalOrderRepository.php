@@ -83,11 +83,34 @@ SQL;
         return $row;
     }
 
+    public function findAllWithSessionAndEngrave($id){
+        $sql = 'SELECT gravure_order.id, 
+gravure_product.alias,
+gravure_order.id_prestashop,
+gravure_machine.type,
+gravure_order.updated_at
+FROM gravure 
+LEFT JOIN gravure_order ON gravure.id_order = gravure_order.id 
+LEFT JOIN gravure_product on gravure.id_product= gravure_product.id
+LEFT JOIN gravure_category on gravure_product.id_category = gravure_category.id
+LEFT JOIN gravure_machine ON gravure_machine.id = gravure.id_machine
+WHERE gravure.id_session = :id
+AND gravure_order.engrave = 1
+GROUP BY gravure_order.id
+ORDER BY gravure_order.id_prestashop
+';
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("id", $id);
+        $stmt->execute();
+        $gravures = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $gravures;
+    }
+
 
     public function findLast()
     {
-
-        $sql = "SELECT MAX(id),id_prestashop FROM `gravure_order` GROUP BY id_prestashop";
+        $sql = "SELECT id_prestashop FROM `gravure_order` WHERE id = (SELECT MAX(id) FROM gravure_order)";
         $stmt = $this->connection->prepare($sql);
         $stmt->execute();
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -182,6 +205,25 @@ SQL;
         ]);
     }
 
+    public function findAllWithEngraveFinishOrOnLoad($statusFinish, $statusOnLoad){
+        $sql = "SELECT gravure_order.id
+FROM gravure_order
+LEFT JOIN gravure g on gravure_order.id = g.id_order
+WHERE g.id_status = :id_status_En_Cours OR g.id_status = :id_status_Termine
+AND gravure_order.engrave = 0;";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("id_status_Termine", $statusFinish);
+        $stmt->bindValue("id_status_En_Cours", $statusOnLoad);
+        $stmt->execute();
+        $orders = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $orders;
+
+        if ($orders == null) {
+            return null;
+        }
+        return $orders;
+    }
+
     public function setEngrave($id){
         $sql = "UPDATE gravure_order SET 
         engrave = 1,
@@ -217,13 +259,15 @@ AND (SELECT COUNT(id) FROM gravure WHERE id_order = :id_order AND gravure.id_sta
 
     public function setCancelEngrave($chainNumber){
         $sql = "UPDATE gravure_order
- SET engrave = 0 
+ SET engrave = 0,
+ updated_at  = :updated_at 
  WHERE id IN
   (SELECT gravure.id_order FROM gravure
    LEFT JOIN gravure_chain_session ON gravure_chain_session.id_gravure = gravure.id
    WHERE chain_number = :chain_number) ";
         $stmt = $this->connection->prepare($sql);
         $stmt->bindValue("chain_number", $chainNumber);
+        $stmt->bindValue("updated_at", (new \DateTime())->format('Y-m-d h:m:s'));
         $stmt->execute();
 
         return $stmt;

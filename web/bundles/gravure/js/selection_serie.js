@@ -1,4 +1,3 @@
-// var array_box = []; //tableau stockant les id_prestashop des commandes
 var color_machine = ""; //contient la couleur de la machine sélectionné
 var color_chain = ""; //contient la couleur de la chaîne en cours
 
@@ -17,7 +16,6 @@ function createChainSession() {
                 $elem += "<tr style=\"background-color: " + val['color'] + ";\" id=\"chain_number_" + (key+1) + "\">";
                 $elem += "<td>" + val['gravures'].length + "</td>";
                 $elem += "<td><a style=\"display:block;width:100%;height:100%; cursor: pointer;\" onclick=\"addListenerChangeColorCase("+ (key+1) +",'" +val['color'] +"');\">" + val['surname'] + "</a></td>";
-                // $elem += "<a onclick=\"addListenerChangeColorCase("+ (key+1) +",'" +val['color'] +"');\"><td>" + val['surname'] + "</td></a>";
                 $elem += val['locked'] == 0 ? "<td><button class='btn-picto' onclick=\"setArrayColorMachineDefault([" + val['gravures'] + "],'" + (key+1) + "');\"><i class=\"glyphicon glyphicon-retweet\" style=\"\"></i></button> </td>" : "<td></td>";
                 $elem += "</tr>";
             });
@@ -58,12 +56,9 @@ function buildTable() {
             }
             for (y = 0; y < number_box; y++) {
                 $divDisplayCase += "<div id=\"DisplayCase_" + (y + 1) + "\" hidden ></div>";
-                // array_box.push(0);
             }
             $("#div_display_gravure").html($divDisplayCase);
             $("#div_table").html($elem);
-            // $("#table_order td").css("background-color", "#E1B7B9"); //remet toutes les cases à la même couleur
-
         },
         error:function (result) {
             alert("Une erreur s'est produite avec le serveur, veuillez actualiser la page.");
@@ -114,8 +109,6 @@ function hydrateTable() {
                 old_id_order = val['id_prestashop'];
 
             });
-            // $("#div_chain_category").html($elem);
-
         },
         error:function (result) {
             alert("Une erreur s'est produite avec le serveur, veuillez actualiser la page.");
@@ -157,13 +150,9 @@ function addListenerCase(array_gravure) {
 //ajout d'un listener au click affiche les images
 function addListenerClic(number) {
     $("#case" + number).click(function(){
-        // console.log("machine " + color_machine);
-        // console.log("chain "+color_chain);
         var array_number_case = []; //tableau contenant les numéros de cases lié à la chaîne
 
         $("#div_display_gravure > div").hide(); // cache toutes les images
-
-
 
         if($("#case" + number).css("background-color") !== "rgb(0, 0, 0)"){
             //parcours de toutes les cases pour récupérer uniquement les cases liées à la chaîne
@@ -184,42 +173,8 @@ function addListenerClic(number) {
             $("#div_chain_category tbody tr").css("opacity", "1"); //remet l'opacité à 1 pour toutes les lignes des chaînes
             setColorBlackForCaseFull(); //remet les cases non vide à la même couleur
         }
-        // $("#table_order td" ).each(function( i ) {
-        //     console.log(this.style.backgroundColor );
-        //     if ( this.style.backgroundColor !== "rgba(0, 0, 0, 0)" || this.style.backgroundColor !== "rgb(225, 183, 185)" ) {
-        //         array_number_case.push((i+1));
-        //     }
-        //     $(this).css("opacity", "1"); //remet l'opacité à 1
-        // });
-        //
-        // // $("#table_order td").css("background-color", "#E1B7B9"); //remet toutes les cases à la même couleur
-        // $.each(array_number_case, function( index, value ) {
-        //     $("#case" + value).css("background-color", color_chain); //change la couleur des cases par celle de la chaîne
-        //     $("#case" + value).css("opacity", "1"); //met l'opacité à 1 pour les cases liées à la chain
-        // });
-        // console.log(array_number_case);
-        // array_number_case = []; //vide le tableau
-        // //vérifie que la case cliqué soit lié à la chain en cours
-        // console.log($("#case" + number).css("background-color"));
-        // if($("#case" + number).css("background-color") !== "rgba(0, 0, 0, 0)"){
-        //     $("#case" + number).css("opacity", "²"); //met l'opacité à 0.9 pour la case cliqué
-        //     console.log("dans le if");
-        // }
-        // else { //si l'utilisateur clique sur une case lié à une autre chain
-        //     console.log("une seule case");
-        //     // $("#table_order td").css("background-color", "#E1B7B9"); //remet toutes les cases à la même couleur
-        //     // $("#table_order td").css("opacity", "1"); //remet l'opacité à 1 pour toutes les cases
-        //     setColorBlackForCaseFull(); //remet les cases non vide à la même couleur
-        //     console.log("machine " + color_machine);
-        //     $("#case" + number).css("background-color", color_machine); //change uniquement la couleur de la caisse
-        //     $("#div_chain_category tbody tr").css("opacity", "1"); //remet l'opacité à 1 pour toutes les lignes des chaînes
-        // }
-
-        // $("#case" + number).css("background-color", color_machine); //change uniquement la couleur de la caisse
         $("#case" + number).css("opacity", "0.5"); //change uniquement la couleur de la caisse
-
         $("#DisplayCase_" + number).show(); //affiche les gravures de la case
-        // $("#div_display_case").css('width', '225px');
 
     });
 }
@@ -243,7 +198,6 @@ function setColorMachineSession(idGravure, bool) {
     $.ajax({
         url: Routing.generate('gravure_change_machine_default', {id : idGravure}),
         success: function (result) {
-            console.log(result);
         },
         error:function (result) {
             alert("Une erreur s'est produite avec le serveur, veuillez actualiser la page.");
@@ -253,24 +207,10 @@ function setColorMachineSession(idGravure, bool) {
     //si bool vaut 0, cela signifie qu'une seule gravure change de machine, on met donc à jour le tableau des chaînes
     if(bool == 0){
         updateChainSessionAndTable();
-        // $("#table_order td").css("background-color", "#E1B7B9"); //remet toutes les cases à la même couleur
         setColorBlackForCaseFull(); //remet les cases non vide à la même couleur
         numberCase = $("#row_gravure_" + idGravure).parent().closest('div').parent().attr('id').replace("DisplayCase_", ""); //cherche le numéro de case de la gravure
         $("#case" + numberCase).css("background-color", color_machine); //change uniquement la couleur de la caisse
     }
-    // else {
-    //
-    //
-    // }
-
-
-    // $("#div_display_gravure > div").hide(); //masque les gravures
-
-    // $("#table_order td" ).each(function( i ) {
-    //     if ( this.style.backgroundColor !== "rgb(225, 183, 185)" ) {
-    //         $(this).css("background-color", color_machine); //remet l'opacité à 1
-    //     }
-    // });
 }
 
 //modifie la couleur de toutes les gravures liée à la chaîne
@@ -278,13 +218,11 @@ function setArrayColorMachineDefault(gravures, number){
     for(i=0;i<gravures.length;i++){
         setColorMachineSession(gravures[i], 1);
     }
-    // $("#table_order td").css("background-color", "#E1B7B9"); //remet toutes les cases à la même couleur
     setColorBlackForCaseFull(); //remet les cases non vide à la même couleur
     $(".chain_"+number).css("background-color", color_machine); //change de couleur les cases contenant une gravure de la chaîne
     $(".chain_"+number).css("opacity", "1"); //remet l'opacité pour ces cases à 1
     color_chain = color_machine; // ajout de la couleur de la chaîne cliqué dans la variable color_chain
     updateChainSessionAndTable();
-
 }
 
 //Change la couleur des cases en fonction de la machine au clic sur une catégorie
@@ -294,10 +232,8 @@ function addListenerChangeColorCase(number, color) {
     color_chain = color; // ajout de la couleur de la chaîne cliqué dans la variable color_chain
 
     $("#div_display_gravure > div").hide(); //masque les gravures
-    // $("#table_order td").css("background-color", "#E1B7B9"); //remet toutes les cases à la même couleur
     setColorBlackForCaseFull(); //remet les cases non vide à la même couleur
     $(".chain_"+number).css("background-color", color); //change de couleur les cases contenant une gravure de la chaîne
-    console.log($(".chain_"+number).length);
 
     var case_number = $(".chain_"+number).length;//nombre de case liée à la chaîne cliqué
     if(case_number == 1){ //si il n'y a qu'une seule case on affiche le contenu lié

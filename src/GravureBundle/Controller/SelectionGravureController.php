@@ -49,7 +49,6 @@ class SelectionGravureController extends Controller
         $em = $this->getDoctrine()->getManager();
         $array_state = [1, 2, 3, 4, 30, 31]; //tableau contenant les "bons" etats des commandes
         $persta = $this->get('iq2i_prestashop_web_service')->getInstance(); //instance prestashop web service
-
         $last_order = $this->get('repositories.order')->findLast()['id_prestashop']; //récupère l'id de la dernière commande sur prestashop
         $regulator = $em->getRepository('GravureBundle:OrderRegulator')->find(1); //objet OrderRegulator
         $diff = $regulator->getNumber(); //valeur du regulateur
@@ -67,8 +66,6 @@ class SelectionGravureController extends Controller
         $result = json_decode(json_encode((array)$result), TRUE);
 
         $array_id_order = $result['orders']['order']; //récupère  les commandes
-
-//        var_dump($array_id_order);
 
         //parcourt de toutes les commandes
         foreach ($array_id_order as $id_order) {
@@ -88,29 +85,22 @@ class SelectionGravureController extends Controller
                     ));
 
                     $result_config_cart = json_decode(json_encode((array)$result_config_cart), TRUE);
-//                    var_dump($id_order['id_cart']);
-//                    var_dump($result_config_cart['config_carts']);
                     //si il y a une bien une gravure on va la rajoute à notre bdd
                     if (isset($result_config_cart['config_carts']['config_cart'])) {
 //                        var_dump($result_config_cart['config_carts']['config_cart']);
 
                         $boolGift = self::checkGift($persta, $id_order); //boolean pour le papier cadeau
-                        var_dump($boolGift);
                         //Creation de la commande
                         $order = Order::addOrder($boolGift, $id_order['id'], $id_order['current_state'], $id_order['date_add']);
                         $this->get('repositories.order')->save($order);
 
-                        //                    var_dump($id_order['id']);
-
                         //creation des gravures
                         $gravures = $this->get('factory.gravure')->createGravures($order, $result_config_cart['config_carts']['config_cart']);
-                        var_dump($gravures);
 
                         foreach ($gravures as $gravure) {
                             $this->get('repositories.gravure')->save($gravure);
                             //recuperation de l'id de la gravure
                             $idGravure = $this->get('repositories.gravure')->findByIdConfig($gravure->getConfigId())['id'];
-                            var_dump($idGravure);
 
                             //récupère tous les éléments de la table config_cart pour une gravure
                             $result_config_cart_block = $persta->get(array(
@@ -128,7 +118,7 @@ class SelectionGravureController extends Controller
 
                                 //cherche le nom du block grâce à son id
                                 $result_config_product_block = $persta->get(array(
-                                    "resource" => "config_block",
+                                    "resource" => "config_product_blocks",
                                     "filter[id]" => '[' . $blockId . ']',
                                     "display" => '[name]',
                                 ));
@@ -146,7 +136,7 @@ class SelectionGravureController extends Controller
 
                                     //cherche le nom du block grâce à son id
                                     $result_config_product_block = $persta->get(array(
-                                        "resource" => "config_block",
+                                        "resource" => "config_product_blocks",
                                         "filter[id]" => '[' . $blockId . ']',
                                         "display" => '[name]',
                                     ));
@@ -166,7 +156,7 @@ class SelectionGravureController extends Controller
 
                 } else { //si la commande est déjà en bdd
                     // maj de l'état prestashop
-//                    self::UpdateState($currentOrder, $persta);
+                    self::UpdateState($currentOrder, $persta);
                 }
             }
         }
@@ -222,16 +212,18 @@ class SelectionGravureController extends Controller
         //récupération de toutes les gravures sans session et qui sont arrivées avant l'heure limite de fin de journée
         $gravures = $this->get('repositories.gravure')->findAllWithoutSessionAndHighSessionOnloadByState($this->getParameter('status_TERMINE'));
 
-        $orderInChainSession = $this->get('repositories.gravure')->findOrderInChainSession(); //récupére les commandes qui ont des gravures dans les chaînes en cours
-
+        $orderToLock = $this->get('repositories.order')->findAllWithEngraveFinishOrOnLoad($this->getParameter('status_TERMINE'), $this->getParameter('status_EN_COURS')); //récupére les commandes qui ont des gravures dans les chaînes en cours
         $formatted = [];
         $time = 0;
+        //formatage du tableau pour avoir les id dans un tableau à une dimension
+        $orderToLock = array_map(function($value){
+            return $value['id'];
+        }, $orderToLock);
 
         foreach ($gravures as $gravure) {
             $time += $gravure['time']; //calcul du temps total
-
             //vérifie si la commande de la gravure a d'autres gravures dans la chaîne
-            if(in_array($gravure['id_order'], $orderInChainSession)){
+            if(in_array($gravure['id_order'], $orderToLock)){
                 $orderLocked = 1;
             }
             else {
@@ -246,7 +238,8 @@ class SelectionGravureController extends Controller
                 'pdf' => $gravure['path_pdf'],
                 'id_product' => $gravure['product_id'],
                 'box' => $gravure['box'],
-                'checked' => $gravure['checked']
+                'checked' => $gravure['checked'],
+                'locked' => $orderLocked
             ];
         }
         //ajout du temps au tableau
@@ -284,7 +277,8 @@ class SelectionGravureController extends Controller
                 'pdf' => $gravure['path_pdf'],
                 'id_product' => $gravure['product_id'],
                 'box' => $gravure['box'],
-                'checked' => $gravure['checked']
+                'checked' => $gravure['checked'],
+                'locked' => 0
             ];
         }
         //ajout du temps au tableau

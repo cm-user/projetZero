@@ -1,7 +1,3 @@
-//masque les boutons download
-// $("#btn_download").hide();
-// $("#btn_download2").hide();
-
 var array_box = []; //tableau stockant les id_prestashop des commandes
 var arrayIdPrestashop = []; //tableau contenant des id prestashop des commandes qui ont des gravures sans catégorie
 
@@ -38,31 +34,6 @@ function buildTable() {
             $("#div_display_case").html($divDisplayCase);
             $("#div_table").html($elem);
             $("#div_table").append("<button class=\"btn btn-default btn-block\" role=\"button\" id=\"btn_graver\" style=\"border-radius: 15px;padding: 5%;background-color: #575354;color:white;\"><h2>GRAVER</h2></button>");
-            // $("#div_table").append("<br><br><br><br><a href=\"#\" data-toggle=\"modal\" data-target=\"#Modal_Button_Reset\"><button class=\"btn btn-default\" role=\"button\" style=\"border-radius: 15px;padding: 1%;background-color: #D82228;color:white;\"><h4>Remise à zéro</h4></button></a>");
-
-            //modal confirmation remise à zéro
-            // $elem = "<div class=\"modal fade bd-example-modal-lg\" id=\"Modal_Button_Reset\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"Modal_Button_Reset_Title\" aria-hidden=\"true\">";
-            // $elem += "<div class=\"modal-dialog modal-lg\" role=\"document\">";
-            // $elem += "<div class=\"modal-content\">";
-            // $elem += "<div class=\"modal-header\">";
-            // $elem += "<h5 class=\"modal-title\" id=\"Modal_Button_Reset_Title\"></h5>";
-            // $elem += "<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">";
-            // $elem += "<span aria-hidden=\"true\">&times;</span>";
-            // $elem += "</button>";
-            // $elem += "</div>";
-            // $elem += "<div class=\"modal-body\">";
-            // $elem += "<p>Etes-vous sur de vouloir supprimer la sélection des caisses en cours ?</p>";
-            // $elem += "</div>";
-            // $elem += "<div class=\"modal-footer\">";
-            // $elem += "<button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\" onclick='actualize(0)'>Oui</button>";
-            // // $elem += "<button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Non</button>";
-            // $elem += "</div>";
-            // $elem += "</div>";
-            // $elem += "</div>";
-            // $elem += "</div>";
-
-            // $("#div_table").append($elem);
-
 
         }
     });
@@ -102,7 +73,6 @@ function actualize(bool) {
         url: Routing.generate('new_gravure_json', {bool: bool}),
 
         success: function (result) {
-            console.log(result);
             $.each(result, function (key, val) {
 
                 if (val['time'] != undefined) {
@@ -138,14 +108,24 @@ function actualize(bool) {
                         $elem += "</span></td>"; //nom de la catégorie
                         if (val['state_prestashop'] == 4) { //verifie que la commande ait le bon etat
                             $elem += "<td><label class=\"checkbox-inline\" id=\"checkbox_" + val['id_prestashop'] + "\">";
-                            $elem += val['checked'] == 1 ? "<button id=\"btg_checkbox_" + val['id_prestashop'] + "\" class='btn btn-danger' onclick=\"RemoveCase(" + val['id_prestashop'] + ");\"><h2><i class=\"glyphicon glyphicon-remove-sign\"></i> Case " + (val['box']) + "</h2></button>" : "<input type=\"checkbox\" value=\"\" id=\"btg_checkbox_" + val['id_prestashop'] + "\" onclick=\"addBoxArray(" + val['id_prestashop']  + ");\">";
+                            if(val['checked'] == 1){
+                                if(val['locked'] == 1){ // si la commande est vérrouillé on masque la croix pour supprimer cette commande
+                                    $elem += "<button type='button' id=\"btg_checkbox_" + val['id_prestashop'] + "\" class='btn btn-danger' data-toggle=\"popover\" data-placement=\"bottom\" data-content=\"Cette commande a commencée la gravure, veuillez la terminer\" ><h2> Case " + (val['box']) + " </h2></button>";
+                                }
+                                else{
+                                    $elem += "<button id=\"btg_checkbox_" + val['id_prestashop'] + "\" class='btn btn-danger' onclick=\"RemoveCase(" + val['id_prestashop'] + ");\"><h2><i class=\"glyphicon glyphicon-remove-sign\"></i> Case " + (val['box']) + "</h2></button>";
+                                }
+                            }
+                            else{
+                                $elem += "<input type=\"checkbox\" value=\"\" id=\"btg_checkbox_" + val['id_prestashop'] + "\" onclick=\"addBoxArray(" + val['id_prestashop']  + ");\">";
+                            }
+
                             $elem += "</label>";
                             $elem += "</td>";
                         }
                         else {
                             $elem += "<td></td>";
                         }
-                        // $elem += "<td></td>";
                         $elem += "</tr>";
                         compteur_order++; //incrémentation du compteur
                     }
@@ -155,7 +135,7 @@ function actualize(bool) {
                     $elem += "<td><a href=\"#\" data-toggle=\"modal\" data-target=\"#Modal_Picture_" + val['id'] + "\"><img src=\"" + val['jpg'] + " \" width='100'></a></td>";
 
                     if (val['id_product'] == null) {
-                        $elem += "<td><div class=\"alert alert-danger\" role=\"alert\">Alerte ce produit n'a pas de catégorie</div><a class=\"btn btn-warning\" id=\"add_" + val['id'] + "\" href=\"/projetZero2/web/app_dev.php/engraving/category/new/" + val['id_product'] + "\">Ajouter cette catégorie</a></td>";
+                        $elem += "<td><div class=\"alert alert-danger\" role=\"alert\">Alerte cette gravure n'est pas liée à un produit type</div><a class=\"btn btn-warning\" id=\"add_" + val['id'] + "\" href=\"/gravure/product/new/" + val['id_product'] + "\">Ajouter le produit type</a></td>";
                         arrayIdPrestashop.push(val['id_prestashop']);
                     }
                     else if (val['state_prestashop'] == 3) {
@@ -192,10 +172,14 @@ function actualize(bool) {
 
 
             });
-            // $elem += "<br><br>";
             $("#new_gravure").html($elem);
             $("#btn_actualize").css("background-color", "#575354");  //changement de couleur du bouton
             RemoveOrderCheckBoxWithGravureWithoutCategory(arrayIdPrestashop); //suppression des checkbox si la commande contient une gravure sans catégorie
+
+            //active les popovers
+            $(function () {
+                $('[data-toggle="popover"]').popover()
+            })
         }
     });
 }
@@ -213,14 +197,13 @@ function addMinutes(date, minutes) {
 }
 
 //fonction pour uncheck la gravure afin qu'elle ne soit pas prise en compte au lancement d'une nouvelle session
-function UncheckPicture(id_prestashop) {
-    $.ajax({
-        url: Routing.generate('order_uncheck', {id_prestashop: id_prestashop}), //enregistre en bdd
-        success: function (result) {
-            console.log(result);
-        }
-    });
-}
+// function UncheckPicture(id_prestashop) {
+//     $.ajax({
+//         url: Routing.generate('order_uncheck', {id_prestashop: id_prestashop}), //enregistre en bdd
+//         success: function (result) {
+//         }
+//     });
+// }
 
 //ajout de la commande dans une boîte
 function addBoxArray(id_prestashop, box) {
@@ -229,7 +212,6 @@ function addBoxArray(id_prestashop, box) {
         array_box[box - 1] = id_prestashop;
         $("#case" + (box)).html("<a href=\"#checkbox_" + id_prestashop + "\" style='color:inherit;'>" + " " + box + "</a>"); // affiche le numéro de la caissse dans le tableau
         $("#case" + (box)).css("background-color", "#D82228"); // change la couleur de la case
-        // $("#DisplayCase_" + (box)).html("<td><span style=\"font-size: 45px ;text-transform: uppercase; \">" + id_prestashop + "</span></td>");
         addDisplayCase(box, id_prestashop); //affiche la commande au survol du numéro de caisse dans le tableau avec les images
         addListenerMouseOver(box);
 
@@ -239,10 +221,8 @@ function addBoxArray(id_prestashop, box) {
     for (i = 0; i < array_box.length; i++) {
         if (array_box[i] == 0) {
             array_box[i] = id_prestashop;
-            console.log(array_box);
             $("#case" + (i + 1)).html("<a href=\"#checkbox_" + id_prestashop + "\" style='color:inherit;'>" + (i + 1) + "</a>"); // affiche le numéro de la caissse dans le tableau
             $("#case" + (i + 1)).css("background-color", "#D82228"); // change la couleur de la case
-            // $("#DisplayCase_" + (i+1)).html("<td><span style=\"font-size: 45px ;text-transform: uppercase; \">" + id_prestashop + "</span></td>"); //affiche la commande au survol du numéro de caisse dans le tableau
             addDisplayCase((i + 1), id_prestashop); //affiche la commande au survol du numéro de caisse dans le tableau avec les images
             $("#checkbox_" + id_prestashop).html("<button class='btn btn-danger' onclick=\"RemoveCase(" + id_prestashop + ");\"><h2><i class=\"glyphicon glyphicon-remove-sign\"></i> Case " + (i + 1) + "</h2></button>"); //ajout du numéro de caisse à la place de la checkbox et d'une croix pour supprimer
 
@@ -259,11 +239,9 @@ function RemoveBoxArray(id_prestashop) {
     for (i = 0; i < array_box.length; i++) {
         if (array_box[i] == id_prestashop) {
             array_box[i] = 0;
-            console.log(array_box);
             $("#case" + (i + 1)).html(""); // supprime le numéro de la caissse dans le tableau
             $("#case" + (i + 1)).css("background-color", "#E1B7B9"); // change la couleur de la case
             $("#DisplayCase_" + (i+1)).html(""); //suppression du numéro de commande au survol de la souris
-
 
             ajaxAddBoxNumberCheck(id_prestashop, (i + 1));
 
@@ -288,7 +266,6 @@ function ajaxAddBoxNumberCheck(id_prestashop, box) {
 //affiche la commande au survol du numéro de caisse dans le tableau avec ces images
 function addDisplayCase(box, id_prestashop) {
 
-    console.log("numéro de box :" + box);
     var compteur = 0;
 
     $.ajax({
@@ -304,10 +281,8 @@ function addDisplayCase(box, id_prestashop) {
                     $elem += "<td><img src=\""+ val['jpg'] + "\" width='100'></td></tr>";
                 }
                 compteur ++;
-                console.log("valeur du compteui: " + compteur);
             });
             $elem += "</table>";
-            console.log($elem);
             $("#DisplayCase_" + (box)).html($elem);
 
         }
@@ -331,11 +306,6 @@ function getAnchorBySearch(){
     var value = $("#recherche").val();
     $('html,body').animate({scrollTop: $("#checkbox_"+ value).offset().top}, 'slow');
 }
-
-// $("#recherche").submit(function(event) {
-//     event.preventDefault();
-//     console.log(event);
-// });
 
 //fonction pour afficher le nombres de gravure à faire
 function getNumberGravures() {
@@ -439,8 +409,6 @@ function getGravureTomorrow() {
 
 // fonction qui va afficher dans la modal les gravures qui seront à faire avant l'heure limite
 function getGravureToday() {
-    $elem = "";
-
     var $elem = "<br>";
     var compteur_order = 0;  //compteur pour calculer quand placer les rows
     var id_order = ""; //nom de la catégorie
@@ -449,9 +417,7 @@ function getGravureToday() {
     $("#Modal_NumberGravure_Today_Body").html("<p>Chargement en cours...</p>");
 
     $.ajax({
-
         url: Routing.generate('new_gravure_today'),
-
         success: function (result) {
             $.each(result, function (key, val) {
 
@@ -512,7 +478,6 @@ function getGravureToday() {
 
                 old_id_order = val['id_prestashop'];
 
-
             });
             $("#Modal_NumberGravure_Today_Body").html($elem);
         }
@@ -527,9 +492,8 @@ function dateHoursMinutes() {
     return hours + ":" + minutes ;
 }
 
-//fonction pour actualiser et effacer la session en cours
-function ActualizeAndClean() {
-    actualize(); //appel de la fonction pour actualiser
-    $("#new_gravure").html(""); //efface les nouvelles gravures
-    // $("#ongoing_gravure").html(""); //efface le contenu de la div
-}
+// //fonction pour actualiser et effacer la session en cours
+// function ActualizeAndClean() {
+//     actualize(); //appel de la fonction pour actualiser
+//     $("#new_gravure").html(""); //efface les nouvelles gravures
+// }

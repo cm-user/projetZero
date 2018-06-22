@@ -36,9 +36,7 @@
             <div id="div_chain_category"></div>
             <div id="div_btn" class="row">
                 {% for machine in machines %}
-                    {#{% if loop.index0 is even %}#}
                     <div class="col-sm-5">
-                        {#{% endif %}#}
                         <button class="btn btn-default btn-block machine" onclick="setMachineUsed({{ machine.id }});"
                                 id="btn_machine_{{ machine.id }}" role="button"
                                 style="border-radius: 15px;padding: 5px;background-color: {{ machine.color }};color:white;">
@@ -46,23 +44,16 @@
                                 {{ machine.name }}
                             </h2>
                         </button>
-                        {#{% if loop.index0 is odd %}#}
                     </div>
-                    {#{% endif %}#}
                 {% endfor %}
             </div>
-        {#<a href="{{ path('download_gravure_pdf') }}" data-toggle="modal" data-target="#Modal_Alert">#}
             <a href="{{ path('download_gravure_pdf') }}" >
-            {#<button class="btn btn-default" id="btn_gravure_ok" role="button" #}
             <button class="btn btn-default" id="btn_gravure_ok" role="button" onclick="beginSessionGravure();"
                     style="border-radius: 15px;padding: 1% 5%;background-color: #575354;color:white;">
-                {#<a href="#" data-toggle="modal" data-target="#Modal_Alert">#}
                     <h1>
                         OK
                     </h1>
-                {#</a>#}
             </button>
-            {#</a>#}
         </a>
         </div>
     </div>
@@ -98,7 +89,6 @@
         }
 
         #table_order td {
-            /*padding:20px;*/
             width: 65px;
             height: 65px;
             background-color: #E1B7B9;
@@ -146,7 +136,6 @@
         }
 
         .btn-picto {
-            /*text-align: center;*/
             cursor: pointer;
             background-color: white;
             border: none;
@@ -165,10 +154,6 @@
             transform: translateY(4px);
         }
 
-        /*a:link*/
-        /*{*/
-        /*text-decoration:none;*/
-        /*}*/
     </style>
 
 {% endblock %}

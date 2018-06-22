@@ -147,18 +147,21 @@ WHERE gravure.id = :id";
     }
 
     public function updateMachine($id, $idMachine){
-        $sql = "UPDATE `gravure` SET `id_machine`= :id_machine
+        $sql = "UPDATE `gravure` SET `id_machine`= :id_machine,
+updated_at  = :updated_at
 WHERE gravure.id = :id";
         $stmt = $this->connection->prepare($sql);
         $stmt->bindValue("id_machine", $idMachine);
+        $stmt->bindValue("updated_at", (new \DateTime())->format('Y-m-d h:m:s'));
         $stmt->bindValue("id", $id);
         $stmt->execute();
     }
 
     public function updateStatusForGravureInChainSession($statusEnChain, $statusEnCours){
-        $sql = "UPDATE gravure SET id_status = :en_cours WHERE id_status = :en_chain ";
+        $sql = "UPDATE gravure SET id_status = :en_cours, updated_at  = :updated_at WHERE id_status = :en_chain ";
         $stmt = $this->connection->prepare($sql);
         $stmt->bindValue("en_chain", $statusEnChain);
+        $stmt->bindValue("updated_at", (new \DateTime())->format('Y-m-d h:m:s'));
         $stmt->bindValue("en_cours", $statusEnCours);
         $stmt->execute();
     }
@@ -240,7 +243,6 @@ WHERE gravure.id_session IS NULL
 AND gravure_order.date_prestashop > :datetime
 ORDER BY gravure_order.state_prestashop DESC, gravure_order.id_prestashop';
 
-
         $stmt = $this->connection->prepare($sql);
         $stmt->bindValue("datetime", $datetime->format('Y-m-d h:m:s'));
         $stmt->execute();
@@ -263,23 +265,22 @@ WHERE gravure.id_session IS NULL
 AND gravure_order.date_prestashop < :datetime
 ORDER BY gravure_order.state_prestashop DESC, gravure_order.id_prestashop';
 
-
         $stmt = $this->connection->prepare($sql);
         $stmt->bindValue("datetime", $datetime->format('Y-m-d h:m:s'));
         $stmt->execute();
         $gravures = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         return $gravures;
-
     }
-
 
     public function setStatusByChainNumber($status, $chainNumber){
         $sql = "UPDATE gravure
- SET id_status = :id_status 
+ SET id_status = :id_status ,
+  updated_at  = :updated_at
  WHERE gravure.id IN
   (SELECT id_gravure FROM gravure_chain_session WHERE chain_number = :chain_number) ";
         $stmt = $this->connection->prepare($sql);
         $stmt->bindValue("id_status", $status);
+        $stmt->bindValue("updated_at", (new \DateTime())->format('Y-m-d h:m:s'));
         $stmt->bindValue("chain_number", $chainNumber);
         $stmt->execute();
 
@@ -295,18 +296,6 @@ FROM gravure
 
         $stmt = $this->connection->prepare($sql);
         $stmt->bindValue("chain_number", $chainNumber);
-        $stmt->execute();
-        $orders = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        return $orders;
-    }
-
-    public function findOrderInChainSession(){
-        $sql = 'SELECT id_order
-FROM gravure
-WHERE gravure.id IN (SELECT id_gravure FROM gravure_chain_session)
-GROUP BY id_order';
-
-        $stmt = $this->connection->prepare($sql);
         $stmt->execute();
         $orders = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         return $orders;
@@ -369,13 +358,10 @@ ORDER BY gravure_order.id_prestashop';
         $stmt = $this->connection->prepare($sql);
         $stmt->bindValue("id", $id);
         $stmt->execute();
-        $gravures = [];
 
-        while($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            $gravures[] = $this->hydrateFromRow($row);
-        }
+        $row = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
-        return $gravures;
+        return $row;
     }
 
     public function findByOrderIdPrestashop($id_prestashop){
@@ -455,33 +441,6 @@ AND o.date_prestashop > :datetime');
 
         return ['NumberExpe' => (int)$expe[0]['COUNT(g.id)'] , 'NumberPrepa' => (int)$prepa[0]['COUNT(g.id)'], 'NumberToday' => (int)$today[0]['COUNT(g.id)'], 'NumberTomorrow' => (int)$tomorrow[0]['COUNT(g.id)']];
     }
-
-//    public function update(Gravure $gravure){
-//
-//        $sql = "UPDATE gravure SET
-//        box = :box,
-//        gift = :gift,
-//        engrave = :engrave,
-//        checked = :checked,
-//        id_prestashop = :id_prestashop,
-//        state_prestashop = :state_prestashop,
-//        date_prestashop = :date_prestashop,
-//        updated_at  = :updated_at
-//        WHERE id = :id";
-//
-//        $stmt = $this->connection->prepare($sql);
-//        $stmt->execute([
-//            'box' => (int)$gravure->getBox(),
-//            'gift' => (bool)$gravure->getGift(),
-//            'engrave' => (bool)$gravure->getEngrave(),
-//            'checked' => (bool)$gravure->getChecked(),
-//            'id_prestashop' => (int)$gravure->getIdPrestashop(),
-//            'state_prestashop' => (int)$gravure->getStatePrestashop(),
-//            'date_prestashop' => (string)$gravure->getDatePrestashop(),
-//            'updated_at' => (new \DateTime())->format('Y-m-d h:m:s'),
-//            "id" => (int) $gravure->getId(),
-//        ]);
-//    }
 
     public function delete($id){
         $sql = "DELETE FROM gravure WHERE id = :id";

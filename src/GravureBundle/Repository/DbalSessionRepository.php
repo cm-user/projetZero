@@ -24,6 +24,12 @@ class DbalSessionRepository
         $this->connection = $connection;
     }
 
+    public function findLastTen(){
+        $sessions = $this->connection->fetchAll('SELECT * FROM gravure_session ORDER BY id LIMIT 10');
+
+        return $sessions;
+    }
+
     public function findAll(){
         $sessions = $this->connection->fetchAll('SELECT * FROM gravure_session');
 
@@ -32,7 +38,6 @@ class DbalSessionRepository
 
     public function save(Session $session)
     {
-
         $query = <<<SQL
 INSERT INTO gravure_session
     (user, gravure_total, created_at, updated_at)
@@ -68,6 +73,29 @@ SQL;
         $session = $this->connection->fetchAll('SELECT MAX(id) FROM gravure_session');
 
         return $session[0]['MAX(id)'];
+    }
+
+    public function countNumberEngraveInLastSession(){
+        $sql =('SELECT COUNT(gravure.id) FROM gravure WHERE gravure.id_session = (SELECT MAX(id) FROM gravure_session)');
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute();
+        $number = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        return $number[0]['COUNT(gravure.id)'];
+    }
+
+    public function updateNumberEngrave($number){
+        $sql = "UPDATE gravure_session SET 
+        gravure_total = :gravure_total,
+        updated_at  = :updated_at 
+        WHERE id = (SELECT MAX(id) FROM (SELECT * FROM gravure_session) AS session_table)";
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute([
+            'gravure_total' => (int)$number,
+            'updated_at' => (new \DateTime())->format('Y-m-d h:m:s'),
+        ]);
     }
 
     public function update(Session $session){

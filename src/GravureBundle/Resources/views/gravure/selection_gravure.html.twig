@@ -79,9 +79,6 @@
         </div>
     </div>
 
-
-
-
     {#modal des gravures à envoyer demain#}
     <div class="modal fade bd-example-modal-lg" id="Modal_NumberGravure_Tomorrow" tabindex="-1" role="dialog"
          aria-labelledby="Modal_NumberGravure_Tomorrow_Title" aria-hidden="true">
@@ -147,33 +144,8 @@
         </div>
     </div>
 
-
-    {#<div style="padding-bottom:2000px">fsgd</div>#}
-
-
-
-
-    {#<a href="{{ path('session_last') }}">#}
-    {#<button class="btn btn-info"  id="btn_session_last">Voir dernière session</button>#}
-    {#</a>#}
-
-
-    {#<a>#}
-    {#<button class="btn btn-warning" onclick="DisplayNewEngraving();" id="btn_session">Nouvelle session de gravures#}
-    {#</button>#}
-    {#</a>#}
-    {#<a id="btn_download" href="{{ path('download_pdf_gravure') }}">#}
-    {#<button class="btn btn-warning">Récupérer l'archive ZIP</button>#}
-    {#</a>#}
-
-    {#<h1>Liste des gravures en cours :</h1>#}
-    {#<div id="msg"></div>#}
     <div id="time_ongoing_gravure"></div>
     <div id="ongoing_gravure"></div>
-
-    {#<a id="btn_download2" href="{{ path('download_pdf_gravure') }}">#}
-    {#<button class="btn btn-warning">Télécharger fichiers ML Laser</button>#}
-    {#</a>#}
 
     <style>
         input[type='radio'] {
@@ -186,16 +158,8 @@
             margin-left: -25px;
         }
 
-        /*.sticky{*/
-        /*position: sticky;*/
-        /*position: -webkit-sticky;*/
-        /*top: 0; !* required *!*/
-        /*}*/
-
         #btn_actualize {
-            /*position: fixed;*/
             margin-top: 50px;
-            /*left: 20px;*/
         }
 
         #table_order {
@@ -203,7 +167,6 @@
         }
 
         #table_order td {
-            /*padding:20px;*/
             width: 50px;
             height: 50px;
             border: 3px solid white;
@@ -226,7 +189,6 @@
             position: fixed;
             position: -webkit-sticky;
             top: 50px; /* required */
-            /*padding-top: 0px;*/
             height: 280px;
         }
 
@@ -240,17 +202,17 @@
             padding-top: 10px;
         }
 
-        .center-block {
-            margin-left: auto;
-            margin-right: auto;
-            display: block;
-        }
+        /*.center-block {*/
+            /*margin-left: auto;*/
+            /*margin-right: auto;*/
+            /*display: block;*/
+        /*}*/
 
-        #btn_session_last {
-            position: fixed;
-            top: 75px;
-            left: 20px;
-        }
+        /*#btn_session_last {*/
+            /*position: fixed;*/
+            /*top: 75px;*/
+            /*left: 20px;*/
+        /*}*/
 
 
     </style>
