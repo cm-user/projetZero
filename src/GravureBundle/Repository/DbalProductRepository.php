@@ -29,9 +29,9 @@ class DbalProductRepository
     {
         $query = <<<SQL
 INSERT INTO gravure_product
-    (id_category, product_id, time, alias)
+    (id_category, product_id, time, alias, created_at, updated_at)
 VALUES
-    (:id_category, :product_id, :time, :alias)
+    (:id_category, :product_id, :time, :alias, :created_at, :updated_at)
 ;
 SQL;
 
@@ -41,6 +41,8 @@ SQL;
             'product_id' => (int)$product->getProductId(),
             'time' => (int)$product->getTime(),
             'alias' => (string)$product->getAlias(),
+            'created_at' => (new \DateTime())->format('Y-m-d h:m:s'),
+            'updated_at' => (new \DateTime())->format('Y-m-d h:m:s'),
         ]);
     }
 
@@ -96,13 +98,14 @@ WHERE gravure_product.id = :id";
 
     public function update(Product $product){
 
-        $sql = "UPDATE gravure_product SET id_category = :id_category, product_id = :product_id, time = :time, alias = :alias WHERE id = :id";
+        $sql = "UPDATE gravure_product SET id_category = :id_category, product_id = :product_id, time = :time, alias = :alias, updated_at  = :updated_at  WHERE id = :id";
         $stmt = $this->connection->prepare($sql);
         $stmt->execute([
             'id_category' => (int)$product->getIdCategory(),
             'product_id' => (int)$product->getProductId(),
             'time' => (int)$product->getTime(),
             'alias' => (string)$product->getAlias(),
+            'updated_at' => (new \DateTime())->format('Y-m-d h:m:s'),
             "id" =>  (int) $product->getId(),
         ]);
     }

@@ -50,6 +50,37 @@ class ProductController extends Controller
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            $persta = $this->get('iq2i_prestashop_web_service')->getInstance(); //instance prestashop web service
+
+            //Mise à jour de toutes les gravures sans produit type lié
+            $gravures = $this->get('repositories.gravure')->findAllWithoutProduct();
+
+            foreach ($gravures as $gravure) {
+
+                //recherche de l'id du produit prestashop en fonction de l'id config
+                $result_config_cart = $persta->get(array(
+                    "resource" => "config_carts",
+                    "filter[id]" => '[' . $gravure['config_id'] . ']',
+                    "display" => '[id_product]',
+                ));
+
+                $result_config_cart = json_decode(json_encode((array)$result_config_cart), TRUE);
+                $productId = $result_config_cart['config_carts']['config_cart']['id_product'];
+
+
+                //////Methode pour récupérer l'id produit de chaque gravure pour trouver son produit lié///////
+                $Product = $this->get('repositories.product')->findByProductId($productId);
+                if ($Product != null) {
+//                    dump($Product);die;
+
+                    $idProduct = $Product['id'];
+                    //Ajout de l'id du produit type à la gravure
+                    $this->get('repositories.gravure')->updateIdProduct($gravure['id'], $idProduct);
+                }
+
+            }
+
             $product = Product::addProduct($productSubmission);
 
             $this->get('repositories.product')->save($product);
@@ -116,7 +147,6 @@ class ProductController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('gravure_product_delete', array('id' => $product->getId())))
             ->setMethod('DELETE')
-            ->getForm()
-            ;
+            ->getForm();
     }
 }

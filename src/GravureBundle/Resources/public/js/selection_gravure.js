@@ -33,7 +33,7 @@ function buildTable() {
             }
             $("#div_display_case").html($divDisplayCase);
             $("#div_table").html($elem);
-            $("#div_table").append("<button class=\"btn btn-default btn-block\" role=\"button\" id=\"btn_graver\" style=\"border-radius: 15px;padding: 5%;background-color: #575354;color:white;\"><h2>GRAVER</h2></button>");
+            $("#div_table").append("<button class=\"btn btn-default btn-block\" role=\"button\" id=\"btn_graver\" onclick='redirectionSelectionSerie();' style=\"border-radius: 15px;padding: 5%;background-color: #575354;color:white;\"><h2>GRAVER</h2></button>");
 
         }
     });
@@ -71,7 +71,6 @@ function actualize(bool) {
     $.ajax({
 
         url: Routing.generate('new_gravure_json', {bool: bool}),
-
         success: function (result) {
             $.each(result, function (key, val) {
 
@@ -135,8 +134,7 @@ function actualize(bool) {
                     $elem += "<td><a href=\"#\" data-toggle=\"modal\" data-target=\"#Modal_Picture_" + val['id'] + "\"><img src=\"" + val['jpg'] + " \" width='100'></a></td>";
 
                     if (val['id_product'] == null) {
-                        $elem += "<td><div class=\"alert alert-danger\" role=\"alert\">Alerte cette gravure n'est pas liée à un produit type</div><a class=\"btn btn-warning\" id=\"add_" + val['id'] + "\" href=\"/gravure/product/new/" + val['id_product'] + "\">Ajouter le produit type</a></td>";
-                        arrayIdPrestashop.push(val['id_prestashop']);
+                        $elem += addBlockEngraveWithoutProduct(val) ;
                     }
                     else if (val['state_prestashop'] == 3) {
                         $elem += "<td><div class=\"alert alert-warning\" role=\"alert\">En cours de préparation</div></td>";
@@ -194,6 +192,15 @@ function RemoveOrderCheckBoxWithGravureWithoutCategory(arrayIdPrestashop) {
 //fonction pour ajouter des minutes à un objet date
 function addMinutes(date, minutes) {
     return new Date(date.getTime() + minutes * 60000);
+}
+
+function addBlockEngraveWithoutProduct(val) {
+    $elem = "<td><div class=\"alert alert-danger\" role=\"alert\">Alerte cette gravure n'est pas liée à un produit type</div>" +
+        "<a class=\"btn btn-warning\" id=\"add_" + val['id'] + "\" target='_blank' href=\"/gravure/product/new/" + val['id_product'] + "\" onclick=\"displayButton(" + val['id'] + ");\">Ajouter le produit type</a>" +
+        "<div id=\"div_button_product_actualize_" + val['id'] + "\"></div></td>";
+    arrayIdPrestashop.push(val['id_prestashop']);
+
+    return $elem;
 }
 
 //fonction pour uncheck la gravure afin qu'elle ne soit pas prise en compte au lancement d'une nouvelle session
@@ -371,8 +378,7 @@ function getGravureTomorrow() {
                 $elem += "<td><a href=\"#\" data-toggle=\"modal\" data-target=\"#Modal_Picture_" + val['id'] + "\"><img src=\"" + val['jpg'] + " \" width='100'></a></td>";
 
                 if (val['id_product'] == null) {
-                    $elem += "<td><div class=\"alert alert-danger\" role=\"alert\">Alerte ce produit n'a pas de catégorie</div><a class=\"btn btn-warning\" id=\"add_" + val['id'] + "\" href=\"/projetZero2/web/app_dev.php/engraving/category/new/" + val['id_product'] + "\">Ajouter cette catégorie</a></td>";
-                    arrayIdPrestashop.push(val['id_prestashop']);
+                    $elem += addBlockEngraveWithoutProduct(val) ;
                 }
                 else {
                     $elem += "<td></td>"
@@ -449,8 +455,7 @@ function getGravureToday() {
                 $elem += "<td><a href=\"#\" data-toggle=\"modal\" data-target=\"#Modal_Picture_" + val['id'] + "\"><img src=\"" + val['jpg'] + " \" width='100'></a></td>";
 
                 if (val['id_product'] == null) {
-                    $elem += "<td><div class=\"alert alert-danger\" role=\"alert\">Alerte ce produit n'a pas de catégorie</div><a class=\"btn btn-warning\" id=\"add_" + val['id'] + "\" href=\"/projetZero2/web/app_dev.php/engraving/category/new/" + val['id_product'] + "\">Ajouter cette catégorie</a></td>";
-                    arrayIdPrestashop.push(val['id_prestashop']);
+                    $elem += addBlockEngraveWithoutProduct(val) ;
                 }
                 else {
                     $elem += "<td></td>"
@@ -490,6 +495,18 @@ function dateHoursMinutes() {
     hours = date.getHours();
     minutes = date.getMinutes() < 10 ? "0" +  date.getMinutes() :  date.getMinutes() ;
     return hours + ":" + minutes ;
+}
+
+function displayButton(id){
+    $("#div_button_product_actualize_" + id).html(
+        "<button class=\"btn btn-info btn-block\" onclick=\"actualize(1);\" role=\"button\"\n" +
+        "                    <h5>Actualiser</h5>\n" +
+        "                </button>"
+    );
+}
+
+function redirectionSelectionSerie() {
+    window.location.replace('http://localhost/projetZero2/web/app_dev.php/gravure/serie/');
 }
 
 // //fonction pour actualiser et effacer la session en cours

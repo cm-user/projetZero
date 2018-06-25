@@ -146,17 +146,20 @@ ORDER BY gravure_order.id_prestashop
         ]);
     }
 
-    public function cleanBoxAndChecked(){
+    public function cleanBoxAndChecked($orderToLock){
         $sql = "UPDATE gravure_order SET 
         box = :box,
                 checked = :checked,
                 updated_at  = :updated_at 
-          WHERE engrave = 0";
+          WHERE engrave = 0
+        AND gravure_order.id NOT IN ( '" . implode( "', '" , $orderToLock ) . "' ) "
+        ;
 
         $stmt = $this->connection->prepare($sql);
         $stmt->execute([
             'box' => 0,
             'checked' => 0,
+//            'arrayOrderToLock' => implode( ',' , $orderToLock ),
             'updated_at' => (new \DateTime())->format('Y-m-d h:m:s'),
         ]);
     }

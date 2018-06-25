@@ -79,6 +79,7 @@ class SelectionSerieController extends Controller
 
         $ZIPFileName = $this->getParameter("gravure_zip_directory") . "GRAVURE.zip";
 
+        //TODO revoir algo pour télécharger les pdf, se fier aux chaînes directement
 
         if ($zip->open($ZIPFileName) == TRUE)
             if ($zip->open($ZIPFileName, ZipArchive::CREATE) === true) {

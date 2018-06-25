@@ -105,6 +105,35 @@ LEFT JOIN gravure_chain_session ON gravure_chain_session.id_gravure = gravure.id
         return $row;
     }
 
+    public function findAllWithoutProduct(){
+        $sql = 'SELECT
+  gravure.id,
+  gravure_order.id_prestashop,
+  gravure_order.state_prestashop,
+  gravure_product.product_id,
+  gravure.config_id
+FROM gravure
+  LEFT JOIN gravure_order on gravure.id_order = gravure_order.id
+  LEFT JOIN gravure_product on gravure.id_product = gravure_product.id
+WHERE gravure.id_product IS NULL ';
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute();
+        $gravures = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $gravures;
+    }
+
+    public function updateIdProduct($idGravure, $idProduct){
+        $sql = "UPDATE `gravure` SET `id_product`= :id_product,
+updated_at  = :updated_at
+WHERE gravure.id = :id";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("id_product", $idProduct);
+        $stmt->bindValue("updated_at", (new \DateTime())->format('Y-m-d h:m:s'));
+        $stmt->bindValue("id", $idGravure);
+        $stmt->execute();
+    }
+
     public function findAllWithoutSessionAndHighSessionOnloadByState($status){
         $sql = 'SELECT
   gravure.id,
@@ -244,7 +273,7 @@ AND gravure_order.date_prestashop > :datetime
 ORDER BY gravure_order.state_prestashop DESC, gravure_order.id_prestashop';
 
         $stmt = $this->connection->prepare($sql);
-        $stmt->bindValue("datetime", $datetime->format('Y-m-d h:m:s'));
+        $stmt->bindValue("datetime", $datetime->format('Y-m-d H:m:s'));
         $stmt->execute();
         $gravures = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         return $gravures;
@@ -266,7 +295,7 @@ AND gravure_order.date_prestashop < :datetime
 ORDER BY gravure_order.state_prestashop DESC, gravure_order.id_prestashop';
 
         $stmt = $this->connection->prepare($sql);
-        $stmt->bindValue("datetime", $datetime->format('Y-m-d h:m:s'));
+        $stmt->bindValue("datetime", $datetime->format('Y-m-d H:m:s'));
         $stmt->execute();
         $gravures = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         return $gravures;
@@ -399,7 +428,7 @@ AND g.id_session IS NULL
 AND o.date_prestashop < :datetime');
 
         $stmt = $this->connection->prepare($sql);
-        $stmt->bindValue("datetime", $datetime->format('Y-m-d h:m:s'));
+        $stmt->bindValue("datetime", $datetime->format('Y-m-d H:m:s'));
         $stmt->execute();
         $expe = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -411,7 +440,7 @@ AND g.id_session IS NULL
 AND o.date_prestashop < :datetime');
 
         $stmt = $this->connection->prepare($sql);
-        $stmt->bindValue("datetime", $datetime->format('Y-m-d h:m:s'));
+        $stmt->bindValue("datetime", $datetime->format('Y-m-d H:m:s'));
         $stmt->execute();
         $prepa = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -423,7 +452,7 @@ AND g.id_session IS NULL
 AND o.date_prestashop < :datetime');
 
         $stmt = $this->connection->prepare($sql);
-        $stmt->bindValue("datetime", $datetime->format('Y-m-d h:m:s'));
+        $stmt->bindValue("datetime", $datetime->format('Y-m-d H:m:s'));
         $stmt->execute();
         $today = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -435,7 +464,7 @@ AND g.id_session IS NULL
 AND o.date_prestashop > :datetime');
 
         $stmt = $this->connection->prepare($sql);
-        $stmt->bindValue("datetime", $datetime->format('Y-m-d h:m:s'));
+        $stmt->bindValue("datetime", $datetime->format('Y-m-d H:m:s'));
         $stmt->execute();
         $tomorrow = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 

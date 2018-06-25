@@ -20,13 +20,14 @@ class SelectionGravureController extends Controller
     {
         $datetime = $this->get('creator.datetime.limit')->getDateTime();
 
-        return $this->render('@Gravure/gravure/selection_gravure.html.twig',['datetime' => $datetime]);
+        return $this->render('@Gravure/gravure/selection_gravure.html.twig', ['datetime' => $datetime]);
     }
 
     /**
      * @Route("/new-gravure/json/{bool}", name="new_gravure_json", options={"expose"=true})
      */
-    public function searchNewGravureAction($bool){
+    public function searchNewGravureAction($bool)
+    {
         //permet de garder en mémoire le choix pour les caisses en cas de coupure internet
         //si le bouton actualiser est cliqué on cherche simplement les nouvelles gravures en supprimant les numéros de caisse et l'état checked
 
@@ -216,17 +217,16 @@ class SelectionGravureController extends Controller
         $formatted = [];
         $time = 0;
         //formatage du tableau pour avoir les id dans un tableau à une dimension
-        $orderToLock = array_map(function($value){
+        $orderToLock = array_map(function ($value) {
             return $value['id'];
         }, $orderToLock);
 
         foreach ($gravures as $gravure) {
             $time += $gravure['time']; //calcul du temps total
             //vérifie si la commande de la gravure a d'autres gravures dans la chaîne
-            if(in_array($gravure['id_order'], $orderToLock)){
+            if (in_array($gravure['id_order'], $orderToLock)) {
                 $orderLocked = 1;
-            }
-            else {
+            } else {
                 $orderLocked = 0;
             }
 
@@ -254,21 +254,33 @@ class SelectionGravureController extends Controller
     }
 
 
-    public function getNewGravureAndCleanBoxChecked($last_order){
-
+    public function getNewGravureAndCleanBoxChecked($last_order)
+    {
         $new_last_order = $this->get('repositories.order')->findLast()['id_prestashop']; //récupère l'id de la dernière commande sur prestashop
 
-        //récupération des commandes qui n'ont pas le statut gravé et met à 0 le numéro de caisse et le checked
-        $this->get('repositories.order')->cleanBoxAndChecked();
         //récupération de toutes les gravures sans session et qui sont arrivées avant l'heure limite de fin de journée
-        $gravures = $this->get('repositories.gravure')->findAllWithoutSessionByState();
+        $gravures = $this->get('repositories.gravure')->findAllWithoutSessionAndHighSessionOnloadByState($this->getParameter('status_TERMINE'));
+
+        $orderToLock = $this->get('repositories.order')->findAllWithEngraveFinishOrOnLoad($this->getParameter('status_TERMINE'), $this->getParameter('status_EN_COURS')); //récupére les commandes qui ont des gravures dans les chaînes en cours
+        //formatage du tableau pour avoir les id dans un tableau à une dimension
+        $orderToLock = array_map(function ($value) {
+            return $value['id'];
+        }, $orderToLock);
+
+        //récupération des commandes qui n'ont pas le statut gravé et met à 0 le numéro de caisse et le checked sauf pour les commandes vérrouillées
+        $this->get('repositories.order')->cleanBoxAndChecked($orderToLock);
 
         $formatted = [];
         $time = 0;
 
         foreach ($gravures as $gravure) {
             $time += $gravure['time']; //calcul du temps total
-
+            //vérifie si la commande de la gravure a d'autres gravures dans la chaîne
+            if (in_array($gravure['id_order'], $orderToLock)) {
+                $orderLocked = 1;
+            } else {
+                $orderLocked = 0;
+            }
             $formatted[] = [
                 'id' => $gravure['id'],
                 'id_prestashop' => $gravure['id_prestashop'],
@@ -278,7 +290,7 @@ class SelectionGravureController extends Controller
                 'id_product' => $gravure['product_id'],
                 'box' => $gravure['box'],
                 'checked' => $gravure['checked'],
-                'locked' => 0
+                'locked' => $orderLocked
             ];
         }
         //ajout du temps au tableau
@@ -291,7 +303,6 @@ class SelectionGravureController extends Controller
 
         return $formatted;
     }
-
 
 
 }
