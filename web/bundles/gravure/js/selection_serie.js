@@ -264,8 +264,8 @@ function setColorBlackForCaseFull() {
 
 //Téléchargement des pdf, envoie du mail, et affichage des messages à l'utilisateur avant de commençer à graver
 function beginSessionGravure(){
-    // $('#Modal_Alert').modal();
-    // $("#Modal_Alert").modal('show');
+    $('#Modal_Alert').modal();
+    $("#Modal_Alert").modal('show');
 
 //     var oShell = new ActiveXObject("Shell.Application");
 //
@@ -276,7 +276,7 @@ function beginSessionGravure(){
 //
 // // Invoke the execute method.
 //     oShell.ShellExecute(commandtoRun, commandParms, "", "open", "1");
-console.log("coucou");
+// console.log("coucou");
     // var wshShell = new ActiveXObject("WScript.Shell");
     // console.log(wshShell);
     // wshShell.Run("C:\\Users\\Antoine\\Desktop\\Antoine.bat");
@@ -284,7 +284,7 @@ console.log("coucou");
     // console.log(teset);
     // console.log(wshShell.Run("C:\Users\Antoine\Desktop\Antoine.bat"));
 
-    window.location="file://C:\\Users\\Antoine\\Desktop\\Antoine.bat";
+    // window.location="file://C:\\Users\\Antoine\\Desktop\\Antoine.bat";
 
     // var file = Components.classes["@mozilla.org/file/local;1"].
     // createInstance(Components.interfaces.nsILocalFile);

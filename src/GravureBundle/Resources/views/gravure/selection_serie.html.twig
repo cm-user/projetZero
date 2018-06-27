@@ -47,8 +47,7 @@
                     </div>
                 {% endfor %}
             </div>
-            {#<a href="{{ path('download_gravure_pdf') }}" >#}
-            <a  >
+            <a href="{{ path('download_gravure_pdf') }}" >
             <button class="btn btn-default" id="btn_gravure_ok" role="button" onclick="beginSessionGravure();"
                     style="border-radius: 15px;padding: 1% 5%;background-color: #575354;color:white;">
                     <h1>
@@ -71,10 +70,13 @@
                     </button>
                 </div>
                 <div class="modal-body" id="Modal_Alert_Body">
-                    <h2>Les pdf vont être téléchargés et les mails envoyés, merci de vérifier.</h2>
+                    <h2>Les pdf vont être téléchargés et les mails envoyés, merci de vérifier.
+                     <br>
+                        Une fois téléchargé, cliquez sur le fichier bat situé dans la barre des tâches
+                    </h2>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-info">Passer à l'étape suivante</button>
+                    <a href="{{ path('assistant_gravure_index') }}"><button type="button" class="btn btn-info">Passer à l'étape suivante</button></a>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
                 </div>
             </div>

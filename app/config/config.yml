@@ -25,6 +25,7 @@ parameters:
     status_EN_CHAIN: 4
     status_EN_COURS: 3
     status_TERMINE: 5
+    status_EN_ATTENTE: 1
     gravure_zip_directory: '%kernel.project_dir%/web/gravure/zip/'
 
 

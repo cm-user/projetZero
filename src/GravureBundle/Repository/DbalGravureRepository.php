@@ -175,6 +175,24 @@ WHERE gravure.id = :id";
         return $row;
     }
 
+    public function UpdateAllWaitingAndCheckedByInChain($statusWaiting, $statusInChain, $idSession)
+    {
+        $sql = 'UPDATE `gravure` SET `id_status`= :id_status_in_chain,
+updated_at  = :updated_at,
+id_session = :id_session
+WHERE gravure.id IN (SELECT g.id FROM (SELECT * FROM `gravure`) AS g 
+LEFT JOIN gravure_order ON gravure_order.id = g.id_order
+WHERE g.id_status = :id_status_waiting 
+AND gravure_order.checked = 1)';
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("id_status_in_chain", $statusInChain);
+        $stmt->bindValue("id_status_waiting", $statusWaiting);
+        $stmt->bindValue("id_session", $idSession);
+        $stmt->bindValue("updated_at", (new \DateTime())->format('Y-m-d h:m:s'));
+        $stmt->execute();
+    }
+
     public function updateMachine($id, $idMachine){
         $sql = "UPDATE `gravure` SET `id_machine`= :id_machine,
 updated_at  = :updated_at
@@ -195,24 +213,23 @@ WHERE gravure.id = :id";
         $stmt->execute();
     }
 
-    public function findAllWithStatusOnloadAndPDFMachine($statusEnCours){
+    public function findAllInChainSessionWithSurname(){
         $sql = 'SELECT 
-gravure.id,
+gravure.id, 
 gravure.path_pdf,
-gravure_category.surname,
-gravure_category.folder,
-gravure_category.max_gabarit
-FROM `gravure` 
-LEFT JOIN gravure_machine on gravure_machine.id = gravure.id_machine 
-LEFT JOIN gravure_product on gravure_product.id = gravure.id_product
-LEFT JOIN gravure_category on gravure_category.id = gravure_product.id_category
-WHERE gravure.id_status = :en_cours 
-AND gravure_machine.type = "pdf"
-ORDER BY gravure_category.surname';
-
+ gravure_category.surname, 
+ gravure_category.folder, 
+ gravure_chain_session.series_number,
+ gravure_chain_session.chain_number
+  FROM gravure_chain_session 
+  LEFT JOIN gravure ON gravure.id = gravure_chain_session.id_gravure
+   LEFT JOIN gravure_machine on gravure_machine.id = gravure.id_machine 
+   LEFT JOIN gravure_product on gravure_product.id = gravure.id_product 
+   LEFT JOIN gravure_category on gravure_category.id = gravure_product.id_category 
+    WHERE gravure_machine.type = "pdf"
+   ORDER BY gravure_chain_session.chain_number ';
 
         $stmt = $this->connection->prepare($sql);
-        $stmt->bindValue("en_cours", $statusEnCours);
         $stmt->execute();
         $gravures = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         return $gravures;

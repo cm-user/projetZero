@@ -49,6 +49,14 @@ SQL;
         }
     }
 
+    public function isEmpty(){
+        $bool = $this->connection->fetchAll('SELECT 1
+FROM gravure_chain_session
+where exists (select * from gravure_chain_session)');
+
+        return $bool;
+    }
+
     public function setLockedPosition($chain_number){
         $sql = "UPDATE gravure_chain_session
  SET locked_position = 1 

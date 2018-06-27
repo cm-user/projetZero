@@ -26,7 +26,7 @@ class GravureController extends Controller
 
         //modifie la valeur du check en fonction de son etat précédent
         if ($order['checked'] == 1) {
-            $this->get('repositories.order')->setChecked($order['id'], 0);
+            $this->get('repositories.order')->setCheckedAndSession($order['id'], 0);
         } else {
             $this->get('repositories.order')->setChecked($order['id'], 1);
         }

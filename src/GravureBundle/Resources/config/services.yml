@@ -71,6 +71,10 @@ services:
         class: GravureBundle\Repository\DbalSessionRepository
         arguments: ["@doctrine.dbal.default_connection"]
 
+    utils.session:
+            class: GravureBundle\Entity\Utils\SessionUtil
+            arguments:  ["@service_container"]
+
 
 #Status
     repositories.status:

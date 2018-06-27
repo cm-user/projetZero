@@ -9,6 +9,7 @@
 namespace GravureBundle\Controller;
 
 
+use GravureBundle\Entity\Domain\Session;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -115,5 +116,6 @@ class SessionController extends Controller
 
         return new JsonResponse("Ajout du total des gravures faîtes par la dernière session");
     }
+
 
 }

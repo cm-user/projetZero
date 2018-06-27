@@ -25,11 +25,10 @@ class AssistantGravureController extends Controller
      */
     public function indexAction()
     {
+        //récupére l'id de la session en cours ou donne la futur valeur de la session
+        $idSession = $this->get('utils.session')->getRecentOrFutureIdSession();
 
-        $idSession = $this->get('repositories.session')->findMaxId();//recherche de la dernière session créé
-
-        $this->get('session')->set('number_session', $idSession); //on stock le numéro de session
-
+//        $this->get('session')->set('number_session', $idSession); //on stock le numéro de session
 
         return $this->render('@Gravure/gravure/assistant_gravure.html.twig',['idSession' => $idSession]);
     }
