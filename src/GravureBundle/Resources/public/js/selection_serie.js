@@ -124,15 +124,15 @@ function addListenerCase(array_gravure) {
     $("#case" + numberBox).html(numberBox); //affiche le numéro de caisse
     for (i=0; i < array_gravure.length; i++){
         $("#case" + numberBox).addClass("chain_" + array_gravure[i]['chain_number']); //ajout d'une classe avec le numéro de chaine
-        if(array_gravure[i]['colorCategory'] != null){
+        if(array_gravure[i]['colorCategory'] !== ""){
             $elem += "<tr style=\"background-color:" + array_gravure[i]['colorCategory'] + ";\"><td style='padding: 3%;'><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'>";
             $elem += "<h4>" + array_gravure[i]['alias'] +"</h4></div></td>";
             $elem += "<td></td></tr>";
         }
-        else if(array_gravure[i]['colorGravure'] != null){
+        else if(array_gravure[i]['colorGravure'] !== ""){
             $elem += "<tr id=\"row_gravure_" + array_gravure[i]['id'] + "\" style=\"background-color:" + array_gravure[i]['colorGravure'] + ";\"><td style='padding: 3%;'><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'>";
             $elem += "<h4>" + array_gravure[i]['alias'] +"</h4></div></td>";
-            $elem += "<td style='padding: 3%;'><button class='btn-picto' onclick=\"setColorMachineSession(" + array_gravure[i]['id'] +"," + 0 + ");\"><i class=\"glyphicon glyphicon-retweet\" style=\"font-size:60px; padding: 25%;color: lightgrey;\"></i></button></td></tr>";
+            $elem += "<td style='padding: 3%;'><button class='btn-picto' onclick=\"setColorMachineSession(" + array_gravure[i]['id'] +"," + 0 + ");\"><i class=\"glyphicon glyphicon-retweet\" style=\"font-size:60px; padding: 25%;color: lightgrey;width:100px;\"></i></button></td></tr>";
         }
         else {
             $elem += "<tr id=\"row_gravure_" + array_gravure[i]['id'] + "\" style=\"background-color:" + color_machine + ";\"><td style='padding: 3%;'><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'></div></td>";
@@ -266,4 +266,7 @@ function setColorBlackForCaseFull() {
 function beginSessionGravure(){
     $('#Modal_Alert').modal();
     $("#Modal_Alert").modal('show');
+
+
+
 }

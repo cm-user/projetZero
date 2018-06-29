@@ -12,13 +12,15 @@
         <div class="col-sm-5" id="div_tableau">
             <div id="div_table"></div>
             <div>
-                <button class="btn btn-default" onclick="actualize(1);"  role="button"
+                <a href="{{ path('selection_gravure_index') }}">
+                <button class="btn btn-default" role="button"
                         style="border-radius: 15px;padding: 10px;background-color: #575354;color:white;">
                     <h3>
                         <i class="glyphicon glyphicon-edit" style="font-size:35px;"></i>
                         Modifier la session
                     </h3>
                 </button>
+                </a>
                 <br>
                 <button class="btn btn-default" onclick="cancelSession();"  role="button"
                         style="border-radius: 15px;background-color: #575354;color:white;">

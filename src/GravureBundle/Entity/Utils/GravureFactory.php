@@ -23,7 +23,7 @@ class GravureFactory
      * GravureFactory constructor.
      *
      */
-    public function __construct(Container $container = null )
+    public function __construct(Container $container = null)
     {
         $this->container = $container;
     }
@@ -36,7 +36,8 @@ class GravureFactory
         $this->listGravure[] = $gravure;
     }
 
-    public function clearListGravure(){
+    public function clearListGravure()
+    {
         $this->listGravure = [];
     }
 
@@ -51,12 +52,12 @@ class GravureFactory
             $idMachine = null;
         } else {
             $idProduct = $Product['id'];
-            $idMachine = $this->container->get('repositories.product')->findMachineByIdProduct($idProduct);
+            $idMachine = $this->container->get('repositories.product')->findMachineByIdProduct($idProduct);//chercher l'id de la machine lié au produit type
         }
 
         //si il n'y a pas de machine liée à la catégorie, on renseigne la machine par défaut
-        if($idMachine == null){
-            $idMachine = $this->container->get('repositories.machine')->getDefaultId();
+        if ($idMachine == null) {
+            $idMachine = $this->container->get('repositories.machine')->getDefaultId(); //renseigne l'id machine de la machine définie par défaut
         }
 
         $path_jpg = $this->container->get('creator.link.file')->createJpg($id_config, $productId); //creation des liens de l'image
@@ -95,7 +96,7 @@ class GravureFactory
             }
         }
 
-        return  $this->listGravure;
+        return $this->listGravure;
     }
 
 }

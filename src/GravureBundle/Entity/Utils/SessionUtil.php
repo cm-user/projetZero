@@ -33,7 +33,8 @@ class SessionUtil
             $idSession = $this->container->get('repositories.session')->findMaxId();//recherche de la dernière session créé
         }
         else{ //si elle vide, création d'une nouvelle session
-            $session = Session::addSession($user->getName() , 0); //création nouvelle session
+//            $session = Session::addSession($user->getName() , 0); //création nouvelle session
+            $session = Session::addSession("Antoine" , 0); //création nouvelle session
             $this->container->get('repositories.session')->save($session);
             $idSession = $this->container->get('repositories.session')->findMaxId();//recherche de la dernière session créé
         }

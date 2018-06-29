@@ -162,12 +162,12 @@ function addListenerCase(array_gravure) {
     $("#case" + numberBox).html(numberBox); //affiche le numéro de caisse
     for (i = 0; i < array_gravure.length; i++) {
         $("#case" + numberBox).addClass("chain_" + array_gravure[i]['chain_number']); //ajout d'une classe avec le numéro de chaine
-        if (array_gravure[i]['colorCategory'] != null) {
+        if (array_gravure[i]['colorCategory'] !== "") {
             $elem += "<tr style=\"background-color:" + array_gravure[i]['colorCategory'] + ";\"><td style='padding: 3%; width:200px;'><img src=\"" + array_gravure[i]['jpg'] + "\" width='180'>";
             $elem += "<h4>" + array_gravure[i]['alias'] + "</h4></div></td>";
             $elem += "</tr>";
         }
-        else if (array_gravure[i]['colorGravure'] != null) {
+        else if (array_gravure[i]['colorGravure'] !== "") {
             $elem += "<tr id=\"row_gravure_" + array_gravure[i]['id'] + "\" style=\"background-color:" + array_gravure[i]['colorGravure'] + ";\"><td style='padding: 3%; width:200px;'><img src=\"" + array_gravure[i]['jpg'] + "\" width='180'>";
             $elem += "<h4>" + array_gravure[i]['alias'] + "</h4></div></td>";
             $elem += "</tr>";
