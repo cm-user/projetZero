@@ -129,7 +129,7 @@ ORDER BY gravure_order.id_prestashop
         $stmt->execute([
             'box' => $box,
             'checked' => $bool,
-            'updated_at' => (new \DateTime())->format('Y-m-d h:m:s'),
+            'updated_at' => (new \DateTime())->format('Y-m-d H:m:s'),
             "id" => $id,
         ]);
     }

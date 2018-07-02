@@ -48,7 +48,7 @@ class SelectionGravureController extends Controller
         set_time_limit(500); //permet d'augmenter le temps maximal d'execution
 
         $em = $this->getDoctrine()->getManager();
-        $array_state = [1, 2, 3, 4, 30, 31]; //tableau contenant les "bons" etats des commandes
+        $array_state = [2, 3, 4, 30, 31]; //tableau contenant les "bons" etats des commandes
         $persta = $this->get('iq2i_prestashop_web_service')->getInstance(); //instance prestashop web service
         $last_order = $this->get('repositories.order')->findLast()['id_prestashop']; //récupère l'id de la dernière commande sur prestashop
         $regulator = $em->getRepository('GravureBundle:OrderRegulator')->find(1); //objet OrderRegulator
