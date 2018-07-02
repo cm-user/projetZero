@@ -118,29 +118,17 @@ ORDER BY gravure_order.id_prestashop
         return $row;
     }
 
-    public function setChecked($id, $bool){
-        $sql = "UPDATE gravure_order SET 
-        checked = :checked,
-                updated_at  = :updated_at 
-        WHERE id = :id";
-
-        $stmt = $this->connection->prepare($sql);
-        $stmt->execute([
-            'checked' => $bool,
-            'updated_at' => (new \DateTime())->format('Y-m-d h:m:s'),
-            "id" => $id,
-        ]);
-    }
-
-    public function setBox($id, $box){
+    public function updateCheckedAndBox($id, $bool, $box){
         $sql = "UPDATE gravure_order SET 
         box = :box,
+         checked = :checked,
                 updated_at  = :updated_at 
         WHERE id = :id";
 
         $stmt = $this->connection->prepare($sql);
         $stmt->execute([
             'box' => $box,
+            'checked' => $bool,
             'updated_at' => (new \DateTime())->format('Y-m-d h:m:s'),
             "id" => $id,
         ]);
@@ -159,7 +147,6 @@ ORDER BY gravure_order.id_prestashop
         $stmt->execute([
             'box' => 0,
             'checked' => 0,
-//            'arrayOrderToLock' => implode( ',' , $orderToLock ),
             'updated_at' => (new \DateTime())->format('Y-m-d h:m:s'),
         ]);
     }

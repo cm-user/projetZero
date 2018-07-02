@@ -269,6 +269,8 @@ class SelectionGravureController extends Controller
 
         //récupération des commandes qui n'ont pas le statut gravé et met à 0 le numéro de caisse et le checked sauf pour les commandes vérrouillées
         $this->get('repositories.order')->cleanBoxAndChecked($orderToLock);
+        //récupération des gravures qui n'ont pas le statut gravé et met à null la session et met le statut des gravures en attente sauf pour les commandes vérrouillées
+        $this->get('repositories.gravure')->updateSessionAndStatusAndNotEngraving($this->getParameter('status_EN_ATTENTE'), $orderToLock );
 
         $formatted = [];
         $time = 0;

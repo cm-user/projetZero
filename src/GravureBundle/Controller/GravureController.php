@@ -44,14 +44,12 @@ class GravureController extends Controller
 
         //modifie la valeur du check en fonction de son etat précédent
         if ($order['checked'] == 1) {
-            $this->get('repositories.order')->setChecked($order['id'], 0);
-            $this->get('repositories.order')->setBox($order['id'], 0);
+            $this->get('repositories.order')->updateCheckedAndBox($order['id'], 0, 0);
+            $this->get('repositories.gravure')->updateSessionAndStatusByIdOrder($this->getParameter('status_EN_ATTENTE'), $order['id']); //remet à null la session et le statut en attente des gravures liée à cette commande
         } else {
-            $this->get('repositories.order')->setChecked($order['id'], 1);
-            $this->get('repositories.order')->setBox($order['id'], $box);
+            $this->get('repositories.order')->updateCheckedAndBox($order['id'], 1, $box);
 
         }
-
 
         return new Response("box change and check");
     }
@@ -148,12 +146,24 @@ class GravureController extends Controller
      */
     public function getGravureWithChainNumber()
     {
-        //récupération de toutes les gravures sans session et qui sont arrivées après l'heure limite de fin de journée
-        $gravures = $this->get('repositories.gravure')->findAllWithHighSessionAndStatusNotFinish($this->getParameter('status_TERMINE'));
+        //récupération de toutes les gravures avec la plus haute session, qui sont checked et qui n'ont pas le statut engrave
+        $gravures = $this->get('repositories.gravure')->findAllWithHighSessionAndStatusNotFinish();
+
+        $orderToLock = $this->get('repositories.order')->findAllWithEngraveFinishOrOnLoad($this->getParameter('status_TERMINE'), $this->getParameter('status_EN_COURS')); //récupére les commandes qui ont des gravures dans les chaînes en cours
+        //formatage du tableau pour avoir les id dans un tableau à une dimension
+        $orderToLock = array_map(function ($value) {
+            return $value['id'];
+        }, $orderToLock);
 
         $formatted = [];
 
         foreach ($gravures as $gravure) {
+
+            if (in_array($gravure['id_order'], $orderToLock)) {
+                $orderLocked = 1;
+            } else {
+                $orderLocked = 0;
+            }
 
             $colorGravure = $this->get('repositories.gravure')->findColorMachineById($gravure['id']);
 
@@ -167,7 +177,8 @@ class GravureController extends Controller
                 'colorCategory' => $gravure['color'],
                 'colorGravure' => $colorGravure['color'],
                 'series_number' => $gravure['series_number'],
-                'alias' => $gravure['alias']
+                'alias' => $gravure['alias'],
+                'locked' => $orderLocked
             ];
 
 
@@ -183,10 +194,10 @@ class GravureController extends Controller
     {
         $machine = $this->get('repositories.gravure')->findColorMachineForceById($id);
         //vérifie que la catégorie de la gravure ne soit pas liée à une machine
-        if ($machine != null) {
+        if ($machine != 1) {
             $response = "machine did not change for this gravure : $id";
         } else { //sinon on peut changer la machine de la gravure
-            $idMachine = $this->get('session')->get('id_machine_used'); //on stock l'id machine
+            $idMachine = $this->get('session')->get('id_machine_used'); //récupére l'id machine dans la session
             $this->get('repositories.gravure')->updateMachine($id, $idMachine);
             $response = "machine changed for this gravure : $id";
         }

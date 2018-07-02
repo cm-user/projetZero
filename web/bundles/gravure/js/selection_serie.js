@@ -16,7 +16,7 @@ function createChainSession() {
                 $elem += "<tr style=\"background-color: " + val['color'] + ";\" id=\"chain_number_" + (key+1) + "\">";
                 $elem += "<td>" + val['gravures'].length + "</td>";
                 $elem += "<td><a style=\"display:block;width:100%;height:100%; cursor: pointer;\" onclick=\"addListenerChangeColorCase("+ (key+1) +",'" +val['color'] +"');\">" + val['surname'] + "</a></td>";
-                $elem += val['locked'] == 0 ? "<td><button class='btn-picto' onclick=\"setArrayColorMachineDefault([" + val['gravures'] + "],'" + (key+1) + "');\"><i class=\"glyphicon glyphicon-retweet\" style=\"\"></i></button> </td>" : "<td></td>";
+                $elem += val['locked_machine'] == 0 ? "<td><button class='btn-picto' onclick=\"setArrayColorMachineDefault([" + convertObjectToArray(val['gravures']) + "],'" + (key+1) + "');\"><i class=\"glyphicon glyphicon-retweet\" style=\"\"></i></button> </td>" : "<td></td>";
                 $elem += "</tr>";
             });
             $elem += "</tody></table>";
@@ -100,12 +100,12 @@ function hydrateTable() {
                     array_gravure = []; //vide le tableau
                 }
                 if(result.length-1 == key){
-                    array_gravure.push({'jpg' : val['jpg'], 'colorGravure':val['colorGravure'], 'colorCategory':val['colorCategory'], 'id':val['id'], 'chain_number':val['chain_number'], 'box':val['box'], 'id_prestashop':val['id_prestashop'], 'alias':val['alias']}); //ajout dans le tableau les id des gravures
+                    array_gravure.push({'jpg' : val['jpg'], 'colorGravure':val['colorGravure'], 'colorCategory':val['colorCategory'], 'id':val['id'], 'chain_number':val['chain_number'], 'box':val['box'], 'id_prestashop':val['id_prestashop'], 'alias':val['alias'], 'locked':val['locked']}); //ajout dans le tableau les id des gravures
                     addListenerCase(array_gravure); //ajout du numéro de caisse au tableau
                     array_gravure = []; //vide le tableau
                 }
 
-                array_gravure.push({'jpg' : val['jpg'], 'colorGravure':val['colorGravure'], 'colorCategory':val['colorCategory'], 'id':val['id'], 'chain_number':val['chain_number'], 'box':val['box'], 'id_prestashop':val['id_prestashop'], 'alias':val['alias']}); //ajout dans le tableau les id des gravures
+                array_gravure.push({'jpg' : val['jpg'], 'colorGravure':val['colorGravure'], 'colorCategory':val['colorCategory'], 'id':val['id'], 'chain_number':val['chain_number'], 'box':val['box'], 'id_prestashop':val['id_prestashop'], 'alias':val['alias'], 'locked':val['locked']}); //ajout dans le tableau les id des gravures
                 old_id_order = val['id_prestashop'];
 
             });
@@ -124,20 +124,39 @@ function addListenerCase(array_gravure) {
     $("#case" + numberBox).html(numberBox); //affiche le numéro de caisse
     for (i=0; i < array_gravure.length; i++){
         $("#case" + numberBox).addClass("chain_" + array_gravure[i]['chain_number']); //ajout d'une classe avec le numéro de chaine
-        if(array_gravure[i]['colorCategory'] !== ""){
-            $elem += "<tr style=\"background-color:" + array_gravure[i]['colorCategory'] + ";\"><td style='padding: 3%;'><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'>";
-            $elem += "<h4>" + array_gravure[i]['alias'] +"</h4></div></td>";
-            $elem += "<td></td></tr>";
+        if(array_gravure[i]['locked'] == 0){
+            if(array_gravure[i]['colorCategory'] !== ""){
+                $elem += "<tr style=\"background-color:" + array_gravure[i]['colorCategory'] + ";\"><td style='padding: 3%;'><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'>";
+                $elem += "<h4>" + array_gravure[i]['alias'] +"</h4></div></td>";
+                $elem += "<td></td></tr>";
+            }
+            else if(array_gravure[i]['colorGravure'] !== ""){
+                $elem += "<tr id=\"row_gravure_" + array_gravure[i]['id'] + "\" style=\"background-color:" + array_gravure[i]['colorGravure'] + ";\"><td style='padding: 3%;'><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'>";
+                $elem += "<h4>" + array_gravure[i]['alias'] +"</h4></div></td>";
+                $elem += "<td style='padding: 3%;'><button class='btn-picto' onclick=\"setColorMachineSession(" + array_gravure[i]['id'] +"," + 0 + ");\"><i class=\"glyphicon glyphicon-retweet\" style=\"font-size:60px; padding: 25%;color: lightgrey;width:100px;\"></i></button></td></tr>";
+            }
+            else {
+                $elem += "<tr id=\"row_gravure_" + array_gravure[i]['id'] + "\" style=\"background-color:" + color_machine + ";\"><td style='padding: 3%;'><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'></div></td>";
+                $elem += "<td style='padding: 3%;'><button class='btn-picto' onclick=\"setColorMachineSession(" + array_gravure[i]['id'] +"," + 0 + ");\"><i class=\"glyphicon glyphicon-retweet\" style=\"font-size:60px; padding: 25%;color: lightgrey;width:100px;\"></i></button></td></tr>";
+            }
         }
-        else if(array_gravure[i]['colorGravure'] !== ""){
-            $elem += "<tr id=\"row_gravure_" + array_gravure[i]['id'] + "\" style=\"background-color:" + array_gravure[i]['colorGravure'] + ";\"><td style='padding: 3%;'><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'>";
-            $elem += "<h4>" + array_gravure[i]['alias'] +"</h4></div></td>";
-            $elem += "<td style='padding: 3%;'><button class='btn-picto' onclick=\"setColorMachineSession(" + array_gravure[i]['id'] +"," + 0 + ");\"><i class=\"glyphicon glyphicon-retweet\" style=\"font-size:60px; padding: 25%;color: lightgrey;width:100px;\"></i></button></td></tr>";
+        else{
+            if(array_gravure[i]['colorCategory'] !== ""){
+                $elem += "<tr style=\"background-color:" + array_gravure[i]['colorCategory'] + ";\"><td style='padding: 3%;'><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'>";
+                $elem += "<h4>" + array_gravure[i]['alias'] +"</h4></div></td>";
+                $elem += "<td></td></tr>";
+            }
+            else if(array_gravure[i]['colorGravure'] !== ""){
+                $elem += "<tr id=\"row_gravure_" + array_gravure[i]['id'] + "\" style=\"background-color:" + array_gravure[i]['colorGravure'] + ";\"><td style='padding: 3%;'><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'>";
+                $elem += "<h4>" + array_gravure[i]['alias'] +"</h4></div></td>";
+                $elem += "<td></td></tr>";
+            }
+            else {
+                $elem += "<tr id=\"row_gravure_" + array_gravure[i]['id'] + "\" style=\"background-color:" + color_machine + ";\"><td style='padding: 3%;'><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'></div></td>";
+                $elem += "<td></td></tr>";
+            }
         }
-        else {
-            $elem += "<tr id=\"row_gravure_" + array_gravure[i]['id'] + "\" style=\"background-color:" + color_machine + ";\"><td style='padding: 3%;'><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'></div></td>";
-            $elem += "<td style='padding: 3%;'><button class='btn-picto' onclick=\"setColorMachineSession(" + array_gravure[i]['id'] +"," + 0 + ");\"><i class=\"glyphicon glyphicon-retweet\" style=\"font-size:60px; padding: 25%;color: red;\"></i></button></td></tr>";
-        }
+
 
     }
     $elem += "</tbody></table></div>";
@@ -266,7 +285,13 @@ function setColorBlackForCaseFull() {
 function beginSessionGravure(){
     $('#Modal_Alert').modal();
     $("#Modal_Alert").modal('show');
+}
 
+function convertObjectToArray(gravures){
+    var arrayResponse = [];
+    gravures.forEach(function(elem){
+        arrayResponse.push(elem['id']);
+    });
 
-
+    return arrayResponse;
 }

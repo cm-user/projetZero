@@ -138,7 +138,7 @@ WHERE gravure.id = :id ';
         $row = $stmt->fetch(\PDO::FETCH_ASSOC);
 
 
-        if($row['id_machine'] == null){
+        if($row['id_machine'] == 1){
             return 0;
         }
         else {

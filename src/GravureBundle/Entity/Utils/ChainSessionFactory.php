@@ -53,6 +53,7 @@ class ChainSessionFactory
             $arrayIdLockedGravure[] = $lockedGravure['id'];
         }
 
+
         foreach ($gravures as $gravure){
 
             //si l'id de l'actuel gravure n'est pas dans la liste des gravures verrouillées , alors on ajoute cette gravure au tableau réponse
@@ -124,7 +125,7 @@ class ChainSessionFactory
                 $arrayPathJpgGravure[] = $gravure['path_jpg'];
             }
 
-            $locked = $this->container->get('repositories.chain_session')->isLockedByMachineDefault($gravures[0]['id']);
+            $locked = $this->container->get('repositories.chain_session')->isLockedByMachineDefault($gravures[0]['id']); //Vérifie si la catégorie est liée à une machine obligatoire
 
             $array[] = [
                 'surname' => $categories[0]['surname'],
@@ -133,7 +134,7 @@ class ChainSessionFactory
                 'color' => $color,
                 'gravures' => $gravures,
                 'texts' => $arrayGravureText,
-                'locked' => $locked,
+                'locked_machine' => $locked,
                 'status' => $gravures[0]['id_status'],
                 'machine' => $gravures[0]['type'],
                 'chain_number' => $chain['chain_number']

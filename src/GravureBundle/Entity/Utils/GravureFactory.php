@@ -49,14 +49,14 @@ class GravureFactory
 
         if ($Product == null) {
             $idProduct = null;
-            $idMachine = null;
+            $idMachine = 1;
         } else {
             $idProduct = $Product['id'];
             $idMachine = $this->container->get('repositories.product')->findMachineByIdProduct($idProduct);//chercher l'id de la machine lié au produit type
         }
 
-        //si il n'y a pas de machine liée à la catégorie, on renseigne la machine par défaut
-        if ($idMachine == null) {
+        //si l'id machine vaut 1 c'est la machine null liée à aucune catégorie, renseigne donc la machine par défaut
+        if ($idMachine == 1) {
             $idMachine = $this->container->get('repositories.machine')->getDefaultId(); //renseigne l'id machine de la machine définie par défaut
         }
 
