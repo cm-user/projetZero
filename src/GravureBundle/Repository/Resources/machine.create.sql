@@ -1,6 +1,6 @@
 CREATE TABLE `gravure_machine` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
+  `name` varchar(191) NOT NULL,
   `color` varchar(50) NOT NULL,
   `type` varchar(30) NOT NULL,
   `by_default` bool DEFAULT '0',

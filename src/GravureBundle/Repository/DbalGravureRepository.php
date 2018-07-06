@@ -35,9 +35,9 @@ class DbalGravureRepository
 
         $query = <<<SQL
 INSERT INTO gravure
-    (id_product, id_session, id_order, id_machine, id_status, path_jpg, path_pdf, config_id, position_gabarit, created_at, updated_at)
+    (id_product, id_session, id_order, id_machine, id_status, path_jpg, path_pdf, config_id, created_at, updated_at)
 VALUES
-    (:id_product, :id_session, :id_order, :id_machine, :id_status, :path_jpg, :path_pdf, :config_id, :position_gabarit, :created_at, :updated_at)
+    (:id_product, :id_session, :id_order, :id_machine, :id_status, :path_jpg, :path_pdf, :config_id, :created_at, :updated_at)
 ;
 SQL;
 
@@ -51,7 +51,6 @@ SQL;
             'path_jpg' => (string)$gravure->getPathJpg(),
             'path_pdf' => (string)$gravure->getPathPdf(),
             'config_id' => (int)$gravure->getConfigId(),
-            'position_gabarit' => null,
             'created_at' => (new \DateTime())->format('Y-m-d h:m:s'),
             'updated_at' => (new \DateTime())->format('Y-m-d h:m:s'),
         ]);
@@ -129,7 +128,7 @@ updated_at  = :updated_at
 WHERE gravure.id = :id";
         $stmt = $this->connection->prepare($sql);
         $stmt->bindValue("id_product", $idProduct);
-        $stmt->bindValue("updated_at", (new \DateTime())->format('Y-m-d h:m:s'));
+        $stmt->bindValue("updated_at", (new \DateTime())->format('Y-m-d H:m:s'));
         $stmt->bindValue("id", $idGravure);
         $stmt->execute();
     }

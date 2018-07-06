@@ -1,6 +1,6 @@
 CREATE TABLE `gravure_status` (
   `id` int NOT NULL AUTO_INCREMENT,
-  name varchar(255) NOT NULL,
+  name varchar(191) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

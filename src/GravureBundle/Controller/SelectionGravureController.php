@@ -30,7 +30,6 @@ class SelectionGravureController extends Controller
     {
         //permet de garder en mémoire le choix pour les caisses en cas de coupure internet
         //si le bouton actualiser est cliqué on cherche simplement les nouvelles gravures en supprimant les numéros de caisse et l'état checked
-
         $last_order = self::actualise();
 
         if ($bool == 0) {

@@ -68,15 +68,14 @@ class ProductController extends Controller
                 $result_config_cart = json_decode(json_encode((array)$result_config_cart), TRUE);
                 $productId = $result_config_cart['config_carts']['config_cart']['id_product'];
 
-
                 //////Methode pour récupérer l'id produit de chaque gravure pour trouver son produit lié///////
                 $Product = $this->get('repositories.product')->findByProductId($productId);
                 if ($Product != null) {
-//                    dump($Product);die;
 
                     $idProduct = $Product['id'];
                     //Ajout de l'id du produit type à la gravure
                     $this->get('repositories.gravure')->updateIdProduct($gravure['id'], $idProduct);
+
                 }
 
             }

@@ -13,6 +13,7 @@ use GravureBundle\Form\CategorySubmission;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -140,4 +141,26 @@ class CategoryController extends Controller
             ->getForm()
             ;
     }
+
+
+    /**
+     * @Route("/import/category", name="category_import_category")
+     */
+    public function importCategory()
+    {
+        $fileName = $this->getParameter('gravure_gabarit_directory') . 'gravure.csv';
+
+            $row = 1;
+if (($handle = fopen($fileName, "r")) !== FALSE) {
+    while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+        $row++;
+        $category = new Category($data[4], $data[0], $data[1], $data[2], "path", $data[3]);
+        $this->get('repositories.category')->save($category);
+    }
+    fclose($handle);
+}
+
+
+            return new JsonResponse("Importation csv réussi ");
+      }
 }

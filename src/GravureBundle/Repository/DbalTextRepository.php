@@ -29,9 +29,9 @@ class DbalTextRepository
     {
         $query = <<<SQL
 INSERT INTO gravure_text
-    (name_block, value)
+    (name_block, value, created_at, updated_at)
 VALUES
-    (:name_block, :value)
+    (:name_block, :value, :created_at, :updated_at)
 ;
 SQL;
 
@@ -39,6 +39,8 @@ SQL;
         $stmt->execute([
             'name_block' => (string)$text->getNameBlock(),
             'value' => (string)$text->getValue(),
+            'created_at' => (new \DateTime())->format('Y-m-d h:m:s'),
+            'updated_at' => (new \DateTime())->format('Y-m-d h:m:s'),
         ]);
     }
 
@@ -47,9 +49,9 @@ SQL;
         //insere le nom du block et sa valeur dans la table Text
         $query = <<<SQL
 INSERT INTO gravure_text
-    (name_block, value)
+    (name_block, value, created_at, updated_at)
 VALUES
-    (:name_block, :value)
+    (:name_block, :value, :created_at, :updated_at)
 ;
 SQL;
 
@@ -57,6 +59,8 @@ SQL;
         $stmt->execute([
             'name_block' => (string)$blockName,
             'value' => (string)$blockValue,
+            'created_at' => (new \DateTime())->format('Y-m-d h:m:s'),
+            'updated_at' => (new \DateTime())->format('Y-m-d h:m:s'),
         ]);
 
 

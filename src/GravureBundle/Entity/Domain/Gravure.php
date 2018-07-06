@@ -22,7 +22,6 @@ class Gravure
     private $pathJpg;
     private $pathPdf;
     private $configId;
-    private $positionGabarit;
     private $createdAt;
     private $updatedAt;
 
@@ -40,7 +39,7 @@ class Gravure
      * @param $createdAt
      * @param $updatedAt
      */
-    public function __construct($idProduct, $idSession, $idOrder, $idMachine, $idStatus, $pathJpg, $pathPdf, $configId, $positionGabarit, $createdAt, $updatedAt)
+    public function __construct($idProduct, $idSession, $idOrder, $idMachine, $idStatus, $pathJpg, $pathPdf, $configId, $createdAt, $updatedAt)
     {
         $this->idProduct = $idProduct;
         $this->idSession = $idSession;
@@ -50,7 +49,6 @@ class Gravure
         $this->pathJpg = $pathJpg;
         $this->pathPdf = $pathPdf;
         $this->configId = $configId;
-        $this->positionGabarit = $positionGabarit;
         $this->createdAt = $createdAt;
         $this->updatedAt = $updatedAt;
     }
@@ -61,7 +59,7 @@ class Gravure
         $createdAt = (new \DateTime())->format('Y-m-d h:m:s');
         $updatedAt = (new \DateTime())->format('Y-m-d h:m:s');
 
-        return new self($idProduct, null, $idOrder, $idMachine, 1, $path_jpg, $path_pdf, $config_id, null, $createdAt, $updatedAt);
+        return new self($idProduct, null, $idOrder, $idMachine, 1, $path_jpg, $path_pdf, $config_id, $createdAt, $updatedAt);
     }
 
     /**
@@ -148,14 +146,6 @@ class Gravure
     /**
      * @return mixed
      */
-    public function getPositionGabarit()
-    {
-        return $this->positionGabarit;
-    }
-
-    /**
-     * @return mixed
-     */
     public function getCreatedAt()
     {
         return $this->createdAt;
@@ -185,7 +175,6 @@ class Gravure
             $data['path_jpg'],
             $data['path_pdf'],
             $data['config_id'],
-            $data['position_gabarit'],
             $data['created_at'],
             $data['updated_at']
         );
