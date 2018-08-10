@@ -27,7 +27,7 @@ class Product
      * @param $time
      * @param $alias
      */
-    public function __construct($idCategory, $productId, $time, $alias)
+    public function __construct($idCategory, $productId, $time = 1, $alias)
     {
         $this->idCategory = $idCategory;
         $this->productId = $productId;

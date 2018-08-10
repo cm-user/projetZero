@@ -53,13 +53,13 @@ class CategoryController extends Controller
             $category = Category::addCategory($categorySubmission);
 
             $file = $category->getPathGabarit(); //récupére le chemin du fichier
-            $fileName = $category->getSurname().".".$file->guessExtension(); //construit le fichier avec le nom donnée par l'utilisateur et son extension
+            $fileName = $category->getSurname() . "." . $file->guessExtension(); //construit le fichier avec le nom donnée par l'utilisateur et son extension
             //déplace le fichier dans le bon repertoire
             $file->move(
                 $this->getParameter('gravure_gabarit_directory'),
                 $fileName
             );
-            $category->setPathGabarit($this->getParameter('gravure_gabarit_url').$fileName); //renseigne le nouveau chemin sur le serveur
+            $category->setPathGabarit($this->getParameter('gravure_gabarit_url') . $fileName); //renseigne le nouveau chemin sur le serveur
 
             $this->get('repositories.category')->save($category);
 
@@ -82,23 +82,45 @@ class CategoryController extends Controller
         $category->setId($id);
 
         $deleteForm = $this->createDeleteForm($category);
-//        $editForm = $this->createForm('GravureBundle\Form\Types\CategoryType', $category);
         $editForm = $this->createForm('GravureBundle\Form\Types\CategoryType',
             $category,
             array('machineRepository' => $this->get('repositories.machine')));
         $editForm->handleRequest($request);
 
+
+        if ($category->getPathGabarit() != null) {
+            $this->get('session')->set('path_gabarit', $category->getPathGabarit()); //on stock le chemin du gabarit si le chemin n'est pas null
+        }
+
         if ($editForm->isSubmitted() && $editForm->isValid()) {
+
             $file = $category->getPathGabarit(); //récupére le chemin du fichier
-            $fileName = $category->getSurname().".".$file->guessExtension(); //construit le fichier avec le nom donnée par l'utilisateur et son extension
-            //déplace le fichier dans le bon repertoire
-            $file->move(
-                $this->getParameter('gravure_gabarit_directory'),
-                $fileName
-            );
-            $category->setPathGabarit($this->getParameter('gravure_gabarit_url').$fileName); //renseigne le nouveau chemin sur le serveur
+
+            if($file != null){
+                $fileName = $category->getSurname().".".$file->guessExtension(); //construit le fichier avec le nom donnée par l'utilisateur et son extension
+                //déplace le fichier dans le bon repertoire
+                $file->move(
+                    $this->getParameter('gravure_gabarit_directory'),
+                    $fileName
+                );
+                $category->setPathGabarit($this->getParameter('gravure_gabarit_url').$fileName); //renseigne le nouveau chemin sur le serveur
+            }else{ //si le champ est vide
+                $category->setPathGabarit($this->get('session')->get('path_gabarit')); //réattribue la bonne valeur du chemin
+            }
 
             $this->get('repositories.category')->update($category);
+
+            $idMachineCategory = $category->getIdMachine();
+
+            //si la machine lié à la catégorie est celle qui vaut null
+            if($idMachineCategory == 1){
+                //lie toutes les gravures tirés de cette catégorie à la machine par défaut
+                $idMachine = $this->get('repositories.machine')->getDefaultId(); //récupération de l'id machine par défaut
+                $this->get('repositories.gravure')->updateIdMachineByCategory($category->getId(), $idMachine, $this->getParameter('status_EN_COURS'), $this->getParameter('status_TERMINE'));
+            }
+            else{//sinon les gravures sont lié à la même machine que celle de leur catégorie
+                $this->get('repositories.gravure')->updateIdMachineByCategory($category->getId(), $idMachineCategory, $this->getParameter('status_EN_COURS'), $this->getParameter('status_TERMINE'));
+            }
 
             return $this->redirectToRoute('category_index');
         }
@@ -124,7 +146,7 @@ class CategoryController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
             $path = $category->getPathGabarit();
-            if(file_exists($path)){
+            if (file_exists($path)) {
                 unlink($path); //suppression du pdf
             }
             $this->get('repositories.category')->delete($id);
@@ -138,8 +160,7 @@ class CategoryController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('category_delete', array('id' => $category->getId())))
             ->setMethod('DELETE')
-            ->getForm()
-            ;
+            ->getForm();
     }
 
 
@@ -150,17 +171,17 @@ class CategoryController extends Controller
     {
         $fileName = $this->getParameter('gravure_gabarit_directory') . 'gravure.csv';
 
-            $row = 1;
-if (($handle = fopen($fileName, "r")) !== FALSE) {
-    while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-        $row++;
-        $category = new Category($data[4], $data[0], $data[1], $data[2], "path", $data[3]);
-        $this->get('repositories.category')->save($category);
+        $row = 1;
+        if (($handle = fopen($fileName, "r")) !== FALSE) {
+            while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+                $row++;
+                $category = new Category($data[4], $data[0], $data[1], $data[2], "path", $data[3]);
+                $this->get('repositories.category')->save($category);
+            }
+            fclose($handle);
+        }
+
+
+        return new JsonResponse("Importation csv réussi ");
     }
-    fclose($handle);
-}
-
-
-            return new JsonResponse("Importation csv réussi ");
-      }
 }

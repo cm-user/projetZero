@@ -3,7 +3,7 @@
 {% block body %}
     <h1>Liste des gravures</h1>
 
-    <table class="table table-bordered table-hover">
+    <table class="table table-bordered">
         <thead>
         <tr>
             <th>Nom du produit</th>
@@ -14,7 +14,6 @@
             <th>Image</th>
             <th>Lien PDF</th>
             <th>ID config de prestashop</th>
-            <th>Position sur le gabarit</th>
             <th>Date de création</th>
             <th>Date de modification</th>
             <th>Actions</th>
@@ -23,17 +22,25 @@
         <tbody>
         {% for gravure in gravures %}
             <tr>
-                <td>{{ getAliasProduct(gravure.idProduct) }}</td>
-                <td>{{ getCreateSession(gravure.idSession) }}</td>
-                <td>{{ getNameStatus(gravure.idStatus) }}</td>
-                <td>{{ getNameMachine(gravure.idMachine) }}</td>
-                <td>exemple de texte</td>
-                <td><img src="{{ gravure.pathJpg }}" alt="{{ gravure.pathJpg }}"></td>
-                <td>{{ gravure.pathPdf }}</td>
-                <td>{{ gravure.configId }}</td>
-                <td>{{ gravure.positionGabarit }}</td>
-                <td>{{ gravure.createdAt }}</td>
-                <td>{{ gravure.updatedAt }}</td>
+                <td>{{ getAliasProduct(gravure.id_product) }}</td>
+                <td>{{ getCreateSession(gravure.id_session) }}</td>
+                <td>{{ getNameStatus(gravure.id_status) }}</td>
+                <td>{{ getNameMachine(gravure.id_machine) }}</td>
+                <td>
+                    <table class="table">
+                        {% for text in gravure.texts %}
+                            <tr>
+                                <td>{{ text.name_block }}</td>
+                                <td>{{ text.value }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </td>
+                <td><a href="{{ gravure.path_jpg }}"><img src="{{ gravure.path_jpg }}" alt="{{ gravure.path_jpg }}" width="200"></a></td>
+                <td><a href="{{ gravure.path_pdf }}"> lien PDF</a></td>
+                <td>{{ gravure.config_id }}</td>
+                <td>{{ gravure.created_at }}</td>
+                <td>{{ gravure.updated_at }}</td>
                 <td>
                 </td>
             </tr>
@@ -41,6 +48,9 @@
         </tbody>
     </table>
 
-    {#<a class="btn btn-success" href="{{ path('gravure_gravure_new') }}">Ajouter</a>#}
+    <p><a class="btn btn-danger" href="{{ path('order_index') }}">
+            <span class="glyphicon glyphicon-arrow-left"></span>
+            Retour
+        </a></p>
 
 {% endblock %}

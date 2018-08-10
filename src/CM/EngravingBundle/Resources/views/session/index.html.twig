@@ -1,12 +1,13 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>Liste des Sessions</h1>
+    <h1>Liste des Sessionss</h1>
 
     <div class='col-md-5'>
         <div class="form-group">
             <div class='input-group date' id='datetimepicker6'>
-                <input id="dateDebut" type='text' class="form-control" required/>
+                <label for="dateDebut">Name:</label>
+                <input id="dateDebut" type='text' class="form-control" placeholder="inclus" required/>
                 <span class="input-group-addon">
                     <span class="glyphicon glyphicon-calendar"></span>
                 </span>
@@ -16,7 +17,7 @@
     <div class='col-md-5'>
         <div class="form-group">
             <div class='input-group date' id='datetimepicker7'>
-                <input id="dateFin" type='text' class="form-control" required/>
+                <input id="dateFin" type='text' class="form-control" placeholder="non inclus" required/>
                 <span class="input-group-addon">
                     <span class="glyphicon glyphicon-calendar"></span>
                 </span>

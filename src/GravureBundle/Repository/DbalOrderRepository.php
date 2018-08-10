@@ -26,7 +26,7 @@ class DbalOrderRepository
 
     public function findAll()
     {
-        $orders = $this->connection->fetchAll('SELECT * FROM gravure_order');
+        $orders = $this->connection->fetchAll('SELECT * FROM gravure_order ORDER BY gravure_order.id DESC');
 
         return $orders;
     }
@@ -131,6 +131,15 @@ ORDER BY gravure_order.id_prestashop
             'checked' => $bool,
             'updated_at' => (new \DateTime())->format('Y-m-d H:m:s'),
             "id" => $id,
+        ]);
+    }
+
+    public function updateEngrave($idPrestashop){
+        $sql = "UPDATE gravure_order SET engrave = 1 WHERE id_prestashop < :id_prestashop AND engrave = 0";
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute([
+            'id_prestashop' => $idPrestashop,
         ]);
     }
 
@@ -261,6 +270,66 @@ AND (SELECT COUNT(id) FROM gravure WHERE id_order = :id_order AND gravure.id_sta
         $stmt->execute();
 
         return $stmt;
+    }
+
+    public function deleteByIdPrestashop($idPrestashop){
+        $sql = "SELECT gravure.id, gravure.path_pdf, gravure.path_jpg FROM `gravure`
+LEFT JOIN gravure_order o on gravure.id_order = o.id
+WHERE o.id_prestashop = :id_prestashop ";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("id_prestashop", $idPrestashop);
+        $stmt->execute();
+        $gravures = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+
+        foreach ($gravures as $gravure){
+
+            $dir_path = "gravure/jpg";
+            $file_name = str_replace("http://tools.cadeau-maestro.com/gravure/jpg/", "", $gravure['path_jpg']);  //récupére le nom de l'image
+            $path = $dir_path . "/" . $file_name; //forme le chemin complet de l'image
+            unlink($path); //suppression de l'image
+
+            $dir_path = "gravure/pdf";
+            $file_name = str_replace("http://tools.cadeau-maestro.com/gravure/pdf/", "", $gravure['path_pdf']);  //récupére le nom de l'image
+            $path = $dir_path . "/" . $file_name; //forme le chemin complet de l'image
+            unlink($path); //suppression de l'image
+
+
+            $sql = "SELECT id_text FROM `gravure_link_gravure_text`
+WHERE id_gravure = :id_gravure ";
+            $stmt = $this->connection->prepare($sql);
+            $stmt->bindValue("id_gravure", $gravure['id']);
+            $stmt->execute();
+            $texts = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+            $texts = array_map(function ($value) {
+                return $value['id_text'];
+            }, $texts);
+
+            $sql2 = "DELETE FROM gravure_link_gravure_text WHERE id_gravure = '". $gravure['id'] ."' ";
+            $stmt2 = $this->connection->prepare($sql2);
+            $stmt2->execute();
+
+
+            $sql = "DELETE FROM gravure_text WHERE id IN ( '" . implode( "', '" , $texts ) . "' ) ";
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute();
+
+        }
+
+        $gravures = array_map(function ($value) {
+            return $value['id'];
+        }, $gravures);
+
+        $sql = "DELETE FROM gravure WHERE id IN ( '" . implode( "', '" , $gravures ) . "' ) ";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute();
+
+        $sql = "DELETE FROM gravure_order WHERE id_prestashop = :id_prestashop";
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue("id_prestashop", $idPrestashop);
+        $stmt->execute();
+
     }
 
     public function delete($id)

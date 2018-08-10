@@ -13,6 +13,7 @@ use GravureBundle\Form\ProductSubmission;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -51,6 +52,10 @@ class ProductController extends Controller
 
         if ($form->isSubmitted() && $form->isValid()) {
 
+            $product = Product::addProduct($productSubmission);
+
+            $this->get('repositories.product')->save($product);
+
             $persta = $this->get('iq2i_prestashop_web_service')->getInstance(); //instance prestashop web service
 
             //Mise à jour de toutes les gravures sans produit type lié
@@ -79,10 +84,6 @@ class ProductController extends Controller
                 }
 
             }
-
-            $product = Product::addProduct($productSubmission);
-
-            $this->get('repositories.product')->save($product);
 
             return $this->redirectToRoute('gravure_product_index');
         }
@@ -147,5 +148,26 @@ class ProductController extends Controller
             ->setAction($this->generateUrl('gravure_product_delete', array('id' => $product->getId())))
             ->setMethod('DELETE')
             ->getForm();
+    }
+
+    /**
+     * @Route("/import/product", name="product_import_product")
+     */
+    public function importProduct()
+    {
+        $fileName = $this->getParameter('gravure_gabarit_directory') . 'ps_product.csv';
+
+        $row = 1;
+        if (($handle = fopen($fileName, "r")) !== FALSE) {
+            while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+                $row++;
+                $product = new Product($data[2], $data[0], 1, $data[1]);
+                $this->get('repositories.product')->save($product);
+            }
+            fclose($handle);
+        }
+
+
+        return new JsonResponse("Importation csv réussi ");
     }
 }

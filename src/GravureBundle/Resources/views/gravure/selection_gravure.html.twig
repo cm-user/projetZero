@@ -9,30 +9,30 @@
         <div class="col-sm-2 " id="NumberGravure">
             <div class="row">
                 <div class="col-sm-8 col-sm-offset-2"
-                     style="background-color: #1ABB49;border-radius: 20px; color:white;">En cours de livraison
+                     style="background-color: #E72322;border-radius: 20px; color:white;"> Les gravures de ce jour
+                </div>
+                <div class="col-sm-2" style="color: #E72322" id="NumberGravureTotalDay"></div>
+            </div>
+            <div class="row">
+                <div class="col-sm-8 col-sm-offset-2"
+                     style="background-color: #1ABB49;border-radius: 20px; color:white;">Prêt à graver
                 </div>
                 <div class="col-sm-2" style="color: #1ABB49" id="NumberGravureExpe"></div>
             </div>
             <div class="row">
-                <div class="col-sm-8 col-sm-offset-2"
-                     style="background-color: #E79D24;border-radius: 20px; color:white;">En cours de préparation
-                </div>
-                <div class="col-sm-2" style="color: #E79D24" id="NumberGravurePrepa"></div>
-            </div>
-            <div class="row">
-                <a href="#" data-toggle="modal" data-target="#Modal_NumberGravure_Today"
-                   onclick="getGravureToday();">
+                <a href="#" data-toggle="modal" data-target="#Modal_NumberGravure_Soon_Available"
+                   onclick="getGravureSoonAvailable();">
                     <div class="col-sm-8 col-sm-offset-2"
-                         style="background-color: #E72322;border-radius: 20px; color:white;"> à envoyer aujourd'hui
+                         style="background-color: #E79D24;border-radius: 20px; color:white;">Commande avant {{ datetime|date("H:i") }}
                     </div>
                 </a>
-                <div class="col-sm-2" style="color: #E72322" id="NumberGravureTotalDay"></div>
+                <div class="col-sm-2" style="color: #E79D24" id="NumberGravureSoonAvailable"></div>
             </div>
             <div class="row">
                 <a href="#" data-toggle="modal" data-target="#Modal_NumberGravure_Tomorrow"
                    onclick="getGravureTomorrow();">
                     <div class="col-sm-8 col-sm-offset-2"
-                         style="background-color: #575354;border-radius: 20px; color:white;"> à envoyer demain
+                         style="background-color: #575354;border-radius: 20px; color:white;"> Commande après {{ datetime|date("H:i") }}
                     </div>
                 </a>
                 <div class="col-sm-2" style="color: #575354" id="NumberGravureTomorrow"></div>
@@ -58,10 +58,10 @@
             <div id="time_new_gravure"></div>
             <div id="msg_new_gravure"></div>
             <div>
-                <form class="form-inline">
-                    <input type="text" class="form-control" id="recherche" placeholder="id Prestashop"
+                <form class="form-inline" onSubmit="return false;">
+                    <input type="search" class="form-control" id="recherche1" placeholder="id Prestashop"
                            style="height: 50px; font-size: 60px; width: 450px;"/>
-                    <button onclick="getAnchorBySearch();" type="button" class="btn btn-warning"
+                    <button onclick="getAnchorBySearch(1);" type="button" class="btn btn-warning"
                             style="height: 50px; font-size: 25px; width: 200px;">Rechercher
                     </button>
                 </form>
@@ -74,7 +74,16 @@
         </div>
         <div class="col-sm-2">
             <div id="div_display_case"></div>
-            <div id="div_table">
+            <div id="div_table"></div>
+            <div id="div_second_search">
+                <p><button class="btn btn-info" onclick="goToTop();"><h4>Aller en haut</h4></button></p>
+                <form class="form-inline" onSubmit="return false;">
+                    <input type="search" class="form-control" id="recherche2" placeholder="id Prestashop"
+                           style="height: 50px; font-size: 30px; width: 200px;"/>
+                    <button onclick="getAnchorBySearch(2);" type="button" class="btn btn-warning"
+                            style="height: 50px; font-size: 25px; width: 200px;">Rechercher
+                    </button>
+                </form>
             </div>
         </div>
     </div>
@@ -86,7 +95,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="Modal_NumberGravure_Tomorrow_Title"> Liste des gravures qui sont tombés
-                        après {{ datetime|date("H:i")  }}</h5>
+                        après {{ datetime|date("H:i") }}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -100,19 +109,20 @@
         </div>
     </div>
 
-    {#modal des gravures à envoyer aujourd'hui#}
-    <div class="modal fade bd-example-modal-lg" id="Modal_NumberGravure_Today" tabindex="-1" role="dialog"
+    {#modal des gravures qui sont en train de tomberi#}
+    <div class="modal fade bd-example-modal-lg" id="Modal_NumberGravure_Soon_Available" tabindex="-1" role="dialog"
          aria-labelledby="Modal_NumberGravure_Today_Title" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="Modal_NumberGravure_Today_Title"> Liste des gravures qui sont tombés
+                    <h5 class="modal-title" id="Modal_NumberGravure_Soon_Available_Title"> Liste des gravures qui sont
+                        tombés
                         avant {{ datetime|date("H:i") }}</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body" id="Modal_NumberGravure_Today_Body">
+                <div class="modal-body" id="Modal_NumberGravure_Soon_Available_Body">
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
@@ -133,7 +143,8 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <p>Etes-vous sur de vouloir supprimer la sélection des caisses en cours ?(garde les commandes en cours de gravure)</p>
+                    <p>Etes-vous sur de vouloir supprimer la sélection des caisses en cours ?(garde les commandes en
+                        cours de gravure)</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick='actualize(0)'>Oui
@@ -184,6 +195,12 @@
             padding-top: 340px;
         }
 
+        #div_second_search{
+            position: fixed;
+            position: -webkit-sticky;
+            top: 720px; /* required */
+        }
+
         #div_display_case {
             background-color: #C6C4C5;
             position: fixed;
@@ -196,22 +213,26 @@
             background-color: #EAE8E9;
             height: 200px;
             padding: 10px;
+            margin-left: 40px;
         }
 
         #NumberGravure .row {
             padding-top: 10px;
         }
 
+        /*body {*/
+        /*overflow-x:hidden;*/
+        /*}*/
         /*.center-block {*/
-            /*margin-left: auto;*/
-            /*margin-right: auto;*/
-            /*display: block;*/
+        /*margin-left: auto;*/
+        /*margin-right: auto;*/
+        /*display: block;*/
         /*}*/
 
         /*#btn_session_last {*/
-            /*position: fixed;*/
-            /*top: 75px;*/
-            /*left: 20px;*/
+        /*position: fixed;*/
+        /*top: 75px;*/
+        /*left: 20px;*/
         /*}*/
 
 

@@ -20,7 +20,7 @@
                 <td>{{ session.gravure_total }}</td>
                 <td>{{ session.created_at }}</td>
                 <td>{{ session.updated_at }}</td>
-                <td>
+                <td><a href="{{ path('gravure_session_show', {id : session.id}) }}"><button class="btn btn-info">Voir l'archive</button></a></td>
             </tr>
         {% endfor %}
         </tbody>

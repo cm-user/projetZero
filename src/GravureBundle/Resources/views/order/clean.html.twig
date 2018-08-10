@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+
+{% block body %}
+    <h1>Nettoyeur de commande</h1>
+    <br>
+    <br>
+    <br>
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="input-group">
+      <span class="input-group-btn">
+        <button class="btn btn-default" type="button" onclick="cleanAncientOrder();">Effacer!</button>
+      </span>
+                <input type="text" class="form-control" id="search_clean_order" placeholder="id prestashop">
+            </div><!-- /input-group -->
+        </div><!-- /.col-lg-6 -->
+    </div>
+    <br>
+    <br>
+    <br>
+
+    <p>Cet outil permet d'effacer les commandes du tableau de bord principal( ces dernières seront ajoutées à une ancienne session).</p>
+    <p>Efface toutes les commandes avec un numéro inférieur au numéro rentré </p>
+    <p>Il est à utiliser que dans de rares cas.</p>
+    <p>Faites attention SVP t_t.</p>
+
+
+    <script>
+        function cleanAncientOrder() {
+            var value = $("#search_clean_order").val();
+
+            $.ajax({
+                url: Routing.generate('order_clean_dashboard', {idPrestashop : value}),
+                success: function (result) {
+                    console.log(result);
+                    if (result == 1){
+                        alert("Les commandes ont bien été archivées.");
+                    }
+                    else{
+                        alert('Il y\'a un problème avec ce numéro de commande.');
+                    }
+                },
+                error: function (result) {
+                    alert("Une erreur s'est produite avec le serveur, veuillez contacter l'administrateur.");
+                }
+            });
+        }
+    </script>
+
+{% endblock %}
+
+
+{% block javascripts %}
+    <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+    <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
+{% endblock %}

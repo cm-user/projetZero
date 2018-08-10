@@ -4,7 +4,7 @@ var color_chain = ""; //contient la couleur de la chaîne en cours
 buildTable(); //construit le tableau pour afficher les caisses
 createChainSession(); // construit la chaîne de série de gravure de la session en cours
 getColorMachineDefault(); //renseigne la couleur de la machine par défaut
-setTimeout(function(){ setColorBlackForCaseFull(); },4000);//remet les cases non vide à la même couleur
+setTimeout(function(){ setColorBlackForCaseFull(); },2000);//remet les cases non vide à la même couleur
 
 
 function createChainSession() {
@@ -64,7 +64,7 @@ function buildTable() {
             alert("Une erreur s'est produite avec le serveur, veuillez actualiser la page.");
         }
     });
-    setTimeout(function(){ hydrateTable(); },2000); //remplit le tableau avec les numéros de caisses
+    setTimeout(function(){ hydrateTable(); },500); //remplit le tableau avec les numéros de caisses
 }
 
 
@@ -126,39 +126,60 @@ function addListenerCase(array_gravure) {
         $("#case" + numberBox).addClass("chain_" + array_gravure[i]['chain_number']); //ajout d'une classe avec le numéro de chaine
         if(array_gravure[i]['locked'] == 0){
             if(array_gravure[i]['colorCategory'] !== ""){
-                $elem += "<tr style=\"background-color:" + array_gravure[i]['colorCategory'] + ";\"><td style='padding: 3%;'><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'>";
+                $elem += "<tr style=\"background-color:" + array_gravure[i]['colorCategory'] + ";\"><td style='padding: 3%;'><a href=\"#\" data-toggle=\"modal\" data-target=\"#Modal_Picture_" + array_gravure[i]['id'] + "\"><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'></a>";
                 $elem += "<h4>" + array_gravure[i]['alias'] +"</h4></div></td>";
                 $elem += "<td></td></tr>";
             }
             else if(array_gravure[i]['colorGravure'] !== ""){
-                $elem += "<tr id=\"row_gravure_" + array_gravure[i]['id'] + "\" style=\"background-color:" + array_gravure[i]['colorGravure'] + ";\"><td style='padding: 3%;'><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'>";
+                $elem += "<tr id=\"row_gravure_" + array_gravure[i]['id'] + "\" style=\"background-color:" + array_gravure[i]['colorGravure'] + ";\"><td style='padding: 3%;'><a href=\"#\" data-toggle=\"modal\" data-target=\"#Modal_Picture_" + array_gravure[i]['id'] + "\"><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'></a>";
                 $elem += "<h4>" + array_gravure[i]['alias'] +"</h4></div></td>";
                 $elem += "<td style='padding: 3%;'><button class='btn-picto' onclick=\"setColorMachineSession(" + array_gravure[i]['id'] +"," + 0 + ");\"><i class=\"glyphicon glyphicon-retweet\" style=\"font-size:60px; padding: 25%;color: lightgrey;width:100px;\"></i></button></td></tr>";
             }
             else {
-                $elem += "<tr id=\"row_gravure_" + array_gravure[i]['id'] + "\" style=\"background-color:" + color_machine + ";\"><td style='padding: 3%;'><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'></div></td>";
+                $elem += "<tr id=\"row_gravure_" + array_gravure[i]['id'] + "\" style=\"background-color:" + color_machine + ";\"><td style='padding: 3%;'><a href=\"#\" data-toggle=\"modal\" data-target=\"#Modal_Picture_" + array_gravure[i]['id'] + "\"><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'></a></div></td>";
                 $elem += "<td style='padding: 3%;'><button class='btn-picto' onclick=\"setColorMachineSession(" + array_gravure[i]['id'] +"," + 0 + ");\"><i class=\"glyphicon glyphicon-retweet\" style=\"font-size:60px; padding: 25%;color: lightgrey;width:100px;\"></i></button></td></tr>";
             }
         }
         else{
             if(array_gravure[i]['colorCategory'] !== ""){
-                $elem += "<tr style=\"background-color:" + array_gravure[i]['colorCategory'] + ";\"><td style='padding: 3%;'><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'>";
+                $elem += "<tr style=\"background-color:" + array_gravure[i]['colorCategory'] + ";\"><td style='padding: 3%;'><a href=\"#\" data-toggle=\"modal\" data-target=\"#Modal_Picture_" + array_gravure[i]['id'] + "\"><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'></a>";
                 $elem += "<h4>" + array_gravure[i]['alias'] +"</h4></div></td>";
                 $elem += "<td></td></tr>";
             }
             else if(array_gravure[i]['colorGravure'] !== ""){
-                $elem += "<tr id=\"row_gravure_" + array_gravure[i]['id'] + "\" style=\"background-color:" + array_gravure[i]['colorGravure'] + ";\"><td style='padding: 3%;'><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'>";
+                $elem += "<tr id=\"row_gravure_" + array_gravure[i]['id'] + "\" style=\"background-color:" + array_gravure[i]['colorGravure'] + ";\"><td style='padding: 3%;'><a href=\"#\" data-toggle=\"modal\" data-target=\"#Modal_Picture_" + array_gravure[i]['id'] + "\"><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'></a>";
                 $elem += "<h4>" + array_gravure[i]['alias'] +"</h4></div></td>";
                 $elem += "<td></td></tr>";
             }
             else {
-                $elem += "<tr id=\"row_gravure_" + array_gravure[i]['id'] + "\" style=\"background-color:" + color_machine + ";\"><td style='padding: 3%;'><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'></div></td>";
+                $elem += "<tr id=\"row_gravure_" + array_gravure[i]['id'] + "\" style=\"background-color:" + color_machine + ";\"><td style='padding: 3%;'><a href=\"#\" data-toggle=\"modal\" data-target=\"#Modal_Picture_" + array_gravure[i]['id'] + "\"><img src=\""+ array_gravure[i]['jpg'] + "\" width='180'></a></div></td>";
                 $elem += "<td></td></tr>";
             }
         }
 
-
+        //modal
+        $elem += "<div class=\"modal fade bd-example-modal-lg\" id=\"Modal_Picture_" + array_gravure[i]['id'] + "\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"Modal_Picture_title_" + array_gravure[i]['id'] + "\" aria-hidden=\"true\">";
+        $elem += "<div class=\"modal-dialog modal-lg\" role=\"document\">";
+        $elem += "<div class=\"modal-content\">";
+        $elem += "<div class=\"modal-header\">";
+        $elem += "<h5 class=\"modal-title\" id=\"Modal_Picture_title_" + array_gravure[i]['id'] + "\"></h5>";
+        $elem += "<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">";
+        $elem += "<span aria-hidden=\"true\">&times;</span>";
+        $elem += "</button>";
+        $elem += "</div>";
+        $elem += "<div class=\"modal-body\">";
+        $elem += "<img src=\"" + array_gravure[i]['jpg'] + " \" width=\'750\'>";
+        $elem += "</div>";
+        $elem += "<div class=\"modal-footer\">";
+        $elem += "<button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Fermer</button>";
+        $elem += "</div>";
+        $elem += "</div>";
+        $elem += "</div>";
+        $elem += "</div>";
     }
+
+
+
     $elem += "</tbody></table></div>";
     $("#DisplayCase_" + numberBox).html($elem);
 
@@ -193,6 +214,7 @@ function addListenerClic(number) {
             setColorBlackForCaseFull(); //remet les cases non vide à la même couleur
         }
         $("#case" + number).css("opacity", "0.5"); //change uniquement la couleur de la caisse
+        $("#case" + number).css("border-radius", "50%"); //change uniquement le border de la caisse
         $("#DisplayCase_" + number).show(); //affiche les gravures de la case
 
     });
@@ -261,14 +283,16 @@ function addListenerChangeColorCase(number, color) {
     }
 
     $(".chain_"+number).css("opacity", "1"); //remet l'opacité pour ces cases à 1
+    $(".chain_"+number).css("border-radius", "0%"); //remet l'opacité pour ces cases à 1
 
 }
 
 //Mise à jour du tableau contenant les chaînes et du tableau pour les caisses
 function updateChainSessionAndTable() {
-    setTimeout(function(){ createChainSession(); },1000); //maj des chaînes
-    $('#table_order td').removeClass(); //supprime les classes des cases avant de les mettre à jour
-    setTimeout(function(){ hydrateTable(); },2000); //maj des données dans le tableau
+    setTimeout(function(){ createChainSession(); },500); //maj des chaînes
+    // $('#table_order td').removeClass(); //supprime les classes des cases avant de les mettre à jour
+    $('#table_order td').removeAttr('class').attr('class', '');  //supprime les classes des cases avant de les mettre à jour
+    setTimeout(function(){ hydrateTable(); },1000); //maj des données dans le tableau
 }
 
 //met en noir les cases contenant les numéros
@@ -277,6 +301,7 @@ function setColorBlackForCaseFull() {
         if ( $(this).html() != "") { //vérifie que la cellule contienne bien un numéro
             $(this).css("background-color", "black"); //change le fond en noir
             $(this).css("opacity", "1"); //remet l'opacité à 1
+            $(this).css("border-radius", "0%"); //remet le border radius à 0
         }
     });
 }

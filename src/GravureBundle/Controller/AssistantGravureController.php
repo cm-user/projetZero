@@ -12,6 +12,7 @@ namespace GravureBundle\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 
 /**
@@ -51,5 +52,34 @@ class AssistantGravureController extends Controller
 
         return new JsonResponse($response);
     }
+
+    /**
+     * @Route("/manuel", name="assistant_gravure_manuel")
+     */
+    public function manuelAction()
+    {
+        return $this->render('@Gravure/gravure/manuel.html.twig',[]);
+    }
+
+    /**
+     * @Route("/manuel/download", name="assistant_gravure_manuel_download")
+     */
+    public function downloadManuelAction()
+    {
+
+        $fileName = $this->getParameter("gravure_gabarit_directory") . "/../manuel utilisateur.pdf";
+
+        //partie téléchargement
+        $response = new Response();
+        $response->setContent(file_get_contents($fileName));
+        $response->headers->set('Content-Type', 'application/force-download'); // modification du content-type pour forcer le téléchargement (sinon le navigateur internet essaie d'afficher le document)
+        $response->headers->set('Content-Transfer-Encoding', 'Binary');
+        $response->headers->set('Content-Length', filesize($fileName));
+        $response->headers->set('Content-disposition', 'filename=manuel_utilisateur_module_gravure.pdf');
+        ob_end_clean();
+
+        return $response;
+    }
+
 
 }

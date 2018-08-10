@@ -2,11 +2,9 @@
 
 
 {% block gravure %}
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
+    <div align="center">
+        <h1>Instance de gravure</h1>
+    </div>
     <div class="row">
         <div class="col-sm-3" id="div_display_gravure"></div>
         <div class="col-sm-5" id="div_tableau">
@@ -14,21 +12,21 @@
             <div>
                 <a href="{{ path('selection_gravure_index') }}">
                 <button class="btn btn-default" role="button"
-                        style="border-radius: 15px;padding: 10px;background-color: #575354;color:white;">
+                        style="border-radius: 15px;padding: 10px;background-color: #575354;color:white;margin-top: 20px;">
                     <h3>
                         <i class="glyphicon glyphicon-edit" style="font-size:35px;"></i>
                         Modifier la session
                     </h3>
                 </button>
                 </a>
-                <br>
-                <button class="btn btn-default" onclick="cancelSession();"  role="button"
-                        style="border-radius: 15px;background-color: #575354;color:white;">
-                    <h4>
-                        <i class="glyphicon glyphicon-trash" style="font-size:20px;"></i>
-                        Annuler la session
-                    </h4>
-                </button>
+                {#<br>#}
+                {#<button class="btn btn-default" onclick="cancelSession();"  role="button"#}
+                        {#style="border-radius: 15px;background-color: #575354;color:white;margin-top: 20px;">#}
+                    {#<h4>#}
+                        {#<i class="glyphicon glyphicon-trash" style="font-size:20px;"></i>#}
+                        {#Annuler la session#}
+                    {#</h4>#}
+                {#</button>#}
             </div>
         </div>
         <div class="col-sm-4" id="div_chain_session">
@@ -94,6 +92,12 @@
             padding-top: 60px;
         }
 
+        #div_chain_category table{
+            overflow-y:scroll;
+            height:500px;
+            display:block;
+        }
+
         #div_chain_category td {
             font-size: large;
             color: black;
@@ -113,10 +117,10 @@
         }
 
         #div_chain_category table {
-            width: 80%;
+            width: 95%;
         }
 
-        .modal-lg {
+        .modal-final {
             width: 100%;
         }
 

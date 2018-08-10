@@ -51,20 +51,21 @@ SQL;
 
     public function findTextByIdGravure($id){
 
-        $sql = "SELECT gravure_link_gravure_text.id_gravure, gravure_text.name_block, gravure_text.value, gravure_text.updated_at, gravure_text.created_at
+        $sql = "SELECT gravure_link_gravure_text.id_gravure, gravure_text.name_block, gravure_text.value
 FROM `gravure_link_gravure_text` 
 LEFT JOIN gravure_text ON gravure_link_gravure_text.id_text = gravure_text.id
 WHERE gravure_link_gravure_text.id_gravure = :id";
         $stmt = $this->connection->prepare($sql);
         $stmt->bindValue("id", $id);
         $stmt->execute();
-        $texts = [];
 
-        while($row = $stmt->fetch(\PDO::FETCH_ASSOC)){
-            $texts[] = $this->hydrateFromRow($row);
+        $row = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        if($row == null){
+            return null;
         }
 
-        return $texts;
+        return $row;
     }
 
     private function hydrateFromRow(array $row)

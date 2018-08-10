@@ -61,7 +61,8 @@ class GravureController extends Controller
     {
 
         $datetime = $this->get('creator.datetime.limit')->getDateTime();
-        $response = $this->get('repositories.gravure')->countGravureNumber($datetime);
+
+        $response = $this->get('repositories.gravure')->countGravureNumber($datetime, $this->getParameter('status_TERMINE'));
 
         return new JsonResponse($response);
     }
@@ -114,15 +115,12 @@ class GravureController extends Controller
     }
 
     /**
-     * @Route("/gravure/today", name="new_gravure_today", options={"expose"=true})
+     * @Route("/gravure/soon-available", name="new_gravure_soon_available", options={"expose"=true})
      */
-    public function getNewGravureToday()
+    public function getNewGravureSoonAvailable()
     {
-
-        $datetime = $this->get('creator.datetime.limit')->getDateTime();
-
         //récupération de toutes les gravures sans session et qui sont arrivées après l'heure limite de fin de journée
-        $gravures = $this->get('repositories.gravure')->findAllWithoutSessionBeforeDateLimit($datetime);
+        $gravures = $this->get('repositories.gravure')->findAllWithoutSessionAndNotStatePrestaExpe();
 
         $formatted = [];
 
@@ -149,7 +147,7 @@ class GravureController extends Controller
         //récupération de toutes les gravures avec la plus haute session, qui sont checked et qui n'ont pas le statut engrave
         $gravures = $this->get('repositories.gravure')->findAllWithHighSessionAndStatusNotFinish();
 
-        $orderToLock = $this->get('repositories.order')->findAllWithEngraveFinishOrOnLoad($this->getParameter('status_TERMINE'), $this->getParameter('status_EN_COURS')); //récupére les commandes qui ont des gravures dans les chaînes en cours
+        $orderToLock = $this->get('repositories.gravure')->findAllWithEngraveFinishOrOnLoad($this->getParameter('status_TERMINE'), $this->getParameter('status_EN_COURS')); //récupére les commandes qui ont des gravures dans les chaînes en cours
         //formatage du tableau pour avoir les id dans un tableau à une dimension
         $orderToLock = array_map(function ($value) {
             return $value['id'];
@@ -159,7 +157,7 @@ class GravureController extends Controller
 
         foreach ($gravures as $gravure) {
 
-            if (in_array($gravure['id_order'], $orderToLock)) {
+            if (in_array($gravure['id'], $orderToLock)) {
                 $orderLocked = 1;
             } else {
                 $orderLocked = 0;
@@ -213,10 +211,9 @@ class GravureController extends Controller
         $request = $this->get('repositories.gravure')->setStatusByChainNumber($this->getParameter('status_EN_COURS'), $chainNumber); //modification du statut pour les gravures liées à la chaîne
         $this->get('repositories.chain_session')->setLockedPosition($chainNumber);  // verouillage de la chaîne
 
-        if($request == true){
+        if ($request == true) {
             return new JsonResponse("Changement de statut effectué");
-        }
-        else {
+        } else {
             return new JsonResponse("Impossible de modifier le statut des gravures lié à la chaîn N° " . $chainNumber);
         }
 
@@ -231,28 +228,26 @@ class GravureController extends Controller
 
         $orders = $this->get('repositories.gravure')->findOrderByChainNumber($chainNumber); // récupére les commandes liées à la chaîne
 
-        if ($orders != null){
+        if ($orders != null) {
             $arrayOrderWithGift = [];
             $arrayOrderWithoutGift = [];
-            foreach ($orders as $order){
+            foreach ($orders as $order) {
                 $orderFinish = $this->get('repositories.order')->isEngraved($this->getParameter('status_TERMINE'), $order['id_order']); //récupére la commande si toutes ses gravures sont terminées
-                if($orderFinish != null){
+                if ($orderFinish != null) {
                     $this->get('repositories.order')->setEngrave($order['id_order']); //Renseigne que la commande est gravé
-                    if($orderFinish[0]['gift'] == 1){
+                    if ($orderFinish[0]['gift'] == 1) {
                         $arrayOrderWithGift[] = $orderFinish[0]['box'];
-                    }
-                    else{
+                    } else {
                         $arrayOrderWithoutGift[] = $orderFinish[0]['box'];
                     }
                 }
             }
 
             return new JsonResponse([
-                $arrayOrderWithoutGift == [] ? '' : 'Amener la ou les caisse(s) N° ' . implode(",", $arrayOrderWithoutGift) . ' à l\'expé' ,
-                $arrayOrderWithGift == [] ? '' : ' Amener la ou les caisse(s) N° ' . implode(",", $arrayOrderWithGift) . ' au paquet cadeau'
+                $arrayOrderWithoutGift == [] ? '' : 'Amener la ou les caisse(s) N° ' . implode(", ", $arrayOrderWithoutGift) . ' à l\'expé',
+                $arrayOrderWithGift == [] ? '' : ' Amener la ou les caisse(s) N° ' . implode(", ", $arrayOrderWithGift) . ' au paquet cadeau'
             ]);
-        }
-        else {
+        } else {
             return new JsonResponse(0); //Aucune commande n'est prête
         }
 
@@ -268,30 +263,54 @@ class GravureController extends Controller
         $this->get('repositories.order')->setCancelEngrave($chainNumber); //change le statut des commandes en passant engrave à 0
         $this->get('repositories.chain_session')->setLockedPosition($chainNumber);  // verouillage de la chaîne
 
-        if($request == true){
+        if ($request == true) {
             return new JsonResponse("Changement de statut effectué");
-        }
-        else {
+        } else {
             return new JsonResponse("Impossible de modifier le statut des gravures lié à la chaîn N° " . $chainNumber);
         }
 
     }
+
+//    /**
+//     * @Route("/gravure/edit/session/", name="gravure_edit_session", options={"expose"=true})
+//     */
+//    public function editSession($chainNumber)
+//    {
+//        $gravures = $this->get('repositories.gravure')->findAllInSession($this->getParameter('status_EN_COURS')); //modification du statut pour les gravures liées à la chaîne
+//
+//        if ($request == true) {
+//            return new JsonResponse("Changement de statut effectué");
+//        } else {
+//            return new JsonResponse("Impossible de modifier le statut des gravures lié à la chaîn N° " . $chainNumber);
+//        }
+//
+//    }
 
     /**
-     * @Route("/gravure/edit/session/", name="gravure_edit_session", options={"expose"=true})
+     * @Route("/gravure/text/{id}", name="gravure_mono_text", options={"expose"=true})
      */
-    public function editSession($chainNumber)
+    public function getText($id)
     {
-        $gravures = $this->get('repositories.gravure')->findAllInSession($this->getParameter('status_EN_COURS')); //modification du statut pour les gravures liées à la chaîne
 
-        if($request == true){
-            return new JsonResponse("Changement de statut effectué");
-        }
-        else {
-            return new JsonResponse("Impossible de modifier le statut des gravures lié à la chaîn N° " . $chainNumber);
+        $gravure = $this->get('repositories.gravure')->findById($id); //trouve la gravure
+        $idSession = $this->get('repositories.session')->findMaxId(); // recherche la dernière session
+
+        $this->get('repositories.gravure')->updateSessionAndStatusById($idSession, $this->getParameter('status_TERMINE'), $id); //maj du statut en termine et de la session pour la gravure
+
+        //maj du nombre total de gravure de la session
+        $number = $this->get('repositories.session')->countNumberEngraveInLastSession();
+        $this->get('repositories.session')->updateNumberEngrave($number);
+
+        $idOrder = $gravure->getIdOrder();
+
+        $orderFinish = $this->get('repositories.order')->isEngraved($this->getParameter('status_TERMINE'), $idOrder); //récupére la commande si toutes ses gravures sont terminées
+        if ($orderFinish != null) {
+            $this->get('repositories.order')->setEngrave($idOrder); //Renseigne que la commande est gravé
         }
 
+        $texts = $this->get('repositories.gravure_text')->findTextByIdGravure($id);
+
+        return new JsonResponse($texts);
     }
-
 
 }

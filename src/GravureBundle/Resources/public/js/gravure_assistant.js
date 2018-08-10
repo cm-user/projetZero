@@ -1,4 +1,3 @@
-var array_gravure_temp = [];
 const EN_COURS = 3;
 const TERMINE = 5;
 buildTable(); //construit le tableau pour afficher les caisses
@@ -163,19 +162,39 @@ function addListenerCase(array_gravure) {
     for (i = 0; i < array_gravure.length; i++) {
         $("#case" + numberBox).addClass("chain_" + array_gravure[i]['chain_number']); //ajout d'une classe avec le numéro de chaine
         if (array_gravure[i]['colorCategory'] !== "") {
-            $elem += "<tr style=\"background-color:" + array_gravure[i]['colorCategory'] + ";\"><td style='padding: 3%; width:200px;'><img src=\"" + array_gravure[i]['jpg'] + "\" width='180'>";
+            $elem += "<tr style=\"background-color:" + array_gravure[i]['colorCategory'] + ";\"><td style='padding: 3%; width:200px;'><a href=\"#\" data-toggle=\"modal\" data-target=\"#Modal_Picture_" + array_gravure[i]['id'] + "\"><img src=\"" + array_gravure[i]['jpg'] + "\" width='180'></a>";
             $elem += "<h4>" + array_gravure[i]['alias'] + "</h4></div></td>";
             $elem += "</tr>";
         }
         else if (array_gravure[i]['colorGravure'] !== "") {
-            $elem += "<tr id=\"row_gravure_" + array_gravure[i]['id'] + "\" style=\"background-color:" + array_gravure[i]['colorGravure'] + ";\"><td style='padding: 3%; width:200px;'><img src=\"" + array_gravure[i]['jpg'] + "\" width='180'>";
+            $elem += "<tr id=\"row_gravure_" + array_gravure[i]['id'] + "\" style=\"background-color:" + array_gravure[i]['colorGravure'] + ";\"><td style='padding: 3%; width:200px;'><a href=\"#\" data-toggle=\"modal\" data-target=\"#Modal_Picture_" + array_gravure[i]['id'] + "\"><img src=\"" + array_gravure[i]['jpg'] + "\" width='180'></a>";
             $elem += "<h4>" + array_gravure[i]['alias'] + "</h4></div></td>";
             $elem += "</tr>";
         }
         else {
-            $elem += "<tr id=\"row_gravure_" + array_gravure[i]['id'] + "\" style=\"background-color:" + color_machine + ";\"><td style='padding: 3%; width:200px;'><img src=\"" + array_gravure[i]['jpg'] + "\" width='180'></div></td>";
+            $elem += "<tr id=\"row_gravure_" + array_gravure[i]['id'] + "\" style=\"background-color:" + color_machine + ";\"><td style='padding: 3%; width:200px;'><a href=\"#\" data-toggle=\"modal\" data-target=\"#Modal_Picture_" + array_gravure[i]['id'] + "\"><img src=\"" + array_gravure[i]['jpg'] + "\" width='180'></a></div></td>";
             $elem += "</tr>";
         }
+
+        //modal
+        $elem += "<div class=\"modal fade bd-example-modal-lg\" id=\"Modal_Picture_" + array_gravure[i]['id'] + "\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"Modal_Picture_title_" + array_gravure[i]['id'] + "\" aria-hidden=\"true\">";
+        $elem += "<div class=\"modal-dialog modal-lg\" role=\"document\">";
+        $elem += "<div class=\"modal-content\">";
+        $elem += "<div class=\"modal-header\">";
+        $elem += "<h5 class=\"modal-title\" id=\"Modal_Picture_title_" + array_gravure[i]['id'] + "\"></h5>";
+        $elem += "<button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-label=\"Close\">";
+        $elem += "<span aria-hidden=\"true\">&times;</span>";
+        $elem += "</button>";
+        $elem += "</div>";
+        $elem += "<div class=\"modal-body\">";
+        $elem += "<img src=\"" + array_gravure[i]['jpg'] + " \" width=\'750\'>";
+        $elem += "</div>";
+        $elem += "<div class=\"modal-footer\">";
+        $elem += "<button type=\"button\" class=\"btn btn-secondary\" data-dismiss=\"modal\">Fermer</button>";
+        $elem += "</div>";
+        $elem += "</div>";
+        $elem += "</div>";
+        $elem += "</div>";
     }
 
     $elem += "</tbody></table></div>";
@@ -358,7 +377,7 @@ function addModalForMachinePdf(val) {
         $elem2 += " <div class=\"collapse\" id=\"collapse_text_" + val['gravures'][i]['id'] + "\"> <div class=\"card card-body\"> <table class='table-bordered table-striped' style='width: 100%; font-size: 20px;'>";
         val['texts'].forEach(function (element) {
             if (element[val['gravures'][i]['id']] != undefined) { //vérifie que l'index de l'objet existe si oui ajout des textes
-                $elem2 += "<tr>";
+                $elem2 += "<tr id=\"tr_" + val['gravures'][i]['id'] + "_" + (element[val['gravures'][i]['id']]['name_block']).replace(/ /g,'') + "\">";
                 $elem2 += "<td>" + element[val['gravures'][i]['id']]['name_block'] + "</td>";
                 $elem2 += "<td> <div id=\"text_value_" + val['gravures'][i]['id'] + "_" + (element[val['gravures'][i]['id']]['name_block']).replace(/ /g,'') + "\">" + element[val['gravures'][i]['id']]['value'] + "</div></td>";
                 $elem2 += "<td><button onclick=\"copyText(" + val['gravures'][i]['id'] + ",'" + (element[val['gravures'][i]['id']]['name_block']).replace(/ /g,'') + "');\" class='btn btn-default'><h3>Copier</h3></button></td>";
@@ -424,7 +443,7 @@ function addModalForMachineMail(val) {
 
         val['texts'].forEach(function (element) {
             if (element[val['gravures'][i]['id']] != undefined) { //vérifie que l'index de l'objet existe si oui ajout des textes
-                $elem2 += "<tr>";
+                $elem2 += "<tr id=\"tr_" + val['gravures'][i]['id'] + "_" + (element[val['gravures'][i]['id']]['name_block']).replace(/ /g,'') + "\">";
                 $elem2 += "<td>" + element[val['gravures'][i]['id']]['name_block'] + "</td>";
                 $elem2 += "<td> <div id=\"text_value_" + val['gravures'][i]['id'] + "_" + (element[val['gravures'][i]['id']]['name_block']).replace(/ /g,'') + "\">" + element[val['gravures'][i]['id']]['value'] + "</div></td>";
                 $elem2 += "<td><button onclick=\"copyText(" + val['gravures'][i]['id'] + ",'" + (element[val['gravures'][i]['id']]['name_block']).replace(/ /g,'') + "');\" class='btn btn-default'><h3>Copier</h3></button></td>";
@@ -479,10 +498,11 @@ function isChecked(chain_number) {
     }
 }
 
+//function pour copier le texte à graver dans le presse-papier
 function copyText(idGravure, blockName) {
     var $textarea = $( '<textarea>' ); //construit un textarea
-    $( 'body' ).append( $textarea ); //le fait apparaître
-    $textarea.val( $("#text_value_" + idGravure + "_" + blockName ).text() ).select(); //Ajoute dans le textarea le contenu de la cible à copier et le selectionne
+    $( '#tr_' + idGravure + '_' + blockName ).append( $textarea ); //le fait apparaître
+    $textarea.val( $('#text_value_' + idGravure + '_' + blockName ).text() ).select(); //Ajoute dans le textarea le contenu de la cible à copier et le selectionne
     document.execCommand( 'copy' ); //copie dans le presse papier
     $textarea.remove(); //suppression du textarea
     return false;

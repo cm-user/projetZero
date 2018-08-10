@@ -110,22 +110,38 @@ class ChainSessionFactory
 
                 $texts = $this->container->get('repositories.gravure_text')->findTextByIdGravure($gravure['id']);
 
-                foreach ($texts as $text){
-
+                if($texts == null){
                     $arrayGravureText[] = [
-                      $gravure['id'] => [
-                          'name_block' => $text->getNameBlock(),
-                          'value' => $text->getValue()
-                      ]
+                        $gravure['id'] => [
+                            'name_block' => "nom block",
+                            'value' => "value"
+                        ]
                     ];
-
                 }
+                else{
+                    foreach ($texts as $text){
+
+                        $arrayGravureText[] = [
+                            $gravure['id'] => [
+                                'name_block' => $text['name_block'],
+                                'value' => $text['value']
+                            ]
+                        ];
+
+                    }
+                }
+
+
 
                 $arrayIdGravure[] = $gravure['id'];
                 $arrayPathJpgGravure[] = $gravure['path_jpg'];
             }
 
             $locked = $this->container->get('repositories.chain_session')->isLockedByMachineDefault($gravures[0]['id']); //Vérifie si la catégorie est liée à une machine obligatoire
+
+            if($locked == 0){//si elle n'est pas vérouillée à une machine, vérifie si elle n'est pas déjà en cours
+                $locked = $this->container->get('repositories.chain_session')->isLockedByPosition($gravures[0]['id']); //Vérifie si la catégorie est liée à une machine obligatoire
+            }
 
             $array[] = [
                 'surname' => $categories[0]['surname'],
@@ -137,6 +153,7 @@ class ChainSessionFactory
                 'locked_machine' => $locked,
                 'status' => $gravures[0]['id_status'],
                 'machine' => $gravures[0]['type'],
+                'id_machine' => $gravures[0]['id_machine'],
                 'chain_number' => $chain['chain_number']
             ];
         }

@@ -11,6 +11,7 @@ namespace GravureBundle\Form\Types;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -27,8 +28,9 @@ class ProductType extends AbstractType
             ->add('alias', TextType::class,[
                 'label' => 'Nom du produit complet'
             ])
-            ->add('time', IntegerType::class,[
-                'label' => 'Temps pour la gravure'
+            ->add('time', HiddenType::class,[
+                'label' => 'Temps pour la gravure',
+                'required' => false
             ])
             ->add('productId', IntegerType::class,[
                 'label' => 'Id prestashop du produit'

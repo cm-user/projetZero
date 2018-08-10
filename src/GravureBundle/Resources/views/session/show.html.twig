@@ -3,6 +3,11 @@
 {% block body %}
     <h1>Archive de la session N° {{ idSession }}</h1>
 
+    <a class="btn btn-danger" href="{{ path('gravure_session_index') }}">
+        <span class="glyphicon glyphicon-arrow-left"></span>
+        Retour
+    </a>
+
     {% for order in orders %}
 
         <div class="row">
@@ -17,7 +22,7 @@
 
                     <table class="table">
                         <tr>
-                            <td>{{ order.alias }}</td>
+                            <td>{{ gravure.alias }}</td>
                             <td>{{ gravure.updated_at }}</td>
                         </tr>
                     </table>

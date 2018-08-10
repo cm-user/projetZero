@@ -30,11 +30,18 @@ class SelectionGravureController extends Controller
     {
         //permet de garder en mémoire le choix pour les caisses en cas de coupure internet
         //si le bouton actualiser est cliqué on cherche simplement les nouvelles gravures en supprimant les numéros de caisse et l'état checked
-        $last_order = self::actualise();
+
 
         if ($bool == 0) {
-            $response = self::getNewGravureAndCleanBoxChecked($last_order);
+            $response = self::getNewGravureAndCleanBoxChecked(); //remet à zéro les cases, les checked, et les statuts
+            if($response == 1){
+                return new JsonResponse(1); // return 1 si tout s'est bien déroulé
+            }
+            else {
+                return new JsonResponse(0);
+            }
         } else {
+            $last_order = self::actualise();
             $response = self::getNewGravure($last_order);
         }
 
@@ -128,8 +135,9 @@ class SelectionGravureController extends Controller
 
                                 $this->get('repositories.text')->saveTextAndLinkGravureText($idGravure, $blockValue, $blockName);
 
-                            } else //s'il y a plusieurs blocks texte
+                            } else //s'il y a plusieurs blocs textes
                             {
+                                $arrayBlock = []; //tableau contenant les informations pour les blocs textes
                                 foreach ($result_config_cart_block['config_carts']['config_cart']['associations']['config_option']['config_option'] as $block) {
                                     $blockValue = $block['value']; //valeur du block entré par le client
                                     $blockId = $block['id_block']; //id du block
@@ -138,14 +146,34 @@ class SelectionGravureController extends Controller
                                     $result_config_product_block = $persta->get(array(
                                         "resource" => "config_product_blocks",
                                         "filter[id]" => '[' . $blockId . ']',
-                                        "display" => '[name]',
+                                        "display" => '[name, position]',
                                     ));
 
                                     $result_config_product_block = json_decode(json_encode((array)$result_config_product_block), TRUE);
                                     $blockName = $result_config_product_block['config_product_blocks']['config_product_block']['name'];
+                                    $blockPosition = $result_config_product_block['config_product_blocks']['config_product_block']['position'];
 
-                                    $this->get('repositories.text')->saveTextAndLinkGravureText($idGravure, $blockValue, $blockName);
+                                    $arrayBlock[] = [
+                                        'id_gravure' => $idGravure,
+                                        'value' => $blockValue,
+                                        'name' => $blockName,
+                                        'position' => $blockPosition
+                                    ];
 
+                                }
+
+//                                dump($arrayBlock);
+
+                                // Obtient une liste des positions
+                                foreach ($arrayBlock as $key => $row) {
+                                    $position[$key] = $row['position'];
+                                }
+                                array_multisort($position, SORT_ASC, $arrayBlock); //trie par ordre croissant les blocs du tableau en fonction de leurs positions
+
+//                                dump($arrayBlock); die;
+
+                                foreach ($arrayBlock as $block){
+                                    $this->get('repositories.text')->saveTextAndLinkGravureText($block['id_gravure'], $block['value'], $block['name']); //mise en bdd des valeurs
                                 }
                             }
                         }
@@ -208,6 +236,7 @@ class SelectionGravureController extends Controller
     private function getNewGravure($last_order)
     {
         $new_last_order = $this->get('repositories.order')->findLast()['id_prestashop']; //récupère l'id de la dernière commande sur prestashop
+        $dateTimeLimit = $this->get('creator.datetime.limit')->getDateTime(); //datetime de l'heure limite
 
         //récupération de toutes les gravures sans session et qui sont arrivées avant l'heure limite de fin de journée
         $gravures = $this->get('repositories.gravure')->findAllWithoutSessionAndHighSessionOnloadByState($this->getParameter('status_TERMINE'));
@@ -229,6 +258,14 @@ class SelectionGravureController extends Controller
                 $orderLocked = 0;
             }
 
+            //vérifie si la commande est tombé avant ou après l'heure limite
+            if($gravure['date_prestashop'] <= $dateTimeLimit->format('Y-m-d H:m:s')){
+                $timeLimit = 0; //met à zéro si avant
+            }
+            else{
+                $timeLimit = 1;
+            }
+
             $formatted[] = [
                 'id' => $gravure['id'],
                 'id_prestashop' => $gravure['id_prestashop'],
@@ -238,11 +275,12 @@ class SelectionGravureController extends Controller
                 'id_product' => $gravure['product_id'],
                 'box' => $gravure['box'],
                 'checked' => $gravure['checked'],
-                'locked' => $orderLocked
+                'locked' => $orderLocked,
+                'time_limited' => $timeLimit
             ];
         }
         //ajout du temps au tableau
-        $formatted[] = ['time' => $time];
+//        $formatted[] = ['time' => $time];
 
         //ajout d'un message si il n'y a pas de nouvelles commandes
         if ($new_last_order == $last_order) {
@@ -253,12 +291,12 @@ class SelectionGravureController extends Controller
     }
 
 
-    public function getNewGravureAndCleanBoxChecked($last_order)
+    public function getNewGravureAndCleanBoxChecked()
     {
-        $new_last_order = $this->get('repositories.order')->findLast()['id_prestashop']; //récupère l'id de la dernière commande sur prestashop
+//        $new_last_order = $this->get('repositories.order')->findLast()['id_prestashop']; //récupère l'id de la dernière commande sur prestashop
 
         //récupération de toutes les gravures sans session et qui sont arrivées avant l'heure limite de fin de journée
-        $gravures = $this->get('repositories.gravure')->findAllWithoutSessionAndHighSessionOnloadByState($this->getParameter('status_TERMINE'));
+//        $gravures = $this->get('repositories.gravure')->findAllWithoutSessionAndHighSessionOnloadByState($this->getParameter('status_TERMINE'));
 
         $orderToLock = $this->get('repositories.order')->findAllWithEngraveFinishOrOnLoad($this->getParameter('status_TERMINE'), $this->getParameter('status_EN_COURS')); //récupére les commandes qui ont des gravures dans les chaînes en cours
         //formatage du tableau pour avoir les id dans un tableau à une dimension
@@ -269,40 +307,9 @@ class SelectionGravureController extends Controller
         //récupération des commandes qui n'ont pas le statut gravé et met à 0 le numéro de caisse et le checked sauf pour les commandes vérrouillées
         $this->get('repositories.order')->cleanBoxAndChecked($orderToLock);
         //récupération des gravures qui n'ont pas le statut gravé et met à null la session et met le statut des gravures en attente sauf pour les commandes vérrouillées
-        $this->get('repositories.gravure')->updateSessionAndStatusAndNotEngraving($this->getParameter('status_EN_ATTENTE'), $orderToLock );
+        $this->get('repositories.gravure')->updateSessionAndStatusAndNotEngraving($this->getParameter('status_EN_ATTENTE'), $this->getParameter('status_TERMINE'), $orderToLock );
 
-        $formatted = [];
-        $time = 0;
-
-        foreach ($gravures as $gravure) {
-            $time += $gravure['time']; //calcul du temps total
-            //vérifie si la commande de la gravure a d'autres gravures dans la chaîne
-            if (in_array($gravure['id_order'], $orderToLock)) {
-                $orderLocked = 1;
-            } else {
-                $orderLocked = 0;
-            }
-            $formatted[] = [
-                'id' => $gravure['id'],
-                'id_prestashop' => $gravure['id_prestashop'],
-                'state_prestashop' => $gravure['state_prestashop'],
-                'jpg' => $gravure['path_jpg'],
-                'pdf' => $gravure['path_pdf'],
-                'id_product' => $gravure['product_id'],
-                'box' => $gravure['box'],
-                'checked' => $gravure['checked'],
-                'locked' => $orderLocked
-            ];
-        }
-        //ajout du temps au tableau
-        $formatted[] = ['time' => $time];
-
-        //ajout d'un message si il n'y a pas de nouvelles commandes
-        if ($new_last_order == $last_order) {
-            $formatted[] = ['msg' => "NoNewOrder"]; //enverra un message pour l'utilisateur
-        }
-
-        return $formatted;
+        return 1;
     }
 
 

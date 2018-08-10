@@ -3,47 +3,115 @@
 {% block body %}
     <h1>Liste des orders</h1>
 
-    <table class="table table-bordered table-hover">
-        <thead>
-        <tr>
-            <th>Id du prestashop</th>
-            <th>Statut sur prestashop</th>
-            <th>Date d'ajout sur prestashop</th>
-            <th>Papier cadeau dans la commande</th>
-            <th>Numéro de la caisse utilisée</th>
-            <th>Gravé</th>
-            <th>Date de création</th>
-            <th>Date de modification</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for order in orders %}
+    <div class="input-group col-md-6">
+        <input type="text" class="form-control input-lg" id="search_order" placeholder="id prestashop"/>
+        <span class="input-group-btn">
+                        <button class="btn btn-info btn-lg" type="button" onclick="displayOrder();">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </button>
+                    </span>
+    </div>
+
+    <br>
+    <br>
+
+    <div id="div_list_order">
+        <table class="table table-bordered table-hover">
+            <thead>
             <tr>
-                <td>{{ order.id_prestashop }}</td>
-                <td>{{ order.state_prestashop }}</td>
-                <td>{{ order.date_prestashop }}</td>
-                {% if order.gift == 1 %}
-                <td>Oui</td>
-                {% else %}
-                <td>Non</td>
-                {% endif %}
-                <td>{{ order.box }}</td>
-                {% if order.engrave == 1 %}
-                    <td>Oui</td>
-                {% else %}
-                    <td>Non</td>
-                {% endif %}
-                <td>{{ order.created_at }}</td>
-                <td>{{ order.updated_at }}</td>
-                <td>
-                    <a class="btn btn-success" href="{{ path('gravure_order_display_gravure', { 'id': order.id }) }}">Voir les gravures liées</a>
-                </td>
+                <th>Id du prestashop</th>
+                <th>Statut sur prestashop</th>
+                <th>Date d'ajout sur prestashop</th>
+                <th>Papier cadeau dans la commande</th>
+                <th>Numéro de la caisse utilisée</th>
+                <th>Gravé</th>
+                <th>Date de création</th>
+                <th>Date de modification</th>
+                <th>Actions</th>
             </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            {% for order in orders %}
+                <tr>
+                    <td>{{ order.id_prestashop }}</td>
+                    <td>{{ order.state_prestashop }}</td>
+                    <td>{{ order.date_prestashop }}</td>
+                    {% if order.gift == 1 %}
+                        <td>Oui</td>
+                    {% else %}
+                        <td>Non</td>
+                    {% endif %}
+                    <td>{{ order.box }}</td>
+                    {% if order.engrave == 1 %}
+                        <td>Oui</td>
+                    {% else %}
+                        <td>Non</td>
+                    {% endif %}
+                    <td>{{ order.created_at }}</td>
+                    <td>{{ order.updated_at }}</td>
+                    <td>
+                        <a class="btn btn-success"
+                           href="{{ path('gravure_order_display_gravure', { 'id': order.id }) }}">Voir
+                            les gravures liées</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
     {#<a class="btn btn-success" href="{{ path('gravure_order_new') }}">Ajouter</a>#}
+
+{% endblock %}
+
+
+{% block javascripts %}
+    <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+    <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
+    <script>
+
+        function displayOrder() {
+            var idPrestashop = $("#search_order").val();
+            var url = "/gravure/order/display/gravure/"; //url menant à la session par son id
+
+            $.ajax({
+                url: Routing.generate('order_search_json', {idPrestashop: idPrestashop}),
+                success: function (result) {
+                    $elem = "<table class=\"table table-bordered table-hover\">\n" +
+                        "        <thead>\n" +
+                        "        <tr>\n" +
+                        "            <th>Id du prestashop</th>\n" +
+                        "            <th>Statut sur prestashop</th>\n" +
+                        "            <th>Date d'ajout sur prestashop</th>\n" +
+                        "            <th>Papier cadeau dans la commande</th>\n" +
+                        "            <th>Numéro de la caisse utilisée</th>\n" +
+                        "            <th>Gravé</th>\n" +
+                        "            <th>Date de création</th>\n" +
+                        "            <th>Date de modification</th>\n" +
+                        "            <th>Actions</th>\n" +
+                        "        </tr>\n" +
+                        "        </thead>\n" +
+                        "        <tbody>";
+                    $elem += "<tr>";
+                    $elem += "<td>" + result['id_prestashop'] + "</td>";
+                    $elem += "<td>" + result['state_prestashop'] + "</td>";
+                    $elem += "<td>" + result['date_prestashop'] + "</td>";
+                    $elem += result['gift'] == 1 ? "<td> Oui</td>" : "<td>Non</td>";
+                    $elem += "<td>" + result['box'] + "</td>";
+                    $elem += result['engrave'] == 1 ? "<td>Oui</td>" : "<td>Non</td>";
+                    $elem += "<td>" + result['created_at'] + "</td>";
+                    $elem += "<td>" + result['updated_at'] + "</td>";
+                    $elem += "<td> <a href=\"" + url + result['id'] + "\"><button class=\"btn btn-success\"> Voir les gravures liées </button></a></td>"; //Changer le chemin manuellement
+                    $elem += "</tr>";
+
+                    $elem += "</tbody></table>";
+
+                    $("#div_list_order").html($elem);
+                }
+            });
+
+        }
+
+    </script>
 
 {% endblock %}

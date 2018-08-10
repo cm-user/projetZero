@@ -3,30 +3,126 @@
 {% block body %}
     <h1>Liste des 10 dernières sessions</h1>
 
-<table class="table table-bordered table-hover">
-    <thead>
-    <tr>
-        <th>Créateur</th>
-        <th>Nombre de gravure total</th>
-        <th>Date de création</th>
-        <th>Date de modification</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for session in sessions %}
+    <div class='col-md-5'>
+        <div class="form-group">
+            <div class='input-group date' id='datetimepicker_left'>
+                <input id="dateDebut" type='text' class="form-control" placeholder="inclus" required/>
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div class='col-md-5'>
+        <div class="form-group">
+            <div class='input-group date' id='datetimepicker_right'>
+                <input id="dateFin" type='text' class="form-control" placeholder="non inclus" required/>
+                <span class="input-group-addon">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn btn-info" onclick="displaySession();">Rechercher</button>
+
+    <div id="div_list_session">
+    <table class="table table-bordered table-hover">
+        <thead>
         <tr>
-            <td>{{ session.user }}</td>
-            <td>{{ session.gravure_total }}</td>
-            <td>{{ session.created_at }}</td>
-            <td>{{ session.updated_at }}</td>
-            <td><a href="{{ path('gravure_session_show', {id : session.id}) }}"><button class="btn btn-info">Voir l'archive</button></a></td>
+            <th>Créateur</th>
+            <th>Nombre de gravure total</th>
+            <th>Date de création</th>
+            <th>Date de modification</th>
+            <th>Actions</th>
         </tr>
-    {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
 
-    <a href="{{ path('gravure_session_index_all') }}"><button class="btn btn-success">Voir toutes les sessions</button></a>
+            {% for session in sessions %}
+                <tr>
+                    <td>{{ session.user }}</td>
+                    <td>{{ session.gravure_total }}</td>
+                    <td>{{ session.created_at }}</td>
+                    <td>{{ session.updated_at }}</td>
+                    <td><a href="{{ path('gravure_session_show', {id : session.id}) }}">
+                            <button class="btn btn-info">Voir l'archive</button>
+                        </a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+    <a href="{{ path('gravure_session_index_all') }}">
+        <button class="btn btn-success">Voir toutes les sessions</button>
+    </a>
 
 
-    {% endblock %}
+{% endblock %}
+
+{% block javascripts %}
+<script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+<script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
+<script>
+    $(document).ready(function () {
+        $('.datepicker').datepicker();
+        $(function () {
+            $('#datetimepicker_left').datepicker({
+                format: 'yyyy-mm-dd'
+            });
+            $('#datetimepicker_right').datepicker({
+                useCurrent: false, //Important! See issue #1075
+                format: 'yyyy-mm-dd'
+            });
+            $("#datetimepicker_left").on("dp.change", function (e) {
+                $('#datetimepicker_right').data("DateTimePicker").minDate(e.date);
+            });
+            $("#datetimepicker_right").on("dp.change", function (e) {
+                $('#datetimepicker_left').data("DateTimePicker").maxDate(e.date);
+            });
+        });
+    })
+
+    function displaySession() {
+        var dateDebut = $("#dateDebut").val();
+        var dateFin = $("#dateFin").val();
+        var url = "/gravure/session/show/"; //url menant à la session par son id
+
+        $.ajax({
+            url: Routing.generate('session_search_date_json', {debut: dateDebut, fin: dateFin}),
+            success: function (result) {
+                console.log(result);
+                $elem = "<table class=\"table table-bordered table-hover\">\n" +
+                    "        <thead>\n" +
+                    "        <tr>\n" +
+                    "            <th>Créateur</th>\n" +
+                    "            <th>Nombre de gravure total</th>\n" +
+                    "            <th>Date de création</th>\n" +
+                    "            <th>Date de modification</th>\n" +
+                    "            <th>Actions</th>\n" +
+                    "        </tr>\n" +
+                    "        </thead>\n" +
+                    "        <tbody>";
+                $.each(result, function (key, val) {
+                    $elem += "<tr>";
+                    $elem += "<td>" + val['user'] + "</td>";
+                    $elem += "<td>" + val['gravure_total'] + "</td>";
+                    $elem += "<td>" + val['created_at'] + "</td>";
+                    $elem += "<td>" + val['updated_at'] + "</td>";
+                    $elem += "<td> <a href=\"" + url + val['id'] + "\"><button class=\"btn btn-info\"> Voir l'archive </button></a></td>"; //Changer le chemin manuellement
+                    $elem += "</tr>";
+
+                });
+
+                $elem += "</tbody></table>";
+
+                $("#div_list_session").html($elem);
+            }
+        });
+
+    }
+
+</script>
+
+{% endblock %}

@@ -4,16 +4,17 @@
     <h1>Modifier ce produit</h1>
 
     {{ form_start(edit_form) }}
-        {{ form_widget(edit_form) }}
-        <input class="btn btn-warning" type="submit" value="Modifier" />
+    {{ form_widget(edit_form) }}
+    <p><input class="btn btn-warning" type="submit" value="Modifier"/></p>
     {{ form_end(edit_form) }}
 
-            <a class="btn btn-danger" href="{{ path('gravure_product_index') }}">
-                <span class="glyphicon glyphicon-arrow-left"></span>
-                Retour
-            </a>
-            {{ form_start(delete_form) }}
-                <input class="btn btn-danger" type="submit" value="Supprimer">
-            {{ form_end(delete_form) }}
-
+    <p><a class="btn btn-danger" href="{{ path('gravure_product_index') }}">
+            <span class="glyphicon glyphicon-arrow-left"></span>
+            Retour
+        </a></p>
+    <p>
+        {{ form_start(delete_form) }}
+        <input class="btn btn-danger" type="submit" value="Supprimer">
+        {{ form_end(delete_form) }}
+    </p>
 {% endblock %}

@@ -47,7 +47,7 @@ SQL;
     }
 
     public function findAll(){
-        $products = $this->connection->fetchAll('SELECT * FROM gravure_product');
+        $products = $this->connection->fetchAll('SELECT * FROM gravure_product ORDER BY id DESC');
 
         return $products;
     }

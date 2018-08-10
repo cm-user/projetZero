@@ -25,7 +25,7 @@ class DbalSessionRepository
     }
 
     public function findLastTen(){
-        $sessions = $this->connection->fetchAll('SELECT * FROM gravure_session ORDER BY id LIMIT 10');
+        $sessions = $this->connection->fetchAll('SELECT * FROM gravure_session ORDER BY id  DESC LIMIT 10');
 
         return $sessions;
     }
@@ -50,10 +50,22 @@ SQL;
         $stmt->execute([
             'user' => (string)$session->getUser(),
             'gravure_total' => (int)$session->getGravureTotal(),
-            'created_at' => (new \DateTime())->format('Y-m-d h:m:s'),
-            'updated_at' => (new \DateTime())->format('Y-m-d h:m:s'),
+            'created_at' => (new \DateTime())->format('Y-m-d H:m:s'),
+            'updated_at' => (new \DateTime())->format('Y-m-d H:m:s'),
         ]);
     }
+
+   public function getSessionByDate($debut, $fin){
+       $sql = "SELECT * FROM gravure_session WHERE gravure_session.created_at BETWEEN :debut AND :fin ";
+       $stmt = $this->connection->prepare($sql);
+       $stmt->bindValue("debut", $debut);
+       $stmt->bindValue("fin", $fin);
+       $stmt->execute();
+
+       $sessions = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+       return $sessions;
+   }
 
     public function findById($id){
 

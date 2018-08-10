@@ -67,14 +67,17 @@ class SelectionSerieController extends Controller
 
 //        $this->get('repositories.gravure')->updateStatusForGravureInChainSession($this->getParameter('status_EN_CHAIN'), $this->getParameter('status_EN_COURS')); //passe le statut de en chaîne à en cours pour les gravures liées à la session en cours
         //sélectionne les gravures ayant le statut EN_CHAIN et faites soit par une machine ayant besoin des mails soit par une machine ayant besoin des pdf
+        $this->statusEnCours = $this->getParameter('status_EN_COURS');
         $mailGravures = $this->get('repositories.gravure')->findAllWithStatusOnLoadAndMailMachine($this->getParameter('status_EN_CHAIN'));
         $PDFGravures = $this->get('repositories.gravure')->findAllInChainSessionWithSurname();
 
-        $mails = $em->getRepository('GravureBundle:Mail')->findAll();
+        if($mailGravures != null){
+            $mails = $em->getRepository('GravureBundle:Mail')->findAll();
 
-//        foreach ($mails as $mail){
-//        self::sendMail($mail->getEmail(), $mailGravures[0]['id_session'], $mailGravures);
-//        }
+//            foreach ($mails as $mail){
+//                self::sendMail($mail->getEmail(), $mailGravures[0]['id_session'], $mailGravures);
+//            }
+        }
 
         $zip = new ZipArchive();
         $ZIPFileName = $this->getParameter("gravure_zip_directory") . "GRAVURE.zip"; //nom du fichier ZIP reçu par l'utilisateur
@@ -107,9 +110,9 @@ class SelectionSerieController extends Controller
                         }
 
                         $file = str_replace('http://tools.cadeau-maestro.com/gravure/pdf/', '', $PDFGravure['path_pdf']); //récupére le nom du fichier
-                        $fileName = $PDFGravure['surname'] . '(' . $PDFGravure['series_number'] . ').pdf';  //création du nom du fichier avec son numéro
+                        $fileName = $PDFGravure['surname'] . ' (' . $PDFGravure['series_number'] . ').pdf';  //création du nom du fichier avec son numéro
 
-                        $zip->addFile($this->getParameter("gravure_pdf_directory") . $file, "$directoryName($arrayCounterFolder[$directoryName])/$fileName"); //Ajout du fichier au ZIP
+                        $zip->addFile($this->getParameter("gravure_pdf_directory") . $file, "$directoryName $arrayCounterFolder[$directoryName]/$fileName"); //Ajout du fichier au ZIP
 
                         $oldChainNumber = $chainNumber;
 

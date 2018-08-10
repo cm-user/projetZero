@@ -2,7 +2,8 @@
 
 {% block body %}
     <h1>Liste des produits</h1>
-
+    <br>
+    <a class="btn btn-success" href="{{ path('gravure_product_new') }}">Ajouter</a>
     <table class="table table-bordered table-hover">
         <thead>
         <tr>
@@ -28,6 +29,5 @@
         </tbody>
     </table>
 
-    <a class="btn btn-success" href="{{ path('gravure_product_new') }}">Ajouter</a>
 
 {% endblock %}
